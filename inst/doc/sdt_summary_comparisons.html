@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Colin G. Tredoux" />
+<meta name="author" content="Tamsyn M. Naylor" />
+
+<meta name="date" content="2026-11-02" />
+
+<title>SDT Summary-Level Comparisons</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">SDT Summary-Level Comparisons</h1>
+<h4 class="author">Colin G. Tredoux</h4>
+<h4 class="author">Tamsyn M. Naylor</h4>
+<h4 class="date">2026-11-02</h4>
+
+
+
+<blockquote>
+<p><strong>Acknowledgement.</strong> Large language models supplied by
+Anthropic and OpenAI were used in preparing this vignette, to assist
+with checking code, testing the veracity of the approaches described,
+and on occasion editing the text. Responsibility for the content rests
+with the authors.</p>
+</blockquote>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This vignette shows how to compare <strong>conditions using only
+summary SDT counts</strong> (hits, false alarms, misses, correct
+rejections).</p>
+<p>Use these tools when <strong>trial-level data are
+unavailable</strong> and you have only summary counts per condition —
+the usual situation when working from published tables, or when
+synthesising results across studies for a meta-analysis.</p>
+<div id="where-the-methods-come-from" class="section level2">
+<h2>Where the methods come from</h2>
+<p>The variance estimators follow Gourevitch and Galanter (1967), Miller
+(1996), and Suero, Privado and Botella (2017). The bootstrap option
+follows the procedure used in the meta-analysis of Tredoux, Sporer,
+Vredeveldt, Kempen and Nortje (2021), where summary counts extracted
+from published studies had to be compared without access to the
+underlying trial data — which is exactly the problem these functions
+address.</p>
+</div>
+<div id="a-caution-about-what-d-means-for-a-lineup" class="section level2">
+<h2>A caution about what d′ means for a lineup</h2>
+<p>These functions treat the data as a standard <strong>yes/no
+detection</strong> problem: hits, misses, false alarms and correct
+rejections, from which d′ follows as <span class="math inline">\(z(\text{hit rate}) - z(\text{false-alarm
+rate})\)</span>.</p>
+<p>A lineup is not that. A witness viewing a lineup performs a
+<strong>compound</strong> task — deciding whether the culprit is present
+at all, <em>and</em> which member it is. Duncan (2006) set this out
+formally as a compound signal-detection model, in which the lineup is a
+1-of-<em>m</em> detection task combined with an <em>m</em>-alternative
+forced-choice identification task, with a single set of latent memory
+parameters driving both. Estimating d′ from collapsed 2 × 2 counts
+ignores that structure, and in particular it discards which lineup
+member was chosen.</p>
+<p>That does not make the summary-level comparison useless — it is often
+the only thing available, and it is what published tables report — but
+the d′ it yields is a yes/no analogue and should be labelled as such
+rather than presented as the lineup’s discriminability. Where
+trial-level data exist, prefer the lineup models in
+<code>vignette(&quot;lineup_memory_models&quot;)</code> or
+<code>vignette(&quot;model_comparison&quot;)</code>, which respect the compound
+structure.</p>
+</div>
+</div>
+<div id="summary-metrics-from-counts" class="section level1">
+<h1>Summary metrics from counts</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(r4lineups)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># Condition A counts</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>hits_a <span class="ot">&lt;-</span> <span class="dv">34</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>fas_a <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>misses_a <span class="ot">&lt;-</span> <span class="dv">16</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>cr_a <span class="ot">&lt;-</span> <span class="dv">44</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>summ_a <span class="ot">&lt;-</span> <span class="fu">sdt_summary_from_counts</span>(hits_a, fas_a, misses_a, cr_a)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>summ_a</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; $hits</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; [1] 34</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; $fas</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; [1] 6</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; $misses</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; [1] 16</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; $cr</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; [1] 44</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; $ns</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; [1] 50</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt; $nn</span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; [1] 50</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt; $hit_rate</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co">#&gt; [1] 0.6764706</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a><span class="co">#&gt; $fa_rate</span></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="co">#&gt; [1] 0.127451</span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a><span class="co">#&gt; $zH</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a><span class="co">#&gt; [1] 0.4578519</span></span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a><span class="co">#&gt; $zF</span></span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a><span class="co">#&gt; [1] -1.138523</span></span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a><span class="co">#&gt; $dprime</span></span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a><span class="co">#&gt; [1] 1.596375</span></span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a><span class="co">#&gt; $c</span></span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a><span class="co">#&gt; [1] 0.3403358</span></span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a><span class="co">#&gt; $ln_beta</span></span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a><span class="co">#&gt; [1] 0.5433037</span></span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a><span class="co">#&gt; $beta</span></span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a><span class="co">#&gt; [1] 1.721685</span></span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a><span class="co">#&gt; $correction</span></span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a><span class="co">#&gt; [1] &quot;loglinear&quot;</span></span></code></pre></div>
+</div>
+<div id="variance-estimation" class="section level1">
+<h1>Variance estimation</h1>
+<p>Miller’s exact‑binomial method is recommended for most cases:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>var_a_miller <span class="ot">&lt;-</span> <span class="fu">sdt_summary_variance</span>(hits_a, fas_a, misses_a, cr_a, <span class="at">method =</span> <span class="st">&quot;miller&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>var_a_miller</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; $var_zH</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; [1] 0.03372994</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; $var_zF</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; [1] 0.05230691</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; $var_dprime</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; [1] 0.08603685</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; $var_c</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; [1] 0.02150921</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; $cov_dprime_c</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; [1] 0.009288488</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; $var_ln_beta</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; [1] 0.07487284</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; $nboot</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; [1] 1000</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; $method</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; [1] &quot;miller&quot;</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt; $correction</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt; [1] &quot;loglinear&quot;</span></span></code></pre></div>
+<p>Gourevitch &amp; Galanter’s delta method is faster but more
+approximate:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>var_a_gouv <span class="ot">&lt;-</span> <span class="fu">sdt_summary_variance</span>(hits_a, fas_a, misses_a, cr_a, <span class="at">method =</span> <span class="st">&quot;gourevitch&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>var_a_gouv</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; $var_zH</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; [1] 0.03391665</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; $var_zF</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; [1] 0.05108471</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; $var_dprime</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; [1] 0.08500136</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; $var_c</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; [1] 0.02125034</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; $cov_dprime_c</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; [1] 0.008584026</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; $var_ln_beta</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; [1] 0.07332771</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; $nboot</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; [1] 1000</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; $method</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; [1] &quot;gourevitch&quot;</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; $correction</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; [1] &quot;loglinear&quot;</span></span></code></pre></div>
+<p>Bootstrap variance can also be used:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>var_a_boot <span class="ot">&lt;-</span> <span class="fu">sdt_summary_variance</span>(hits_a, fas_a, misses_a, cr_a,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                                   <span class="at">method =</span> <span class="st">&quot;bootstrap&quot;</span>, <span class="at">nboot =</span> <span class="dv">1000</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>var_a_boot</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; $var_zH</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; [1] 0.03600002</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; $var_zF</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; [1] 0.05148473</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; $var_dprime</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; [1] 0.08391206</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; $var_c</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; [1] 0.02276436</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; $cov_dprime_c</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; [1] 0.007742356</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; $var_ln_beta</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; [1] 0.08607643</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; $nboot</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; [1] 1000</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; $method</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; [1] &quot;bootstrap&quot;</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; $correction</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; [1] &quot;loglinear&quot;</span></span></code></pre></div>
+</div>
+<div id="comparing-two-conditions" class="section level1">
+<h1>Comparing two conditions</h1>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Condition B counts</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>hits_b <span class="ot">&lt;-</span> <span class="dv">28</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>fas_b <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>misses_b <span class="ot">&lt;-</span> <span class="dv">22</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>cr_b <span class="ot">&lt;-</span> <span class="dv">40</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">compare_sdt_summary</span>(hits_a, fas_a, misses_a, cr_a,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>                    hits_b, fas_b, misses_b, cr_b,</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>                    <span class="at">metric =</span> <span class="st">&quot;dprime&quot;</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>                    <span class="at">method =</span> <span class="st">&quot;miller&quot;</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; $metric</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;dprime&quot;</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; $estimate_a</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; [1] 1.596375</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; $estimate_b</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; [1] 0.9687792</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; $diff</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; [1] 0.6275962</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt; $se</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt; [1] 0.3973377</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt; $z</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt; [1] 1.579503</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt; $p_value</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt; [1] 0.1142207</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt; $method</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co">#&gt; [1] &quot;miller&quot;</span></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="co">#&gt; $correction</span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a><span class="co">#&gt; [1] &quot;loglinear&quot;</span></span></code></pre></div>
+<p>You can also compare <strong>criterion</strong> or
+<strong>lnβ</strong>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">compare_sdt_summary</span>(hits_a, fas_a, misses_a, cr_a,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                    hits_b, fas_b, misses_b, cr_b,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                    <span class="at">metric =</span> <span class="st">&quot;c&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                    <span class="at">method =</span> <span class="st">&quot;bootstrap&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                    <span class="at">nboot =</span> <span class="dv">2000</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; $metric</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;c&quot;</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; $estimate_a</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; [1] 0.3403358</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; $estimate_b</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; [1] 0.3364025</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; $diff</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; [1] 0.003933284</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; $se</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; [1] 0.1999384</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; $z</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; [1] 0.01967248</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt; $p_value</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt; [1] 0.9843046</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt; $method</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt; [1] &quot;bootstrap&quot;</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt; $correction</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt; [1] &quot;loglinear&quot;</span></span></code></pre></div>
+</div>
+<div id="notes" class="section level1">
+<h1>Notes</h1>
+<ul>
+<li>Extreme rates (0 or 1) are corrected by default (loglinear).</li>
+<li>If only <strong>published d′ or β</strong> are available, you need a
+reported <strong>SE/variance</strong> to compare conditions. Without
+counts or SEs, z-tests are not identifiable.</li>
+</ul>
+</div>
+<div id="the-compound-model-alternative" class="section level1">
+<h1>The compound-model alternative</h1>
+<p><code>fit_max_sdt()</code> fits the compound (MAX SDT) model of
+Duncan (2006) directly to lineup counts, estimating d’ and a criterion
+together, and gives the sampling distribution by parametric bootstrap.
+It is the lineup-appropriate counterpart to everything above.</p>
+<div id="what-it-needs-and-why-you-may-not-have-it" class="section level2">
+<h2>What it needs, and why you may not have it</h2>
+<p>The yes/no functions need four numbers per condition. The compound
+model needs <strong>five</strong>, because it distinguishes outcomes the
+2 x 2 framing merges:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Yes/no summary</th>
+<th>Compound model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Target-present</td>
+<td>hits, misses</td>
+<td>correct IDs, <strong>filler IDs</strong>, rejections</td>
+</tr>
+<tr class="even">
+<td>Target-absent</td>
+<td>false alarms, correct rejections</td>
+<td>suspect/filler choices, rejections</td>
+</tr>
+</tbody>
+</table>
+<p>The extra cell is the filler identification, and this is the
+practical constraint: <strong>you cannot convert 2 x 2 counts into
+compound-model input</strong>, because collapsing to “miss” has already
+merged filler identifications with rejections. If a published table
+reports only hits and false alarms, the yes/no route above is the only
+one available. If the suspect/filler/rejection breakdown survives,
+prefer the compound model.</p>
+</div>
+<div id="a-worked-example" class="section level2">
+<h2>A worked example</h2>
+<p>These are the Profile-lineup counts from Reisberg and Pezdek (2024),
+the data on which the reference implementation of this model was
+written: two conditions, each with 96 target-present and 96 or 106
+target-absent lineups of size 6.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Stored with the vignette; set R4LINEUPS_PRECOMPUTE=true to recompute.</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>fit_free <span class="ot">&lt;-</span> <span class="fu">fit_max_sdt</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">n_hit =</span> <span class="dv">69</span>, <span class="at">n_tp_choose =</span> <span class="dv">82</span>, <span class="at">n_fa =</span> <span class="dv">64</span>, <span class="at">N_tp =</span> <span class="dv">96</span>, <span class="at">N_ta =</span> <span class="dv">106</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">n_hit_2 =</span> <span class="dv">68</span>, <span class="at">n_tp_choose_2 =</span> <span class="dv">78</span>, <span class="at">n_fa_2 =</span> <span class="dv">42</span>, <span class="at">N_tp_2 =</span> <span class="dv">96</span>, <span class="at">N_ta_2 =</span> <span class="dv">96</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">6</span>, <span class="at">nboot =</span> <span class="dv">300</span>, <span class="at">seed =</span> <span class="dv">11</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="at">Condition =</span> <span class="fu">c</span>(<span class="st">&quot;Condition 1&quot;</span>, <span class="st">&quot;Condition 2&quot;</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    <span class="st">`</span><span class="at">d&#39;</span><span class="st">`</span>      <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">c</span>(fit_free<span class="sc">$</span>dprime_1, fit_free<span class="sc">$</span>dprime_2), <span class="dv">3</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="st">`</span><span class="at">95% CI</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">&quot;[%.2f, %.2f]&quot;</span>, fit_free<span class="sc">$</span>boot_ci[<span class="st">&quot;lower&quot;</span>, <span class="st">&quot;d1&quot;</span>],</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>                                          fit_free<span class="sc">$</span>boot_ci[<span class="st">&quot;upper&quot;</span>, <span class="st">&quot;d1&quot;</span>]),</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>                  <span class="fu">sprintf</span>(<span class="st">&quot;[%.2f, %.2f]&quot;</span>, fit_free<span class="sc">$</span>boot_ci[<span class="st">&quot;lower&quot;</span>, <span class="st">&quot;d2&quot;</span>],</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>                                          fit_free<span class="sc">$</span>boot_ci[<span class="st">&quot;upper&quot;</span>, <span class="st">&quot;d2&quot;</span>])),</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    <span class="st">`</span><span class="at">Criterion</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">c</span>(fit_free<span class="sc">$</span>lambda_1, fit_free<span class="sc">$</span>lambda_2), <span class="dv">3</span>),</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>    <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  ),</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Compound (MAX SDT) model fitted to the Reisberg &amp; Pezdek Profile-lineup counts, with parametric bootstrap intervals from 300 replicates.&quot;</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption>Compound (MAX SDT) model fitted to the Reisberg &amp; Pezdek
+Profile-lineup counts, with parametric bootstrap intervals from 300
+replicates.</caption>
+<thead>
+<tr class="header">
+<th align="left">Condition</th>
+<th align="right">d’</th>
+<th align="left">95% CI</th>
+<th align="right">Criterion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Condition 1</td>
+<td align="right">1.944</td>
+<td align="left">[1.63, 2.21]</td>
+<td align="right">1.146</td>
+</tr>
+<tr class="even">
+<td align="left">Condition 2</td>
+<td align="right">2.083</td>
+<td align="left">[1.80, 2.41]</td>
+<td align="right">1.393</td>
+</tr>
+</tbody>
+</table>
+<p>The bootstrap intervals <strong>are</strong> the sampling
+distribution: replicates are simulated from the fitted model and
+refitted, so the spread reflects the estimator’s behaviour rather than
+an asymptotic approximation.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Goodness of fit: chi-square =&quot;</span>, <span class="fu">round</span>(fit_free<span class="sc">$</span>chisq, <span class="dv">3</span>),</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>    <span class="st">&quot;on&quot;</span>, fit_free<span class="sc">$</span>df, <span class="st">&quot;df, p =&quot;</span>, <span class="fu">round</span>(fit_free<span class="sc">$</span>p_value, <span class="dv">4</span>), <span class="st">&quot;</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="st">&quot;</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; Goodness of fit: chi-square = 6.619 on 2 df, p = 0.0365</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Bootstrap replicates used:&quot;</span>, fit_free<span class="sc">$</span>boot_n_used,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="st">&quot; failed:&quot;</span>, fit_free<span class="sc">$</span>boot_n_failed, <span class="st">&quot;</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="st">&quot;</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; Bootstrap replicates used: 299  failed: 1</span></span></code></pre></div>
+<p>Unlike the exactly-identified summary estimators, this model has
+residual degrees of freedom, so it <strong>can</strong> be found to fit
+badly — which is informative in itself.</p>
+</div>
+<div id="comparing-conditions" class="section level2">
+<h2>Comparing conditions</h2>
+<p>The comparison is a nested test rather than a Wald test on a
+difference: fit the model with d’ free across conditions, refit with d’
+constrained equal, and compare the chi-square change.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>fit_equal_d <span class="ot">&lt;-</span> <span class="fu">fit_max_sdt</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="at">n_hit =</span> <span class="dv">69</span>, <span class="at">n_tp_choose =</span> <span class="dv">82</span>, <span class="at">n_fa =</span> <span class="dv">64</span>, <span class="at">N_tp =</span> <span class="dv">96</span>, <span class="at">N_ta =</span> <span class="dv">106</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">n_hit_2 =</span> <span class="dv">68</span>, <span class="at">n_tp_choose_2 =</span> <span class="dv">78</span>, <span class="at">n_fa_2 =</span> <span class="dv">42</span>, <span class="at">N_tp_2 =</span> <span class="dv">96</span>, <span class="at">N_ta_2 =</span> <span class="dv">96</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">6</span>, <span class="at">constrain_d =</span> <span class="cn">TRUE</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="fu">compare_max_sdt</span>(fit_free, fit_equal_d)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; MAX SDT Model Comparison (chi-squared difference test)</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt;   Free model:       chi-sq = 6.619 (4 free params)</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt;   Constrained model: chi-sq = 7.039 (3 free params)</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt;   Constraint: d&#39; equal</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt;   Delta chi-sq(1) = 0.420, p = 0.5170</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt;   Interpretation: constraint does not significantly worsen fit.</span></span></code></pre></div>
+<p>Constraining d’ to be equal costs 0.42 in chi-square for one degree
+of freedom, which is nothing: these two conditions do not differ
+detectably in discriminability. <code>constrain_c = TRUE</code> tests
+the criterion in the same way.</p>
+</div>
+<div id="which-to-use" class="section level2">
+<h2>Which to use</h2>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Only hits and false alarms survive, e.g. from a published table</td>
+<td>The yes/no summary functions above, stating that d’ is a yes/no
+analogue</td>
+</tr>
+<tr class="even">
+<td>Full suspect/filler/rejection breakdown available</td>
+<td><code>fit_max_sdt()</code> — it respects the compound structure and
+gives a goodness-of-fit test</td>
+</tr>
+<tr class="odd">
+<td>Trial-level data with confidence</td>
+<td>The lineup models in <code>vignette(&quot;model_comparison&quot;)</code> and
+<code>vignette(&quot;lineup_memory_models&quot;)</code></td>
+</tr>
+</tbody>
+</table>
+<p>A note for anyone reproducing published analyses:
+<code>fit_max_sdt()</code> uses mutually exclusive response cells,
+whereas some reference scripts for this model fit total target-present
+choices alongside culprit identifications, which counts the latter
+twice. Estimates therefore differ — see the “Relation to Smith’s
+scripts” section of <code>?fit_max_sdt</code>.</p>
+</div>
+</div>
+<div id="technical-details" class="section level1">
+<h1>Technical Details</h1>
+<div id="the-estimators" class="section level2">
+<h2>The estimators</h2>
+<p>From hits <span class="math inline">\(H\)</span>, false alarms <span class="math inline">\(F\)</span>, signal trials <span class="math inline">\(N_s\)</span> and noise trials <span class="math inline">\(N_n\)</span>:</p>
+<p><span class="math display">\[
+d&#39; = z(p_H) - z(p_F), \qquad
+c = -\tfrac{1}{2}\bigl[z(p_H) + z(p_F)\bigr], \qquad
+\ln\beta = d&#39;c
+\]</span></p>
+<p>with <span class="math inline">\(p_H = H/N_s\)</span> and <span class="math inline">\(p_F = F/N_n\)</span>. The <span class="math inline">\(\ln\beta = d&#39;c\)</span> identity holds under
+equal variance only.</p>
+</div>
+<div id="variance-and-why-there-are-three-methods" class="section level2">
+<h2>Variance, and why there are three methods</h2>
+<p>Comparing two conditions needs a variance for the difference. The
+three options differ in what they assume:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Basis</th>
+<th>When to prefer it</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>&quot;gourevitch&quot;</code></td>
+<td>Delta-method approximation (Gourevitch &amp; Galanter, 1967)</td>
+<td>Quick, and adequate with large counts away from the extremes</td>
+</tr>
+<tr class="even">
+<td><code>&quot;miller&quot;</code></td>
+<td>Binomial moment sums evaluated at estimated rates (Miller,
+1996)</td>
+<td>The package default; its plug-in Wald test is approximate and can be
+liberal with sparse false alarms</td>
+</tr>
+<tr class="odd">
+<td><code>&quot;bootstrap&quot;</code></td>
+<td>Parametric resampling of independent binomial counts at estimated
+rates</td>
+<td>Avoids a normal approximation for the transformed draws, but still
+assumes the binomial sampling model; boundary behaviour needs
+assessment</td>
+</tr>
+</tbody>
+</table>
+<p>Exact binomial moment summation does not make the resulting plug-in
+comparison an exact test. In an independent audit scenario with 200
+signal and 200 noise trials per condition, true hit rate .15 and
+false-alarm rate .01, nominal 5% Miller Wald tests rejected equal
+conditions about 8% of the time for d’ and 9% for ln-beta (12,000
+datasets). These are limits of the approximation, rather than evidence
+that one variance option is uniformly preferable.</p>
+<p>The comparison is a Wald test, with <span class="math inline">\(\mathrm{Var}(\Delta) = \mathrm{Var}_A +
+\mathrm{Var}_B\)</span>, valid because the two conditions are
+independent samples. It would be wrong for a within-subjects design,
+where the two estimates are correlated; the package provides no
+within-subjects version.</p>
+</div>
+<div id="the-extreme-rate-correction" class="section level2">
+<h2>The extreme-rate correction</h2>
+<p>A hit rate of exactly 1 or a false-alarm rate of exactly 0 gives an
+infinite <span class="math inline">\(z\)</span>, so a correction is
+unavoidable. Three are available via <code>correction</code>:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Option</th>
+<th>Rate computed as</th>
+<th>Applied</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>&quot;loglinear&quot;</code> (default)</td>
+<td><span class="math inline">\((x + 0.5)/(n + 1)\)</span></td>
+<td>To every case, extreme or not</td>
+</tr>
+<tr class="even">
+<td><code>&quot;half&quot;</code></td>
+<td><span class="math inline">\(0.5/n\)</span> or <span class="math inline">\((n - 0.5)/n\)</span></td>
+<td>Only when the count is 0 or <span class="math inline">\(n\)</span></td>
+</tr>
+<tr class="odd">
+<td><code>&quot;none&quot;</code></td>
+<td><span class="math inline">\(x/n\)</span></td>
+<td>Never (rates are clamped away from 0 and 1 to keep <span class="math inline">\(z\)</span> finite)</td>
+</tr>
+</tbody>
+</table>
+<p>The default applies unconditionally rather than only to offending
+cells, which is the form that behaves better in simulation. The choice
+is recorded in the returned object rather than being applied silently,
+and it should be stated in any writeup: with small counts it moves d′
+appreciably.</p>
+</div>
+<div id="assumptions" class="section level2">
+<h2>Assumptions</h2>
+<ol style="list-style-type: decimal">
+<li>Equal-variance signal detection. Unequal variance requires the full
+ROC, not a single point; see <code>fit_sdt_roc()</code>.</li>
+<li>The two conditions are independent samples.</li>
+<li>Every trial contributes one binary response, so the four counts
+partition the sample.</li>
+<li>The task is treated as yes/no detection. See the caution above on
+compound decision tasks (Duncan, 2006) for what this costs when the data
+are lineups.</li>
+</ol>
+</div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<div class="hanging-indent">
+<p>Duncan, M. (2006). <em>A signal detection model of compound decision
+tasks</em> (Technical Note DRDC TR 2006-256). Defence R&amp;D Canada,
+Toronto.</p>
+<p>Gourevitch, V., &amp; Galanter, E. (1967). A significance test for
+one parameter isosensitivity functions. <em>Psychometrika, 32</em>(1),
+25-33.</p>
+<p>Miller, J. (1996). The sampling distribution of d’. <em>Perception
+&amp; Psychophysics, 58</em>(1), 65-72.</p>
+<p>Reisberg, D., &amp; Pezdek, K. (2024). Data analysed with the MAX SDT
+model in scripts supplied by A. M. Smith (personal communication, 4
+April 2024).</p>
+<p>Suero, M., Privado, J., &amp; Botella, J. (2017). Estimating the
+variances and covariance of the parameters of signal detection theory.
+<em>Psicothema, 29</em>(3), 432-437.</p>
+<p>Tredoux, C. G., Sporer, S. L., Vredeveldt, A., Kempen, K., &amp;
+Nortje, A. (2021). Does constructing a facial composite affect
+eyewitness memory? A research synthesis and meta-analysis. <em>Journal
+of Experimental Criminology, 17</em>(4), 713-741. <a href="https://doi.org/10.1007/s11292-020-09432-z" class="uri">https://doi.org/10.1007/s11292-020-09432-z</a></p>
+</div>
+</div>
+<div id="further-reading" class="section level1">
+<h1>Further Reading</h1>
+<ul>
+<li><code>?sdt_summary_from_counts</code>,
+<code>?sdt_summary_variance</code>,
+<code>?compare_sdt_summary</code></li>
+<li><code>vignette(&quot;sdt_glm_analysis&quot;)</code> for trial-level SDT with
+covariates and random effects</li>
+<li><code>vignette(&quot;model_comparison&quot;)</code> and
+<code>vignette(&quot;lineup_memory_models&quot;)</code> for models that respect
+the compound structure of a lineup decision</li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -4,28 +4,45 @@
 \alias{esize_T_ci_n}
 \title{Effective Size with Confidence Intervals from Normal Theory (Tredoux, 1998)}
 \usage{
-esize_T_ci_n(lineup_table, alpha)
+esize_T_ci_n(lineup_tab, alpha)
 }
 \arguments{
-\item{lineup_table}{A table of lineup choices}
+\item{lineup_tab}{A table of lineup choices.}
 
-\item{alpha}{Alpha level to be declared by user (scalar)}
+\item{alpha}{Confidence level as a decimal (e.g., 0.95 for a 95-percent CI).}
 }
 \description{
-Function for generating Effective Size (Tredoux, 1998) with CIs from normal theory
+Computes effective size E' (Tredoux, 1998) together with a confidence interval
+derived from the normal-theory variance formula in Tredoux (1998).
 }
 \details{
-Reduces the size of a lineup from a (corrected) nominal starting
-         value by the degree to which members are, in sum, chosen below
-         the level of chance expectation
+The variance of the diversity index I is estimated via Tredoux's (1998)
+  closed-form expression:
+  \deqn{\mathrm{Var}(I) \approx \frac{4}{N}\left(\sum_i p_i^3 - \left(\sum_i p_i^2\right)^2\right).}
+  Normal quantiles are applied to I and the resulting bounds are back-transformed
+  to the E' scale via \eqn{E' = 1/(1-I)}. For small samples or skewed distributions,
+  all interval methods require qualification. In particular, plug-in bootstrap
+  intervals also fail at exact uniform fairness; see \code{\link{esize_boot_dist}}.
+  Bayesian credible intervals describe a stated posterior rather than
+  guaranteeing fixed-parameter frequentist coverage.
+
+  Note that this concerns the \emph{interval}. The point estimate itself is
+  also biased downward near uniform choice distributions at small samples,
+  although the direction is not universal, since \eqn{E'} is a plug-in
+  estimator; see the \dQuote{Small-sample bias} section of
+  \code{\link{esize_T}}. This function uses the plug-in form.
+  This first-order interval is unreliable in small samples and at uniform or
+  concentrated boundary distributions. A zero estimated variance yields a
+  degenerate interval, not evidence of zero population uncertainty. An ordinary
+  bootstrap is also not a general solution to these boundary problems.
 }
 \examples{
 #Data:
 lineup_vec <- round(runif(100, 1, 6))
-lineup_table <- table(lineup_vec)
+lineup_tab <- table(lineup_vec)
 
 #Call:
-e_ci <- esize_T_ci_n(lineup_table, .95)
+e_ci <- esize_T_ci_n(lineup_tab, .95)
 
 }
 \references{

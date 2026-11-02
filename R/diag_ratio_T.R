@@ -1,6 +1,8 @@
-#' Diagnosticty Ratio (Tredoux, 1998)
+#' Diagnosticity Ratio (Tredoux, 1998)
 #'
-#'Computes Wells's adjusted diagnosticity ratio for one lineup pair (see: Tredoux, 1998)
+#' Computes Tredoux's small-cell corrected diagnosticity ratio for one
+#' target-present/target-absent lineup pair.
+#'
 #'@param lineup_pres A numeric vector of lineup choices for a lineup in which
 #'                   the target was present
 #'@param lineup_abs A numeric vector of lineup choices for a lineup in which
@@ -9,6 +11,14 @@
 #'@param pos_abs A scalar, representing target position in TA lineup. Must be declared by user
 #'@param k1 Number of targets in TP lineup. Must be specified by user (scalar).
 #'@param k2 Number of targets in TA lineup. Must be specified by user (scalar).
+#'@details The corrected estimator is:
+#'         \deqn{DR_T =
+#'         \frac{(n_{TP,s} + 0.5)/(N_{TP} + 0.5)}
+#'              {(n_{TA,s} + 0.5)/(N_{TA} + 0.5)},}
+#'         where \eqn{n_{TP,s}} and \eqn{n_{TA,s}} are suspect-selection
+#'         counts in target-present and target-absent lineups, respectively,
+#'         and \eqn{N_{TP}} and \eqn{N_{TA}} are the corresponding sample
+#'         sizes.
 #'@references Malpass, R. S. (1981). Effective size and defendant bias in
 #'            eyewitness identification lineups. \emph{Law and Human Behavior, 5}(4), 299-309.
 #'
@@ -45,6 +55,13 @@ diag_ratio_T <- function(lineup_pres, lineup_abs, pos_pres, pos_abs, k1, k2){
     lineup_abs <- typecheck(lineup_abs)
 
     datacheck2(lineup_pres, lineup_abs, k1, k2)
+    if (length(pos_pres) != 1L || length(pos_abs) != 1L ||
+        !is.numeric(pos_pres) || !is.numeric(pos_abs) ||
+        !is.finite(pos_pres) || !is.finite(pos_abs) ||
+        pos_pres != floor(pos_pres) || pos_abs != floor(pos_abs) ||
+        pos_pres < 1 || pos_pres > k1 || pos_abs < 1 || pos_abs > k2) {
+      stop("Suspect positions must be integer positions within their lineups.", call. = FALSE)
+    }
 
     a <- (sum(lineup_pres == pos_pres) + 0.5)/(length(lineup_pres) + 0.5)
     b <- (sum(lineup_abs == pos_abs) + 0.5)/(length(lineup_abs) + 0.5)

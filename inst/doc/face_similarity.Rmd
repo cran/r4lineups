@@ -1,0 +1,844 @@
+---
+title: "Face Similarity Analysis"
+subtitle: "Deep-learning measures of facial similarity in lineups"
+author:
+- "Colin G. Tredoux"
+- "Tamsyn M. Naylor"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Face Similarity Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+> **Acknowledgement.** Large language models supplied by Anthropic and OpenAI
+> were used in preparing this vignette, to assist with checking code, testing
+> the veracity of the approaches described, and on occasion editing the text.
+> Responsibility for the content rests with the authors.
+
+```{r setup, include = FALSE, purl=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = NA,
+  fig.width = 7,
+  fig.height = 5,
+  eval = FALSE,
+  purl = FALSE
+)
+```
+
+> **Note on the code in this vignette.** Unlike the other vignettes in this
+> package, the examples below are **not executed** when it is built. They
+> require two things the package cannot supply: a working Python environment
+> with DeepFace installed, and **face image files of your own**. No face images
+> are distributed with r4lineups, for obvious reasons. The calls match the
+> functions' arguments and return values, and the code that works on their
+> results has been run against objects of the same structure, but the outputs
+> are described rather than computed here.
+
+## Introduction
+
+**r4lineups** provides deep learning methods for measuring facial similarity in eyewitness lineups. These tools complement mock-witness studies by giving analysts reproducible, continuous similarity summaries that can help screen candidate foils and document how a lineup was assembled. They should be treated as exploratory aids, not as a replacement for mock-witness or outcome-based evidence.
+
+### Why measure face similarity?
+
+Traditional lineup fairness assessment relies on mock witnesses viewing the
+lineup and choosing from it **on the basis of a description**. That dependence
+is the method's foundation, and it is also where its difficulties lie.
+
+**Whose description?** The mock-witness procedure asks people to pick the member
+who best matches a description, so the result is a property of the
+description-lineup pair, not of the lineup alone. Change the description and the
+measured fairness changes. In real cases the description is the witness's own,
+given under conditions that may have been poor, and it is often the only one
+available. In laboratory studies it is frequently fabricated by the
+experimenters, which raises a different problem: a description written with a
+great deal of detail makes a lineup very hard to construct, because few
+candidate foils will match on every feature. Detail also tends to narrow the
+field towards the suspect, so an over-specified description can make a
+perfectly reasonable lineup look unfair — and an under-specified one can make an
+unfair lineup look acceptable.
+
+Beyond that, the procedure requires recruiting and testing participants, which
+is slow and costly, and returns categorical data — which member each mock
+witness chose — rather than a continuous measure of resemblance.
+
+**Deep learning face similarity** measures something different: the resemblance
+between the images themselves, with no description and no participants. It is
+numeric, fast, scalable to hundreds of lineups, and exactly reproducible — the
+same images always give the same scores. It can also say *which* foils sit
+close to or far from the suspect, which a choice distribution can only do
+indirectly.
+
+### An important caution before going further
+
+It is tempting to move from "we can measure similarity" to "here is the right
+amount of similarity", and this vignette deliberately does not do that.
+
+**The literature is not settled on how similar lineup foils should be.** The
+long-standing intuition that foils should closely resemble the suspect competes
+with evidence that very high similarity can impair discriminability by removing
+the diagnostic features a witness might use, and the balance appears to depend
+on the procedure, the encoding conditions and what is being optimised. There is
+no agreed optimum, and no threshold at which a lineup becomes "fair" on a
+similarity metric.
+
+So the functions here **report degree of similarity**; they do not grade it.
+Where the sections below give numbers, read them as descriptions of the images,
+not as verdicts on the lineup. Similarity scores are most defensible used
+comparatively — this foil against that one, this lineup against another
+constructed the same way — and as a screening aid during construction, rather
+than as evidence of fairness after the fact. The choice-based measures in the
+main vignette, and the outcome-based measures elsewhere in the package, remain
+the evidence about how a lineup actually performed.
+
+### What This Vignette Covers
+
+1. **Setup** - Installing Python dependencies
+2. **Basic Comparison** - Comparing two face images
+3. **Lineup Analysis** - Analyzing entire lineups
+4. **Models & Metrics** - Choosing the right configuration
+5. **Visualization** - Displaying results
+6. **Advanced Features** - Embeddings, batch processing, dimensionality reduction
+7. **Integration** - Combining with traditional measures
+8. **Interpretation** - What these scores do and do not establish
+
+## Setup
+
+Face similarity analysis uses Python's DeepFace library via R's reticulate package. This requires a one-time setup.
+
+### Check Current Setup
+
+```{r check-setup, purl=FALSE}
+library(r4lineups)
+
+# Check if Python and dependencies are available
+check_python_deps()
+```
+
+### Install Python Dependencies
+
+If you don't have the required dependencies, install them:
+
+The setup has one requirement that must be met first, so do it in the order
+below.
+
+**TensorFlow, which DeepFace depends on, does not publish wheels for every
+Python version.** At the time of writing it supports Python 3.9 to 3.12. If your
+system Python is newer — 3.13 or 3.14, which is increasingly common — the
+install will proceed a long way and then fail with `No matching distribution
+found for tensorflow`. `install_r4lineups_python()` checks the interpreter
+first and stops before downloading anything, rather than letting that happen.
+
+So pin the version, and **obtain a suitable interpreter before asking for an
+environment built from one**:
+
+```{r install-deps, purl=FALSE}
+# Step 1: get a Python that TensorFlow supports. Skip if you already have one.
+reticulate::install_python(version = "3.11")
+
+# Step 2: build the environment from it and install DeepFace
+install_r4lineups_python(envname = "r4lineups-face-env",
+                         python_version = "3.11")
+```
+
+Requesting `python_version = "3.11"` without step 1 fails, because there is no
+3.11 interpreter to build from. `install_r4lineups_python()` checks for this
+first and reports which versions it did find, along with the
+`reticulate::install_python()` call needed.
+
+The first run takes several minutes, as it downloads the deep learning models
+(ArcFace, FaceNet and others). They are cached afterwards.
+
+### If the Python setup defeats you
+
+It is a genuine possibility — the dependency chain is long and platform
+dependent. Two fallbacks:
+
+- The bundled Shiny application, `run_r4lineups_app()`, covers the lineup
+  fairness measures that need no Python at all.
+- Everything in the rest of this package — effective size, functional size, ROC,
+  CAC, the SDT and MPT models — is pure R. Two optional components use Python:
+  face similarity, and the pyWitness bridge behind `fit_lineup_models()`
+  (`vignette("lineup_memory_models")`). Neither is a prerequisite for anything
+  else.
+
+### Verify Installation
+
+```{r verify, purl=FALSE}
+# Check available models
+available_models()
+
+# Check available face detectors
+available_detectors()
+```
+
+## Basic Face Comparison
+
+The simplest use case is comparing two face images.
+
+### Compare Two Faces
+
+```{r basic-comparison, purl=FALSE}
+# Compare target to a foil
+# (Use your own image paths)
+result <- face_similarity(
+  img1_path = "path/to/target.jpg",
+  img2_path = "path/to/foil1.jpg",
+  model = "ArcFace",     # State-of-the-art face recognition model
+  metric = "cosine"      # Similarity metric
+)
+
+print(result)
+```
+
+### Understanding the Output
+
+```{r interpret-result, purl=FALSE}
+# Similarity score (for cosine, 1 - distance: -1 to 1, higher = more similar)
+result$similarity  # e.g., 0.85
+
+# Distance (lower = more similar)
+result$distance    # e.g., 0.15
+
+# Would the model judge these to be the same person?
+result$verified    # see the note below on what this does and does not mean
+
+# Model's threshold for verification
+result$threshold   # e.g., 0.68 for ArcFace + cosine
+```
+
+**Reading the output.** `similarity` is a continuous score on the model's own
+scale; higher means the two images are closer in the model's embedding space.
+There is no table of bands here, because the literature does not establish what level of similarity a lineup foil ought to
+have. Compare scores against each other, not against a standard.
+
+`verified` is a different kind of output. It is not a
+judgement about fairness; it is the model's **identity** decision, whether the
+distance falls inside its threshold for "same person". A `TRUE` is a reason to
+look at the two photographs, nothing more. Face recognition systems make false
+matches, especially between people of similar appearance, and a match does not
+establish that the photographs show the same person, that the foil fails as an
+alternative for witnesses, or that the lineup contains the suspect twice.
+
+`threshold` is the model's own cut-off for that identity decision. It is a
+**distance**, so on the similarity scale the corresponding value for cosine is
+`1 - threshold`. It varies by model and metric, and it is not a fairness
+criterion.
+
+## Lineup Similarity Analysis
+
+Analyze all lineup members against the target in one call.
+
+### Analyze Complete Lineup
+
+```{r lineup-analysis, purl=FALSE}
+# Paths to your own images; later chunks reuse these two objects
+target_path <- "path/to/target.jpg"
+foil_paths <- c(
+  "path/to/foil1.jpg",
+  "path/to/foil2.jpg",
+  "path/to/foil3.jpg",
+  "path/to/foil4.jpg",
+  "path/to/foil5.jpg"
+)
+
+# Analyze all foils in a lineup. Rows come back ordered by rank, most similar
+# first; foil_name and foil_path identify each foil.
+lineup_result <- lineup_similarity(
+  target_path = target_path,
+  foil_paths = foil_paths,
+  model = "ArcFace",
+  metric = "cosine"
+)
+
+print(lineup_result)
+```
+
+### Examining Results
+
+```{r examine-lineup, purl=FALSE}
+# View as dataframe
+lineup_result
+
+# Summary statistics
+summary(lineup_result)
+
+# Foils the model judges to be the same identity as the suspect. Inspect
+# them by eye; the model can be wrong.
+same_identity <- lineup_result[which(lineup_result$verified), ]
+if (nrow(same_identity) > 0) {
+  cat("Model judges these foils to be the same person as the target:\n")
+  # as.data.frame() first: a column subset keeps the lineup_similarity class,
+  # whose print method needs the distance and verified columns
+  print(as.data.frame(same_identity)[, c("foil_path", "similarity")])
+}
+
+# Check similarity distribution
+cat("Mean similarity:", round(mean(lineup_result$similarity), 3), "\n")
+cat("SD similarity:", round(sd(lineup_result$similarity), 3), "\n")
+cat("Range:", range(lineup_result$similarity), "\n")
+```
+
+### Describing the similarity profile
+
+These numbers describe the **similarity profile** of the lineup — where the foils sit
+relative to the suspect and to each other. Turning that into a verdict would
+require knowing what profile is desirable, which is exactly what is unsettled.
+
+Report three quantities:
+
+- **Mean similarity** — how close the foils are to the suspect on average.
+- **Spread of similarity** — whether the foils are homogeneous, or whether one
+  or two sit much closer to the suspect than the rest. This is often the more
+  informative of the two, since a lineup where one foil resembles the suspect far
+  more than the others is unbalanced whatever the mean.
+- **Identity matches** — foils the model cannot distinguish from the suspect, as
+  discussed above.
+
+```{r fairness-assessment, purl=FALSE}
+# Describe the similarity profile
+mean_sim <- mean(lineup_result$similarity)
+sd_sim <- sd(lineup_result$similarity)
+n_verified <- sum(lineup_result$verified)
+
+cat("Similarity profile:\n")
+cat("  Mean similarity:", round(mean_sim, 3), "\n")
+cat("  SD of similarity:", round(sd_sim, 3), "\n")
+cat("  Range:", round(range(lineup_result$similarity), 3), "\n")
+cat("  Foils judged same identity:", n_verified, "\n\n")
+
+# The one flag raised automatically, because it is an identity decision
+# rather than a fairness judgement
+if (n_verified > 0) {
+  cat("Note:", n_verified, "foil(s) judged the same person as the target.\n")
+  cat("Inspect these photographs by eye; the model's match may be false.\n")
+}
+```
+
+## Models and Metrics
+
+Different models and metrics serve different purposes.
+
+### Available Models
+
+```{r models, purl=FALSE}
+# List all models
+available_models()
+
+# Models ordered by identity-recognition accuracy on standard benchmarks.
+# That is accuracy at telling people apart, not agreement with human
+# similarity judgements or with mock-witness choices.
+# 1. ArcFace
+# 2. Facenet512
+# 3. Facenet
+# 4. VGG-Face
+# 5. OpenFace (fastest, least accurate)
+```
+
+### Distance Metrics
+
+```{r metrics, purl=FALSE}
+# Three metrics available:
+
+# 1. Cosine (the default, and the only metric with a similarity score)
+#    - Distance ranges from 0 to 2; similarity = 1 - distance, from -1 to 1
+#    - Depends only on the angle between embeddings
+
+# 2. Euclidean L2 (Euclidean distance between normalised embeddings)
+#    - Still specific to the model: not comparable across models
+
+# 3. Euclidean
+#    - Raw vector distance, on each model's own scale
+```
+
+### Comparing Models
+
+```{r model-comparison, purl=FALSE}
+# Compare different models on same lineup
+models_to_test <- c("ArcFace", "Facenet512", "VGG-Face")
+
+comparison_results <- list()
+
+for (model in models_to_test) {
+  result <- lineup_similarity(
+    target_path = "path/to/target.jpg",
+    foil_paths = foil_paths,
+    model = model,
+    metric = "cosine"
+  )
+
+  comparison_results[[model]] <- data.frame(
+    model = model,
+    mean_similarity = mean(result$similarity),
+    sd_similarity = sd(result$similarity),
+    n_verified = sum(result$verified)
+  )
+}
+
+comparison_df <- do.call(rbind, comparison_results)
+print(comparison_df)
+```
+
+**Interpretation:**
+
+- Models give different absolute scores, which are not comparable across models
+- Check whether the ordering of foils agrees across models; do not assume it
+- Use the same model consistently within a study
+
+## Visualization
+
+### Display Lineup with Similarity Scores
+
+```{r display-lineup, purl=FALSE}
+# Display the lineup as a grid of images, target outlined in red.
+# display_lineup() returns a magick image, not a ggplot.
+lineup_img <- display_lineup(
+  target_path = target_path,
+  foil_paths = foil_paths,
+  ncol = 3,
+  show_labels = TRUE,
+  highlight_target = TRUE
+)
+lineup_img
+
+# Save it with magick (ggsave() would save the last ggplot instead)
+magick::image_write(lineup_img, "lineup_display.png")
+```
+
+The similarity scores are best shown alongside, for example with
+`plot_lineup_similarity(lineup_result)`.
+
+### Similarity Heatmap
+
+```{r similarity-heatmap, purl=FALSE}
+# For multiple lineups, create heatmap
+library(ggplot2)
+
+# Suppose we have analyzed multiple lineups
+lineup_ids <- c("Lineup_1", "Lineup_2", "Lineup_3")
+foil_positions <- 1:5
+
+# Create example data (replace with your actual data)
+similarity_matrix <- matrix(
+  runif(15, 0.3, 0.8),  # Example data
+  nrow = 3,
+  ncol = 5,
+  dimnames = list(lineup_ids, paste("Foil", foil_positions))
+)
+
+# Convert to long format for ggplot (base R, no extra package needed)
+sim_long <- as.data.frame(as.table(similarity_matrix))
+colnames(sim_long) <- c("Lineup", "Foil", "Similarity")
+
+# Create heatmap. The colour scale is descriptive; it marks no fair range.
+ggplot(sim_long, aes(x = Foil, y = Lineup, fill = Similarity)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "grey95", high = "steelblue4") +
+  geom_text(aes(label = round(Similarity, 2)), color = "black", size = 3) +
+  theme_minimal() +
+  labs(title = "Lineup Similarity Heatmap",
+       subtitle = "Color indicates target-foil similarity")
+```
+
+### Similarity Distribution
+
+```{r sim-distribution, purl=FALSE}
+# The model's threshold is a cosine *distance*, stored as an attribute.
+# On the similarity scale the identity cut-off is 1 - threshold.
+sim_threshold <- 1 - attr(lineup_result, "threshold")
+
+ggplot(as.data.frame(lineup_result), aes(x = similarity)) +
+  geom_histogram(binwidth = 0.05, fill = "steelblue", color = "black") +
+  geom_vline(xintercept = sim_threshold,
+             color = "red", linetype = "dashed", linewidth = 1) +
+  annotate("text", x = sim_threshold, y = Inf,
+           label = "Identity\nthreshold",
+           vjust = 1.5, color = "red") +
+  labs(
+    title = "Distribution of Target-Foil Similarity",
+    x = "Similarity Score",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+## Advanced Features
+
+### Extract Face Embeddings
+
+Embeddings are the deep learning representations of faces. They can be used for advanced analyses.
+
+```{r embeddings, purl=FALSE}
+# get_embedding() returns a list: the vector is in $embedding, alongside the
+# image path, model, detector and the detected face region
+emb <- get_embedding(
+  img_path = "path/to/face.jpg",
+  model = "ArcFace"
+)
+
+embedding <- emb$embedding
+length(embedding)  # 512 for ArcFace
+
+# Get embeddings for comparison
+result_with_emb <- face_similarity(
+  img1_path = "path/to/target.jpg",
+  img2_path = "path/to/foil.jpg",
+  model = "ArcFace",
+  return_embeddings = TRUE
+)
+
+target_embedding <- result_with_emb$embeddings$emb1
+foil_embedding <- result_with_emb$embeddings$emb2
+```
+
+### Dimensionality Reduction Visualization
+
+Visualize the lineup in two dimensions. With six faces, principal components are
+the sensible projection; t-SNE needs far more points than a lineup has (its
+perplexity must be well below the number of observations), so keep it for
+collections of many faces.
+
+```{r tsne-viz, purl=FALSE}
+# Collect the numeric embedding vectors for all lineup members
+member_paths <- c(Target = target_path,
+                  setNames(foil_paths, paste0("Foil_", seq_along(foil_paths))))
+embedding_matrix <- t(vapply(
+  member_paths,
+  function(p) get_embedding(p, model = "ArcFace")$embedding,
+  numeric(512)
+))
+
+# Project onto the first two principal components
+pca <- prcomp(embedding_matrix)
+
+viz_df <- data.frame(
+  x = pca$x[, 1],
+  y = pca$x[, 2],
+  member = rownames(embedding_matrix),
+  type = ifelse(rownames(embedding_matrix) == "Target", "Target", "Foil")
+)
+
+# Plot
+ggplot(viz_df, aes(x = x, y = y, color = type, label = member)) +
+  geom_point(size = 4) +
+  geom_text(vjust = -1) +
+  scale_color_manual(values = c("Target" = "red", "Foil" = "blue")) +
+  labs(
+    title = "Lineup Members in Embedding Space",
+    subtitle = "First two principal components of the face embeddings",
+    x = "PC 1",
+    y = "PC 2"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+### Batch Processing Multiple Lineups
+
+```{r batch-processing, purl=FALSE}
+# Process multiple lineups efficiently
+lineup_list <- list(
+  lineup1 = list(target = "target1.jpg", foils = c("1a.jpg", "1b.jpg", "1c.jpg")),
+  lineup2 = list(target = "target2.jpg", foils = c("2a.jpg", "2b.jpg", "2c.jpg")),
+  lineup3 = list(target = "target3.jpg", foils = c("3a.jpg", "3b.jpg", "3c.jpg"))
+)
+
+# Analyze all lineups
+results_list <- lapply(names(lineup_list), function(lineup_name) {
+  lineup <- lineup_list[[lineup_name]]
+
+  result <- lineup_similarity(
+    target_path = lineup$target,
+    foil_paths = lineup$foils,
+    model = "ArcFace"
+  )
+
+  # Add lineup identifier
+  result$lineup_id <- lineup_name
+
+  result
+})
+
+# Combine results
+all_results <- do.call(rbind, results_list)
+
+# Summary by lineup
+library(dplyr)
+lineup_summary <- all_results %>%
+  group_by(lineup_id) %>%
+  summarise(
+    mean_similarity = mean(similarity),
+    sd_similarity = sd(similarity),
+    min_similarity = min(similarity),
+    max_similarity = max(similarity),
+    n_verified = sum(verified)
+  )
+
+print(lineup_summary)
+```
+
+## Integration with Traditional Measures
+
+Combine deep learning similarity with traditional lineup fairness measures.
+
+### Compare with Effective Size
+
+```{r compare-effective-size, purl=FALSE}
+# Traditional effective size from mock witnesses
+# (Using example data)
+mock_choices <- c(3, 2, 5, 6, 1, 3, 3, 5, 6, 4)  # Position 3 is suspect
+trad_eff_size <- esize_T(table(factor(mock_choices, levels = 1:6)))
+
+cat("Traditional effective size:", round(trad_eff_size, 2), "\n")
+
+# Face similarity, for comparison. Note these measure different things:
+# effective size describes how mock witnesses distributed their choices,
+# similarity describes the images themselves.
+mean_similarity <- mean(lineup_result$similarity)
+
+cat("Mean face similarity:", round(mean_similarity, 3), "\n")
+
+# Correlation across multiple lineups
+# (With sufficient data, examine relationship)
+```
+
+### Similarity and mock-witness choices: a hypothesis to test
+
+The direction of the relationship is important here, and it is easy to state
+backwards. Mock witnesses choose the member who best matches **the
+description**. A foil that closely resembles the suspect also resembles the
+description, so it draws choices *away* from the suspect — which is precisely
+what makes a lineup fair. A foil that resembles the suspect very little matches
+the description poorly and tends to be chosen by nobody: it is a null foil, and
+it contributes nothing.
+
+So the expectation runs: **higher foil-suspect similarity should mean a higher
+share of mock-witness choices**, and hence a larger effective size. That is a
+hypothesis, not an established result: embedding similarity is not human
+perceived similarity, and Lee, Mansour and Penrod (2024) report that different
+families of fairness measures can disagree. The sketch below shows the
+comparison to make; it is not a validated measure.
+
+```{r hybrid-measure, purl=FALSE}
+# Expected selection shares implied by similarity. Foils more similar to the
+# suspect match the description better and should attract more choices.
+similarities <- lineup_result$similarity
+expected_prob <- similarities / sum(similarities)
+
+# Compare to observed selections
+# observed_prob <- table(mock_choices[-which(mock_choices == suspect_pos)]) /
+#                  length(mock_choices[-which(mock_choices == suspect_pos)])
+
+# A discrepancy between expected and observed shares is a question to
+# investigate, not a validated measure of bias.
+```
+
+### Validation Studies
+
+Examine predictive validity:
+
+```{r validation, purl=FALSE}
+# Research question: Do objective similarity scores predict mock witness choices?
+
+# For each lineup:
+# - Get face similarity scores
+# - Collect mock witness data
+# - Correlate: Do more similar foils get chosen more often?
+
+# Example correlation structure (use your data):
+# cor.test(foil_similarities, foil_selection_rates)
+```
+
+## Practical Guidelines
+
+### Interpreting Similarity Scores
+
+This vignette gives no similarity bands, for the reason set out at the start: no
+study has established what similarity a foil should have, and a band labelled
+"acceptable" would read as a finding when it is a guess. Two points in
+particular resist a simple rule. Low similarity between suspect and foils can
+make the suspect conspicuous, so it does not certify a fair lineup. And high
+similarity, or an identity match, is a reason to look at the photographs, not a
+verdict. Report the scores descriptively, compare them within a study, and use
+mock-witness and outcome data for claims about fairness.
+
+### Best Practices
+
+1. **Consistency**
+   - Use same model throughout a study
+   - Use same metric throughout a study
+   - Use same verification thresholds
+
+2. **Validation**
+   - Compare similarity scores to mock witness data when available
+   - Treat any cut-off you adopt as a proposal to be tested, not a standard
+
+3. **Complementarity**
+   - Use face similarity alongside traditional mock witness studies
+   - Similarity describes the images; mock-witness and outcome data describe
+     how the lineup performs
+
+4. **Documentation**
+   - Report model and metric used
+   - Report mean and SD of similarities
+   - Report verification threshold and number verified
+
+5. **Image Quality**
+   - Use high-quality, front-facing photos
+   - Ensure good lighting and resolution
+   - Consistent photo conditions across lineup members
+
+### Troubleshooting
+
+**"No face detected"**
+
+- Image quality too poor
+- Face not front-facing enough
+- Try different detector: `detector = "opencv"` is more lenient
+
+**Embeddings fail**
+
+- Check image file paths are correct
+- Ensure images are standard formats (jpg, png)
+- Verify Python environment is activated
+
+**Inconsistent results**
+
+- Deep learning models are deterministic
+- If results change, check if images were modified
+- Verify same model/metric used
+
+**Very high/low similarities**
+
+- Check image quality
+- Verify correct target-foil pairing
+- Look at the photographs before drawing any conclusion
+
+## Example Workflow
+
+Complete analysis from start to finish:
+
+```{r complete-workflow, purl=FALSE}
+# 1. Setup (first time only)
+# install_r4lineups_python()
+
+# 2. Load package
+library(r4lineups)
+
+# 3. Analyze lineup
+lineup_sim <- lineup_similarity(
+  target_path = "suspect_photo.jpg",
+  foil_paths = c("foil1.jpg", "foil2.jpg", "foil3.jpg",
+                 "foil4.jpg", "foil5.jpg"),
+  model = "ArcFace",
+  metric = "cosine"
+)
+
+# 4. Describe the similarity profile
+mean_sim <- mean(lineup_sim$similarity)
+sd_sim <- sd(lineup_sim$similarity)
+n_verified <- sum(lineup_sim$verified)
+
+# 5. Generate report
+cat("=== Lineup Similarity Profile ===\n\n")
+cat("Model: ArcFace | Metric: Cosine\n\n")
+cat("Results:\n")
+cat("  Mean similarity:", round(mean_sim, 3), "\n")
+cat("  SD similarity:", round(sd_sim, 3), "\n")
+cat("  Range:", round(min(lineup_sim$similarity), 3), "-",
+    round(max(lineup_sim$similarity), 3), "\n")
+cat("  Judged same person by the model:", n_verified, "of 5 foils\n")
+if (n_verified > 0) {
+  cat("  Inspect those photographs; the model's match may be false.\n")
+}
+# No fairness verdict is printed: no validated similarity range defines one.
+
+# 6. Visualize
+lineup_img <- display_lineup(
+  target_path = "suspect_photo.jpg",
+  foil_paths = c("foil1.jpg", "foil2.jpg", "foil3.jpg",
+                 "foil4.jpg", "foil5.jpg")
+)
+magick::image_write(lineup_img, "lineup_001.png")
+plot_lineup_similarity(lineup_sim)
+
+# 7. Save results
+write.csv(lineup_sim, "lineup_001_similarity.csv", row.names = FALSE)
+```
+
+## References
+
+::: {.hanging-indent}
+
+Colloff, M. F., Wade, K. A., & Strange, D. (2016). Unfair lineups make witnesses more likely to confuse innocent and guilty suspects. *Psychological Science, 27*(9), 1227-1239.
+
+Deng, J., Guo, J., Xue, N., & Zafeiriou, S. (2019). ArcFace: Additive angular margin loss for deep face recognition. *CVPR 2019*.
+
+Lee, J., Mansour, J. K., & Penrod, S. D. (2024). How to measure lineup fairness: Concurrent and predictive validity of lineup-fairness measures. *Psychology, Crime & Law*. https://doi.org/10.1080/1068316X.2024.2307358
+
+Schroff, F., Kalenichenko, D., & Philbin, J. (2015). FaceNet: A unified embedding for face recognition and clustering. *CVPR 2015*.
+
+Serengil, S. I., & Ozpinar, A. (2020). LightFace: A hybrid deep face recognition framework. *ASYU 2020*.
+
+Tredoux, C. G. (2002). A direct measure of facial similarity and its relation to human similarity perceptions. *Journal of Experimental Psychology: Applied, 8*(3), 180-193.
+
+:::
+
+## Technical Details
+
+### What is computed
+
+Each image is passed through a pretrained deep face-recognition network, which
+maps it to an **embedding** — a vector, typically 128 or 512 dimensional,
+positioned so that images of the same person land close together. Similarity
+between two faces is then a distance in that space, converted to a similarity
+score.
+
+| Component | Meaning |
+|---|---|
+| `model` | Which network produces the embedding (ArcFace, FaceNet, VGG-Face, ...). Different networks give different embedding spaces, so scores are **not comparable across models** |
+| `metric` | How distance is measured in that space — cosine, Euclidean, or Euclidean on L2-normalised vectors |
+| `similarity` | For cosine, 1 − distance, from −1 to 1, higher meaning closer; `NA` for the Euclidean metrics |
+| `threshold` | The model's own **distance** cut-off for judging two images the same identity (on the similarity scale, `1 - threshold` for cosine). Model- and metric-specific |
+| `verified` | Whether the distance falls inside that threshold |
+
+### Assumptions and limitations
+
+1. **Scores are model-relative.** ArcFace and FaceNet place faces in different
+   spaces. Never compare a similarity score from one against another, and always
+   report which model and metric produced a number.
+2. **The networks were trained for recognition, not for lineup construction.**
+   They are optimised to tell identities apart, which is related to but not the
+   same as capturing what makes two faces look alike to a witness. Whether the
+   embedding distance corresponds to *human* perceived similarity is an
+   empirical question, and the appropriate reference here is Tredoux (2002) on
+   direct similarity measurement and its relation to human judgements.
+3. **Image conditions are important.** Pose, lighting, expression, resolution and
+   background all affect embeddings. Lineup photographs taken under different
+   conditions may differ in similarity for reasons that have nothing to do with
+   facial resemblance. Standardised images are essential.
+4. **Demographic differences in accuracy** are well documented for face
+   recognition systems, with error rates varying by ethnicity, sex and age. That
+   is a serious caution in a forensic context, where the consequences of
+   systematic error fall unevenly.
+5. **No fairness threshold exists.** The point of the caution at the top of this
+   vignette, restated: these functions describe similarity, they do not
+   adjudicate fairness.
+
+### Reproducibility
+
+Given the same images, model and metric, scores are exactly reproducible — one
+of the method's genuine advantages over mock-witness testing. Record the model,
+the metric and the package versions, since a different DeepFace release may ship
+different weights.
+
+## Session Info
+
+```{r session-info, purl=FALSE}
+sessionInfo()
+
+# Check Python environment
+reticulate::py_config()
+```

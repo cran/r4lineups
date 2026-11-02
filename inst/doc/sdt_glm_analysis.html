@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Colin G. Tredoux" />
+<meta name="author" content="Tamsyn M. Naylor" />
+
+<meta name="date" content="2026-11-02" />
+
+<title>SDT via GLM/GLMM</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">SDT via GLM/GLMM</h1>
+<h4 class="author">Colin G. Tredoux</h4>
+<h4 class="author">Tamsyn M. Naylor</h4>
+<h4 class="date">2026-11-02</h4>
+
+
+
+<blockquote>
+<p><strong>Acknowledgement.</strong> Large language models supplied by
+Anthropic and OpenAI were used in preparing this vignette, to assist
+with checking code, testing the veracity of the approaches described,
+and on occasion editing the text. Responsibility for the content rests
+with the authors.</p>
+</blockquote>
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>This vignette estimates signal-detection metrics from <strong>old/new
+recognition</strong> data using generalized linear models.</p>
+<p><strong>Attribution.</strong> The approach is that of Wright, Horry
+and Skagerberg (2009), who set out both the traditional per-participant
+computation and the multilevel alternative, and released it as the R
+package <strong>sdtalt</strong>. The implementation here —
+<code>fit_sdt_glm()</code>, <code>fit_sdt_glmm()</code> and
+<code>extract_sdt_metrics()</code> — was written from that paper and
+adapted into this package’s conventions; it is not derived from their
+code. The multilevel fitting is done by <strong>lme4</strong> (Bates,
+Mächler, Bolker &amp; Walker, 2015).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(r4lineups)</span></code></pre></div>
+</div>
+<div id="what-changes-when-you-move-from-classic-sdt-to-a-glm" class="section level2">
+<h2>What changes when you move from classic SDT to a GLM</h2>
+<p>Classic signal detection analysis computes, for each participant
+separately, a hit rate and a false-alarm rate, converts both to
+z-scores, and takes d′ as their difference:</p>
+<p><span class="math display">\[d&#39; = z(\text{hit rate}) -
+z(\text{false alarm rate})\]</span></p>
+<p>Those per-participant values are then averaged, and a t-test is run
+on them. This works, and for a simple design it gives sensible answers.
+But it has four awkward properties:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Extreme values break it.</strong> A participant with a hit
+rate of 1 or a false-alarm rate of 0 gives an infinite z-score. The
+usual remedies — adding 0.5 to each cell, or replacing 0 and 1 with
+1/(2N) — are arbitrary adjustments applied to make the arithmetic
+work.</li>
+<li><strong>Every participant is weighted equally</strong>, whether they
+contributed 20 trials or 200.</li>
+<li><strong>Covariates are awkward.</strong> Testing whether d′ depends
+on a continuous predictor means computing d′ per participant and then
+regressing on it, which is a two-stage procedure that loses the
+trial-level uncertainty.</li>
+<li><strong>Items are ignored entirely.</strong> More on this below,
+since it is the most consequential.</li>
+</ol>
+<p>The GLM formulation avoids all four by modelling the individual
+response rather than the per-participant summary. d′ follows directly
+from a probit regression, so nothing is lost by doing it this way.</p>
+<div id="why-a-probit-regression-gives-you-d" class="section level3">
+<h3>Why a probit regression gives you d′</h3>
+<p>The connection is exact rather than approximate.</p>
+<p>Signal detection theory says the witness’s evidence is normally
+distributed with mean 0 for new items and mean d′ for old ones, with a
+criterion at some point <span class="math inline">\(c\)</span>. The
+probability of saying “old” is the area of that distribution above the
+criterion:</p>
+<p><span class="math display">\[P(\text{said old} \mid \text{new}) =
+\Phi(-c), \qquad
+P(\text{said old} \mid \text{old}) = \Phi(d&#39; - c)\]</span></p>
+<p>A probit regression models exactly this form:</p>
+<p><span class="math display">\[\Phi^{-1}\bigl(P(\text{said old})\bigr)
+= \beta_0 + \beta_1 \cdot \text{is old}\]</span></p>
+<p>Matching the two, <span class="math inline">\(\beta_1 =
+d&#39;\)</span> and <span class="math inline">\(\beta_0 = -c\)</span>.
+<strong>The coefficient on item status <em>is</em> d′</strong> — not an
+analogue of it.</p>
+<p>The intercept needs one further step. With <code>is_old</code> coded
+0/1, <span class="math inline">\(\beta_0\)</span> is the value when
+<code>is_old = 0</code>, so it is the criterion measured from the
+new-item distribution. Coding <code>is_old</code> as −0.5/+0.5 instead
+centres it, and the intercept becomes the criterion measured from the
+midpoint of the two distributions — which is the conventional definition
+of <span class="math inline">\(c\)</span>. <code>fit_sdt_glm()</code>
+centres by default, which is why the criterion is only reported when
+<code>center_isold = TRUE</code>.</p>
+<p>With a <strong>logit</strong> link instead, the same coefficient is a
+log odds ratio rather than d′. It answers the same question about
+discriminability but on a different scale, and should not be reported as
+d′.</p>
+</div>
+</div>
+<div id="simulated-data" class="section level2">
+<h2>Simulated data</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>n_subj  <span class="ot">&lt;-</span> <span class="dv">40</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>n_items <span class="ot">&lt;-</span> <span class="dv">60</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">subject_id =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>n_subj, <span class="at">each =</span> n_items),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">item_id    =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>n_items, <span class="at">times =</span> n_subj)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>df<span class="sc">$</span>is_old <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fu">nrow</span>(df), <span class="dv">1</span>, <span class="fl">0.5</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co"># True d&#39; = 1.2, with both participants and items varying in difficulty</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>subj_shift <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_subj,  <span class="dv">0</span>, <span class="fl">0.4</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>item_shift <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_items, <span class="dv">0</span>, <span class="fl">0.4</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>df<span class="sc">$</span>said_old <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="fu">nrow</span>(df), <span class="dv">1</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  stats<span class="sc">::</span><span class="fu">pnorm</span>(<span class="fl">1.2</span> <span class="sc">*</span> df<span class="sc">$</span>is_old <span class="sc">+</span> subj_shift[df<span class="sc">$</span>subject_id] <span class="sc">+</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>                 item_shift[df<span class="sc">$</span>item_id])</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>)</span></code></pre></div>
+<p>Note that both participants <strong>and items</strong> vary. That is
+realistic — some faces are simply more memorable than others — and it is
+what makes the next section important.</p>
+</div>
+<div id="single-level-glm" class="section level2">
+<h2>Single-level GLM</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>glm_fit <span class="ot">&lt;-</span> <span class="fu">fit_sdt_glm</span>(df, <span class="at">is_old =</span> <span class="st">&quot;is_old&quot;</span>, <span class="at">said_old =</span> <span class="st">&quot;said_old&quot;</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                       <span class="at">link =</span> <span class="st">&quot;probit&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">extract_sdt_metrics</span>(glm_fit)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; $metric</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;dprime&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; $estimate</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; [1] 1.15806</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; $criterion</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; [1] -0.4869419</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; $link</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; [1] &quot;probit&quot;</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; $centered</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div id="multilevel-glmm" class="section level2">
+<h2>Multilevel GLMM</h2>
+<p><code>fit_sdt_glmm()</code> fits the same model with random effects,
+using <code>lme4::glmer()</code> internally:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>glmm_fit <span class="ot">&lt;-</span> <span class="fu">fit_sdt_glmm</span>(df,</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>                         <span class="at">is_old       =</span> <span class="st">&quot;is_old&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                         <span class="at">said_old     =</span> <span class="st">&quot;said_old&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>                         <span class="at">subject_id   =</span> <span class="st">&quot;subject_id&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                         <span class="at">item_id      =</span> <span class="st">&quot;item_id&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>                         <span class="at">link         =</span> <span class="st">&quot;probit&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>                         <span class="at">random_slope =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="fu">extract_sdt_metrics</span>(glmm_fit)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; $metric</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; [1] &quot;dprime&quot;</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; $estimate</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; [1] 1.312328</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; $criterion</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; [1] -0.5735799</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; $link</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; [1] &quot;probit&quot;</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; $centered</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div id="participants-items-or-both" class="section level2">
+<h2>Participants, items, or both</h2>
+<p>This is the main reason to prefer the multilevel formulation, and it
+is an old argument: Clark (1973) pointed out that treating stimulus
+items as fixed means any conclusion strictly applies only to the
+particular items used. In recognition memory the items are faces or
+words, and they differ in memorability. If your analysis treats them as
+fixed, you are entitled to conclude something about <em>those sixty
+faces</em>, not about faces in general.</p>
+<p>The traditional workaround was to run the analysis twice — once
+averaging over items to get a by-participants test, once averaging over
+participants to get a by-items test — and require both to be
+significant. Crossed random effects do the job properly in one
+model.</p>
+<p>The consequence is visible in the standard errors:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>structures <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="st">&quot;GLM: no clustering&quot;</span>        <span class="ot">=</span> <span class="fu">fit_sdt_glm</span>(df, <span class="st">&quot;is_old&quot;</span>, <span class="st">&quot;said_old&quot;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>                                            <span class="at">link =</span> <span class="st">&quot;probit&quot;</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="st">&quot;GLMM: subject only&quot;</span>        <span class="ot">=</span> <span class="fu">fit_sdt_glmm</span>(df, <span class="st">&quot;is_old&quot;</span>, <span class="st">&quot;said_old&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>                                             <span class="at">subject_id =</span> <span class="st">&quot;subject_id&quot;</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>                                             <span class="at">link =</span> <span class="st">&quot;probit&quot;</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>                                             <span class="at">random_slope =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="st">&quot;GLMM: subject and item&quot;</span>    <span class="ot">=</span> <span class="fu">fit_sdt_glmm</span>(df, <span class="st">&quot;is_old&quot;</span>, <span class="st">&quot;said_old&quot;</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>                                             <span class="at">subject_id =</span> <span class="st">&quot;subject_id&quot;</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>                                             <span class="at">item_id =</span> <span class="st">&quot;item_id&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>                                             <span class="at">link =</span> <span class="st">&quot;probit&quot;</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>                                             <span class="at">random_slope =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>)</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="fu">names</span>(structures), <span class="cf">function</span>(nm) {</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  m  <span class="ot">&lt;-</span> structures[[nm]]</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  co <span class="ot">&lt;-</span> <span class="fu">summary</span>(m)<span class="sc">$</span>coefficients</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  term <span class="ot">&lt;-</span> <span class="fu">attr</span>(m, <span class="st">&quot;sdt_is_old_term&quot;</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(term)) term <span class="ot">&lt;-</span> <span class="st">&quot;.is_old_c&quot;</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>    <span class="st">`</span><span class="at">Random effects</span><span class="st">`</span> <span class="ot">=</span> nm,</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>    <span class="st">`</span><span class="at">d&#39;</span><span class="st">`</span>             <span class="ot">=</span> <span class="fu">round</span>(co[term, <span class="st">&quot;Estimate&quot;</span>], <span class="dv">3</span>),</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>    <span class="st">`</span><span class="at">SE</span><span class="st">`</span>             <span class="ot">=</span> <span class="fu">round</span>(co[term, <span class="st">&quot;Std. Error&quot;</span>], <span class="dv">4</span>),</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>    <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>  )</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>}))</span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>  comparison, <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Estimated d&#39; and its standard error under three random-effect structures. Simulated data, 40 participants by 60 items, true d&#39; = 1.2.&quot;</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption>Estimated d’ and its standard error under three random-effect
+structures. Simulated data, 40 participants by 60 items, true d’ =
+1.2.</caption>
+<thead>
+<tr class="header">
+<th align="left">Random effects</th>
+<th align="right">d’</th>
+<th align="right">SE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">GLM: no clustering</td>
+<td align="right">1.158</td>
+<td align="right">0.0576</td>
+</tr>
+<tr class="even">
+<td align="left">GLMM: subject only</td>
+<td align="right">1.245</td>
+<td align="right">0.0615</td>
+</tr>
+<tr class="odd">
+<td align="left">GLMM: subject and item</td>
+<td align="right">1.312</td>
+<td align="right">0.0654</td>
+</tr>
+</tbody>
+</table>
+<p>The standard error grows as clustering is acknowledged. Ignoring it
+entirely treats every one of the 2400 trials as independent, which they
+are not: trials from the same participant share that participant’s
+ability, and trials on the same item share that item’s memorability.
+<strong>A GLM that ignores this reports a standard error that is too
+small, and a p-value that is too generous.</strong></p>
+<div id="the-estimates-move-too-and-predictably" class="section level3">
+<h3>The estimates move too, and predictably</h3>
+<p>The d′ estimates also differ across the three rows, and this is not
+noise. The GLM estimate is <strong>marginal</strong>
+(population-averaged): it describes the average response probability
+across all participants and items. The GLMM estimate is
+<strong>conditional</strong> (subject- and item-specific): it describes
+the effect for a participant and item at the average of the random
+effects.</p>
+<p>For a probit link the two are related by a known attenuation:</p>
+<p><span class="math display">\[d&#39;_{\text{marginal}} \approx
+\frac{d&#39;_{\text{conditional}}}{\sqrt{1 + \sigma^2_{\text{subject}} +
+\sigma^2_{\text{item}}}}\]</span></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>vc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lme4<span class="sc">::</span><span class="fu">VarCorr</span>(structures[[<span class="st">&quot;GLMM: subject and item&quot;</span>]]))</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>total_var <span class="ot">&lt;-</span> <span class="fu">sum</span>(vc<span class="sc">$</span>vcov)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>cond <span class="ot">&lt;-</span> lme4<span class="sc">::</span><span class="fu">fixef</span>(structures[[<span class="st">&quot;GLMM: subject and item&quot;</span>]])[[<span class="st">&quot;.is_old_c&quot;</span>]]</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>marg <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">coef</span>(structures[[<span class="st">&quot;GLM: no clustering&quot;</span>]])[[<span class="st">&quot;.is_old_c&quot;</span>]]</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    <span class="at">Quantity =</span> <span class="fu">c</span>(<span class="st">&quot;Conditional d&#39; (GLMM)&quot;</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>                 <span class="st">&quot;Random-effect variance, total&quot;</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>                 <span class="st">&quot;Attenuation factor&quot;</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>                 <span class="st">&quot;Conditional / attenuation factor&quot;</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>                 <span class="st">&quot;Marginal d&#39; (GLM), observed&quot;</span>),</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="at">Value =</span> <span class="fu">round</span>(<span class="fu">c</span>(cond, total_var, <span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> total_var),</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>                    cond <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> total_var), marg), <span class="dv">3</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  ),</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Marginal and conditional d&#39; are different quantities related by a known factor. Simulated data.&quot;</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption>Marginal and conditional d’ are different quantities related by
+a known factor. Simulated data.</caption>
+<thead>
+<tr class="header">
+<th align="left">Quantity</th>
+<th align="right">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Conditional d’ (GLMM)</td>
+<td align="right">1.312</td>
+</tr>
+<tr class="even">
+<td align="left">Random-effect variance, total</td>
+<td align="right">0.336</td>
+</tr>
+<tr class="odd">
+<td align="left">Attenuation factor</td>
+<td align="right">1.156</td>
+</tr>
+<tr class="even">
+<td align="left">Conditional / attenuation factor</td>
+<td align="right">1.135</td>
+</tr>
+<tr class="odd">
+<td align="left">Marginal d’ (GLM), observed</td>
+<td align="right">1.158</td>
+</tr>
+</tbody>
+</table>
+<p>The predicted marginal value and the observed one agree closely. So
+the two models are not disagreeing about the data; they are answering
+slightly different questions. Neither is wrong, but they should not be
+compared as though interchangeable, and a paper should say which is
+being reported. The conditional estimate is usually the one meant by
+“d′” in a cognitive model, since it refers to a typical participant
+rather than to an average over heterogeneity.</p>
+</div>
+</div>
+<div id="including-covariates" class="section level2">
+<h2>Including covariates</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>df<span class="sc">$</span>delay <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(df), <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>glm_fit_cov <span class="ot">&lt;-</span> <span class="fu">fit_sdt_glm</span>(df,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>                           <span class="at">is_old       =</span> <span class="st">&quot;is_old&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                           <span class="at">said_old     =</span> <span class="st">&quot;said_old&quot;</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>                           <span class="at">covariates   =</span> <span class="st">&quot;delay&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>                           <span class="at">link         =</span> <span class="st">&quot;probit&quot;</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                           <span class="at">interactions =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">summary</span>(glm_fit_cov)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; stats::glm(formula = form, family = stats::binomial(link = link), </span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt;     data = df)</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt;                 Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; (Intercept)      0.48750    0.02886  16.893   &lt;2e-16 ***</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; .is_old_c        1.15905    0.05772  20.082   &lt;2e-16 ***</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; delay           -0.04253    0.02907  -1.463    0.143    </span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt; .is_old_c:delay -0.06977    0.05813  -1.200    0.230    </span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="co">#&gt; (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="co">#&gt;     Null deviance: 3083.6  on 2399  degrees of freedom</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co">#&gt; Residual deviance: 2647.3  on 2396  degrees of freedom</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="co">#&gt; AIC: 2655.3</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#&gt; Number of Fisher Scoring iterations: 4</span></span></code></pre></div>
+<p>With <code>interactions = TRUE</code>, the
+<code>is_old × delay</code> term tests whether discriminability itself
+depends on the covariate — which is the question usually intended, and
+which the two-stage classic approach cannot ask directly.</p>
+</div>
+<div id="technical-details" class="section level2">
+<h2>Technical Details</h2>
+<div id="what-is-estimated" class="section level3">
+<h3>What is estimated</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Link</th>
+<th>Coefficient on <code>is_old</code></th>
+<th>Intercept (centred coding)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>probit</td>
+<td>d′</td>
+<td>−criterion</td>
+</tr>
+<tr class="even">
+<td>logit</td>
+<td>log odds ratio</td>
+<td>−criterion on the logit scale</td>
+</tr>
+</tbody>
+</table>
+<p>Standard errors for the GLM come from the usual Fisher information;
+for the GLMM they come from <code>lme4</code>’s Laplace approximation to
+the marginal likelihood.</p>
+</div>
+<div id="coding-conventions" class="section level3">
+<h3>Coding conventions</h3>
+<p><code>center_isold = TRUE</code> (the default) codes item status as
+−0.5/+0.5 rather than 0/1. This does not change the coefficient on
+<code>is_old</code>, but it changes the intercept from “criterion
+relative to the new-item distribution” to “criterion relative to the
+midpoint”, which is the conventional <span class="math inline">\(c\)</span>. <code>extract_sdt_metrics()</code>
+returns the criterion only under centred coding, since under 0/1 coding
+the intercept is not <span class="math inline">\(c\)</span>.</p>
+</div>
+<div id="assumptions" class="section level3">
+<h3>Assumptions</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Equal variance.</strong> The probit model as fitted assumes
+the old- and new-item evidence distributions have the same variance. The
+unequal-variance case — which is the empirically supported one in
+recognition memory — needs a model with a scale parameter, for which see
+<code>fit_sdt_roc()</code> in <code>R/zroc_sdt.R</code>, or the ordinal
+approach discussed below.</li>
+<li><strong>Random effects are normally distributed</strong> with mean
+zero, and independent of the predictors.</li>
+<li><strong>Crossed, not nested.</strong> Participants and items are
+crossed: every participant sees every item, or nearly so.
+<code>(1|subject_id) + (1|item_id)</code> is correct for this. If items
+were nested within lists, the specification would differ.</li>
+<li>Random intercepts only, unless <code>random_slope = TRUE</code>.
+Allowing d′ itself to vary across participants is often the more
+realistic model and requires more data to fit.</li>
+</ol>
+</div>
+<div id="a-limitation" class="section level3">
+<h3>A limitation</h3>
+<p>This treats the response as binary — “old” or “new”. Recognition data
+usually carry confidence as well, and reducing a confidence rating to a
+binary response discards it. The natural extension is an
+<strong>ordinal</strong> (cumulative link) model with confidence as the
+ordered outcome, in which the coefficient on item status is still d′ and
+the thresholds are the criteria; allowing the scale to depend on
+condition then gives the unequal-variance model. That is not implemented
+here.</p>
+</div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<div class="hanging-indent">
+<p>Bates, D., Mächler, M., Bolker, B., &amp; Walker, S. (2015). Fitting
+linear mixed-effects models using lme4. <em>Journal of Statistical
+Software, 67</em>(1), 1-48.</p>
+<p>Clark, H. H. (1973). The language-as-fixed-effect fallacy: A critique
+of language statistics in psychological research. <em>Journal of Verbal
+Learning and Verbal Behavior, 12</em>(4), 335-359.</p>
+<p>Wright, D. B., Horry, R., &amp; Skagerberg, E. M. (2009). Functions
+for traditional and multilevel approaches to signal detection theory.
+<em>Behavior Research Methods, 41</em>(2), 257-267.</p>
+</div>
+</div>
+<div id="further-reading" class="section level2">
+<h2>Further Reading</h2>
+<ul>
+<li><code>?fit_sdt_glm</code>, <code>?fit_sdt_glmm</code>,
+<code>?extract_sdt_metrics</code></li>
+<li><code>vignette(&quot;sdt_summary_comparisons&quot;)</code> for comparing SDT
+parameters between groups</li>
+<li><code>vignette(&quot;model_comparison&quot;)</code> for lineup-specific
+models</li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

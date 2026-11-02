@@ -2,19 +2,95 @@
 % Please edit documentation in R/roc_functions.R
 \name{make_rocdata}
 \alias{make_rocdata}
-\title{Helper functions: Compute and plot ROC curve for lineup accuracy ~ confidence}
+\title{Compute ROC Data for Lineup Identification}
 \usage{
-make_rocdata(df_confacc)
+make_rocdata(
+  data,
+  lineup_size = 6,
+  innocent_suspect = "auto",
+  thresholds = NULL
+)
 }
 \arguments{
-\item{df_confacc}{A df with two columns, confidence and accuracy,
-where accuracy = binary accuracy.}
+\item{data}{A dataframe with the following columns:
+\itemize{
+  \item target_present: Logical. TRUE if guilty suspect in lineup, FALSE if innocent
+  \item identification: Character. "suspect", "filler", or "reject"
+  \item confidence: Numeric. Confidence rating (higher = more confident)
+}}
+
+\item{lineup_size}{Integer. Number of people in the lineup (default = 6).
+Used to estimate false ID rate when fillers are chosen from target-absent lineups.}
+
+\item{innocent_suspect}{How innocent-suspect identifications in
+target-absent lineups are obtained. \code{"designated"}: the lineups had a
+designated innocent suspect, so target-absent \code{"suspect"} rows are
+counted directly, and zero such rows means a false-ID rate of zero.
+\code{"estimated"}: there was no designated innocent suspect, so the
+innocent-suspect count is estimated as filler IDs divided by
+\code{lineup_size}. \code{"auto"} (the default) chooses
+\code{"designated"} when any target-absent row is a suspect ID or the data
+have a non-missing \code{suspect_pos} column, and \code{"estimated"}
+otherwise, with a message.}
+
+\item{thresholds}{Optional numeric vector of confidence criteria at which
+to evaluate the ROC. The default uses the confidence levels of the
+responses that can move an operating point; see Details. Supplying the
+criteria of a full sample keeps them fixed across bootstrap resamples.}
 }
 \value{
-An ROC object of package pROC
+A list containing:
+  \itemize{
+    \item roc_data: Dataframe with correct_id_rate, false_id_rate, and confidence
+    \item pauc: Partial area under the curve
+    \item n_target_present: Number of target-present lineups
+    \item n_target_absent: Number of target-absent lineups
+    \item thresholds: The confidence criteria used, highest first
+  }
 }
 \description{
-Function to compute and plot an ROC curve for data from an eyewitness
-experiment, where accuracy is recorded for target present and target
-absent lineups
+Computes Receiver Operating Characteristic (ROC) data from lineup identification
+experiments following the methodology of Mickes, Wixted, and Gronlund.
+}
+\details{
+This function computes ROC curves following Wixted & Mickes (2012) and
+Mickes (2015). For each confidence criterion:
+\itemize{
+  \item Correct ID rate = proportion of target-present lineups where suspect identified
+  \item False ID rate = proportion of target-absent lineups where suspect identified
+}
+
+The criteria are the confidence levels of the responses that enter the
+ROC: target-present suspect IDs, and target-absent suspect IDs (designated
+suspect) or filler IDs (estimated). The confidence given to rejections, or
+to filler IDs in target-present lineups, does not define a criterion,
+because it cannot move an operating point. Each criterion therefore gives a
+distinct point, and averages over points (DPP, z-ROC d') do not depend on
+how rejection confidence was coded.
+
+With a designated innocent suspect, target-absent \code{"suspect"}
+responses are used directly. Without one, filler IDs are divided by lineup
+size. The two estimators are never added together. See
+\code{innocent_suspect} for how the design is determined.
+}
+\examples{
+data(lineup_example)
+roc <- make_rocdata(lineup_example)
+roc$roc_data
+roc$pauc
+
+}
+\references{
+Wixted, J. T., & Mickes, L. (2012). The field of eyewitness memory should
+abandon probative value and embrace receiver operating characteristic analysis.
+\emph{Perspectives on Psychological Science, 7}(3), 275-278.
+
+Mickes, L. (2015). Receiver operating characteristic analysis and
+confidence-accuracy characteristic analysis in investigations of system
+variables and estimator variables that affect eyewitness memory.
+\emph{Journal of Applied Research in Memory and Cognition, 4}(2), 93-102.
+
+Gronlund, S. D., Wixted, J. T., & Mickes, L. (2014). Evaluating eyewitness
+identification procedures using receiver operating characteristic analysis.
+\emph{Current Directions in Psychological Science, 23}(1), 3-10.
 }

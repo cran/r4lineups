@@ -12,3 +12,7 @@ rot_vector(lineup_vec)
 \description{
 Helper function to rotate vector
 }
+\examples{
+# Rotate lineup positions by one place
+rot_vector(1:6)
+}

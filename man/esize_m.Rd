@@ -4,20 +4,20 @@
 \alias{esize_m}
 \title{Effective Size}
 \usage{
-esize_m(lineup_table, k, both = FALSE)
+esize_m(lineup_tab, k, both = FALSE)
 }
 \arguments{
-\item{lineup_table}{A table of lineup choices}
+\item{lineup_tab}{A table of lineup choices.}
 
-\item{k}{Number of members in lineup. Must be specified by user (scalar).}
+\item{k}{Number of members in the lineup. Must be specified by the user (scalar).}
 
-\item{both}{Defaults to FALSE. Returns Tredoux's adjusted effective size estimate.
-
-                If TRUE, provides both Malpass's (1981) and Makpass's adjusted (see: Tredoux, 1998)
-                calculations of effective size.}
+\item{both}{Logical. Defaults to FALSE, returning Tredoux's adjusted effective
+size estimate only. If TRUE, both Malpass's (1981) original formulation and
+Malpass's adjusted version (Tredoux, 1998) are printed to the console.}
 }
 \value{
-Malpass's original & adjusted estimates of effective size
+The Tredoux-adjusted Malpass effective-size estimate. With
+ \code{both = TRUE}, the original and adjusted estimates are also printed.
 }
 \description{
 Function for computing Effective Size
@@ -54,4 +54,9 @@ Malpass, R. S. (1981). Effective size and defendant bias in
            Wells, G. L.,Leippe, M. R., & Ostrom, T. M. (1979). Guidelines for
            empirically assessing the fairness of a lineup. \emph{Law and Human Behavior,
            3}(4), 285-293.
+}
+\seealso{
+\code{\link{esize_T}}, whose \dQuote{Small-sample bias} section
+  describes a downward bias affecting plug-in effective-size estimators at
+  small numbers of choices, and an optional correction.
 }

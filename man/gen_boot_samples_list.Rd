@@ -14,7 +14,7 @@ in which the target was either absent or present}
 }
 \value{
 A list of bootstrapped lineup data
-        Length of list = no. of boostrap sample draws
+        Length of list = number of bootstrap sample draws
 }
 \description{
 Function for generating bootstrapped samples for of k vectors of lineup choices

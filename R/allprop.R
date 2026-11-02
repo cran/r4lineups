@@ -18,13 +18,10 @@
 allprop <- function(lineup_vec, k){
   lineup_vec <- typecheck(lineup_vec)
   datacheck1(lineup_vec, k)
-  target_pos <- c(1:k)
-    propvec <- as.data.frame(matrix(ncol= 1,
-                                    nrow = length(target_pos)))
-    for (i in 1:length(target_pos)){
-        propvec[i,]=lineup_prop_vec(lineup_vec, target_pos[i], k)
-        names(propvec) <- c("prop")
-        propvec <- round(propvec, 3)
-    }
-    return(propvec)
+  target_pos <- seq_len(k)
+  data.frame(
+    prop = vapply(target_pos, function(pos) {
+      lineup_prop_vec(lineup_vec, pos, k)
+    }, numeric(1))
+  )
 }

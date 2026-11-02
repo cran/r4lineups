@@ -1,10 +1,10 @@
 datacheck5 <- function(lineup_pres_list, k){
   pos_list <- list(NULL)
-  for (i in 1:length(lineup_pres_list)){
+  for (i in seq_along(lineup_pres_list)){
     pos_list[[i]]= c(sort(unique(lineup_pres_list[[i]])))
   }
 
-  for (i in 1:length(pos_list)){
+  for (i in seq_along(pos_list)){
 
     pos_list
     if (length(pos_list[[i]])== k[[i]]){

@@ -1,6 +1,8 @@
 #'Descriptive statistics for bootstrapped lineup proportion
 #'
-#'Function for computing mean. med and se of boot proportion
+#'Function for computing the mean, median, and bootstrap standard error. The
+#'standard deviation of the bootstrap replicates is the estimated standard error;
+#'it is not divided by the square root of the number of replicates.
 #'@param lineuprops A dataframe of bootstrapped lineup proportions
 #'@return Mean, median, standard deviation, standard error & 95 CIs of
 #'        lineup proportion across a bootstrapped dataframe
@@ -29,17 +31,33 @@
 
 
 gen_boot_propmean_se <- function (lineuprops){
-    mean_boot_prop = round(mean(lineuprops, na.rm = T), 3)
-    median_boot_prop = round(median(lineuprops, na.rm = T),3)
-    stdev_boot_prop = round(sd(lineuprops, na.rm = T),3)
-    n = length(lineuprops)
-    std_error_boot_prop    = round(stdev_boot_prop/sqrt(n), 3)
-    ci025 = gen_boot_propci(lineuprops,.025)
-    ci975 = gen_boot_propci(lineuprops,.975)
+    lineuprops <- as.numeric(lineuprops)
+    if (any(!is.finite(lineuprops))) {
+      stop("Bootstrap estimates must all be finite; failed draws must be reported explicitly.", call. = FALSE)
+    }
+    valid <- lineuprops
+    if (length(valid) < 2L) {
+      stop("lineuprops must contain at least two finite bootstrap estimates.", call. = FALSE)
+    }
+    mean_boot_prop <- mean(valid)
+    median_boot_prop <- median(valid)
+    stdev_boot_prop <- sd(valid)
+    # The bootstrap standard deviation is the estimated standard error.
+    std_error_boot_prop <- stdev_boot_prop
+    ci025 <- gen_boot_propci(valid, .025)
+    ci975 <- gen_boot_propci(valid, .975)
     cat("Boot prop. (mean)   = ", mean_boot_prop,"\n")
     cat("Boot prop. (median) = ", median_boot_prop, "\n")
     cat("SD of boot prop     = ", stdev_boot_prop, "\n")
-    cat("SE of boot prop     = ", stdev_boot_prop/sqrt(n), "\n")
+    cat("SE of boot prop     = ", round(std_error_boot_prop, 3), "\n")
     cat("2.5% boot CI lvl    = ", ci025, "\n")
     cat("97.5% boot CI lvl   = ", ci975, "\n")
+    invisible(list(
+      mean = mean_boot_prop,
+      median = median_boot_prop,
+      sd = stdev_boot_prop,
+      se = std_error_boot_prop,
+      ci = c(lower = unname(ci025), upper = unname(ci975)),
+      n_bootstrap = length(valid)
+    ))
 }

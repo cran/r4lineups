@@ -4,7 +4,15 @@
 \alias{homog_diag_boot}
 \title{Homogeneity of diagnosticity ratio with bootstrapped CIs}
 \usage{
-homog_diag_boot(lineup_pres_list, lineup_abs_list, k, R = 100)
+homog_diag_boot(
+  lineup_pres_list,
+  lineup_abs_list,
+  k,
+  R = 100,
+  pos_list = NULL,
+  seed = NULL,
+  conf.level = 0.95
+)
 }
 \arguments{
 \item{lineup_pres_list}{A list containing k vectors of lineup choices for k lineups, in which the
@@ -16,28 +24,57 @@ target was absent}
 \item{k}{Number of members in lineup. Must be specified by user (scalar).}
 
 \item{R}{Number of bootstrap replications. Defaults to R = 100.}
+
+\item{pos_list}{Suspect positions for each lineup pair, in the same format as
+\code{diag_param()}. This is required; earlier releases attempted to infer
+suspect positions from observed choices, which cannot be done validly.}
+
+\item{seed}{Optional integer seed for reproducible resampling.}
+
+\item{conf.level}{Confidence level for the percentile intervals and the
+per-pair intervals, and the complement of the level at which
+heterogeneity is declared. Defaults to 0.95.}
+}
+\value{
+Invisibly returns a list containing the observed mean diagnosticity,
+ chi-square statistic with degrees of freedom and asymptotic p-value,
+ percentile intervals, a \code{heterogeneous} flag, a \code{parameters} data
+ frame of per-pair ratios and intervals, all attempted bootstrap draws
+ (failed rows retained as NA), \code{n_successful}, \code{n_failed}, and
+ \code{R}. Intervals are conditional on successful draws when failures occur.
 }
 \description{
 Function for computing bootstrapped estimates of homogeneity of diagnosticity ratio
 }
 \details{
 Computes bootstrapped diagnosticity ratio with chi-squared estimate,
-        significance level and confidence intervals for k lineup pairs
+        significance level and confidence intervals for k lineup pairs.
+
+        The interval on the pooled ratio and the chi-square answer different
+        questions, and can disagree. See \code{\link{homog_diag}} for the
+        distinction; as there, a note is printed whenever the k ratios are
+        heterogeneous and the pooled estimate should not be reported on its
+        own.
 }
 \examples{
 #Target present data:
-A <-  round(runif(100,1,6))
-B <-  round(runif(70,1,5))
-C <-  round(runif(20,1,4))
+A <- rep(1:6, length.out = 100)
+B <- rep(1:5, length.out = 70)
+C <- rep(1:4, length.out = 20)
 lineup_pres_list <- list(A, B, C)
 rm(A, B, C)
 
 #Target absent data:
-A <-  round(runif(100,1,6))
-B <-  round(runif(70,1,5))
-C <-  round(runif(20,1,4))
+A <- rep(6:1, length.out = 100)
+B <- rep(5:1, length.out = 70)
+C <- rep(4:1, length.out = 20)
 lineup_abs_list <- list(A, B, C)
 rm(A, B, C)
+
+pos_list <- c(3, 2, 1)
+k <- c(6, 5, 4)
+homog_diag_boot(lineup_pres_list, lineup_abs_list, k, R = 20,
+               pos_list = pos_list, seed = 1)
 
 }
 \references{

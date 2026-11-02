@@ -2,44 +2,77 @@
 % Please edit documentation in R/make_roc.R
 \name{make_roc}
 \alias{make_roc}
-\title{Compute and plot ROC curve for lineup accuracy ~ confidence}
+\title{Compute and Plot ROC Curve for Lineup Identification}
 \usage{
-make_roc(df_confacc)
+make_roc(
+  data,
+  lineup_size = 6,
+  show_plot = TRUE,
+  innocent_suspect = "auto",
+  ...
+)
 }
 \arguments{
-\item{df_confacc}{A dataframe with two columns, named confidence and accuracy (where accuracy = binary accuracy)}
+\item{data}{A dataframe with the following columns:
+\itemize{
+  \item target_present: Logical. TRUE if guilty suspect in lineup
+  \item identification: Character. "suspect", "filler", or "reject"
+  \item confidence: Numeric. Confidence rating
+}}
+
+\item{lineup_size}{Integer. Number of people in lineup (default = 6)}
+
+\item{show_plot}{Logical. Whether to display the plot (default = TRUE)}
+
+\item{innocent_suspect}{How innocent-suspect identifications in
+target-absent lineups are obtained. \code{"designated"}: the lineups had a
+designated innocent suspect, so target-absent \code{"suspect"} rows are
+counted directly, and zero such rows means a false-ID rate of zero.
+\code{"estimated"}: there was no designated innocent suspect, so the
+innocent-suspect count is estimated as filler IDs divided by
+\code{lineup_size}. \code{"auto"} (the default) chooses
+\code{"designated"} when any target-absent row is a suspect ID or the data
+have a non-missing \code{suspect_pos} column, and \code{"estimated"}
+otherwise, with a message.}
+
+\item{...}{Additional arguments passed to make_roc_gg()}
 }
 \value{
-An ROC object of package pROC
+A list containing:
+  \itemize{
+    \item plot: ggplot2 object. Always returned, whatever show_plot is
+      set to; show_plot controls only whether it is displayed immediately
+    \item roc_data: Dataframe with ROC curve points
+    \item pauc: Partial area under the curve
+    \item summary: Summary statistics
+  }
 }
 \description{
-Function to compute and plot an ROC curve for data from an eyewitness
-experiment, where accuracy is recorded for target present and target
-absent lineups
+Main function to compute and plot an ROC curve for eyewitness lineup data.
+This follows the methodology of Wixted & Mickes (2012) and Mickes (2015).
 }
 \details{
-The approach is outlined in several papers by Mickes, Wixted, Gronlund,
-Clark, and others (see \strong{References})
+ROC analysis measures discriminability - the ability to distinguish innocent
+from guilty suspects. According to Mickes (2015), ROC analysis is most relevant
+for policymakers deciding on system variables (e.g., simultaneous vs. sequential
+lineups, lineup size, etc.).
 
-This function is a user level function.  It chains the two roc functions
-together. The user must pass a dataframe, with one column indicating
-confidence, and another accuracy, and these must be named as such.
-
-The approach is outlined in several papers by Mickes, Wixted, Gronlund,
-Clark, and others (see references)
+For estimator variables (e.g., exposure duration, retention interval), use
+CAC analysis instead (see \code{\link{make_cac}}).
 }
 \examples{
-#Data:
-data(mickwick)
-
-#Call:
-make_roc(mickwick)
-
-
+data(lineup_example)
+roc_result <- make_roc(lineup_example)
+print(roc_result$pauc)
 
 }
 \references{
-Gronlund, S. D., Wixted, J. T., & Mickes, L. (2014). Evaluating
-eyewitness identification procedures using receiver operating characteristic
-analysis. \emph{Current Directions in Psychological Science, 23}(1), 3-10.
+Wixted, J. T., & Mickes, L. (2012). The field of eyewitness memory should
+abandon probative value and embrace receiver operating characteristic analysis.
+\emph{Perspectives on Psychological Science, 7}(3), 275-278.
+
+Mickes, L. (2015). Receiver operating characteristic analysis and
+confidence-accuracy characteristic analysis in investigations of system
+variables and estimator variables that affect eyewitness memory.
+\emph{Journal of Applied Research in Memory and Cognition, 4}(2), 93-102.
 }

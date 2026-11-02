@@ -35,6 +35,6 @@ gen_boot_propci <- function (lineuprops, perc=.05){
         quantile(lineuprops, probs = perc)
     }
     else {
-        cat("Illegal value entered (must be proportion)")
+        stop("perc must be between 0 and 1.", call. = FALSE)
     }
 }

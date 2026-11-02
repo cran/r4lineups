@@ -7,10 +7,15 @@
 makevec_prop(prop, n)
 }
 \arguments{
-\item{prop}{A dataframe of bootstrapped proportions}
+\item{prop}{A single finite proportion between 0 and 1.}
 
-\item{n}{Number of lineup members}
+\item{n}{A positive whole-number sample size. \code{n * prop} must be a whole number.}
 }
 \description{
-Several helper functions that compute bootcis from proportions
+Several helper functions that compute bootstrap confidence limits from proportions.
+}
+\examples{
+# Expand a choice proportion of 0.25 among 20 mock witnesses into a
+# binary choice vector
+makevec_prop(0.25, 20)
 }

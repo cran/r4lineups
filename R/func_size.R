@@ -28,9 +28,15 @@
 #'@export
 
 func_size <- function(lineup_vec, target_pos){
-
-    lineup_vec <- typecheck(lineup_vec)
-
-    fsize <- length(lineup_vec) / sum(lineup_vec == target_pos)
-    return(fsize)
+  lineup_vec <- typecheck(lineup_vec)
+  if (!is.numeric(target_pos) || length(target_pos) != 1L || is.na(target_pos)) {
+    stop("target_pos must identify exactly one lineup member.", call. = FALSE)
+  }
+  selected <- sum(lineup_vec == target_pos)
+  if (selected == 0L) {
+    warning("No mock witnesses chose the target position; functional size is infinite.",
+            call. = FALSE)
+    return(Inf)
+  }
+  length(lineup_vec) / selected
 }

@@ -1,0 +1,331 @@
+---
+title: "SDT via GLM/GLMM"
+author:
+- "Colin G. Tredoux"
+- "Tamsyn M. Naylor"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SDT via GLM/GLMM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+> **Acknowledgement.** Large language models supplied by Anthropic and OpenAI
+> were used in preparing this vignette, to assist with checking code, testing
+> the veracity of the approaches described, and on occasion editing the text.
+> Responsibility for the content rests with the authors.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
+                      warning = FALSE, message = FALSE,
+                      fig.width = 7, fig.height = 5)
+```
+
+## Overview
+
+This vignette estimates signal-detection metrics from **old/new recognition**
+data using generalized linear models.
+
+**Attribution.** The approach is that of Wright, Horry and Skagerberg (2009),
+who set out both the traditional per-participant computation and the multilevel
+alternative, and released it as the R package **sdtalt**. The implementation
+here — `fit_sdt_glm()`, `fit_sdt_glmm()` and `extract_sdt_metrics()` — was
+written from that paper and adapted into this package's conventions; it is not
+derived from their code. The multilevel fitting is done by **lme4**
+(Bates, Mächler, Bolker & Walker, 2015).
+
+```{r libraries}
+library(r4lineups)
+```
+
+## What changes when you move from classic SDT to a GLM
+
+Classic signal detection analysis computes, for each participant separately, a
+hit rate and a false-alarm rate, converts both to z-scores, and takes d′ as
+their difference:
+
+$$d' = z(\text{hit rate}) - z(\text{false alarm rate})$$
+
+Those per-participant values are then averaged, and a t-test is run on them.
+This works, and for a simple design it gives sensible answers. But it has four
+awkward properties:
+
+1. **Extreme values break it.** A participant with a hit rate of 1 or a
+   false-alarm rate of 0 gives an infinite z-score. The usual remedies — adding
+   0.5 to each cell, or replacing 0 and 1 with 1/(2N) — are arbitrary
+   adjustments applied to make the arithmetic work.
+2. **Every participant is weighted equally**, whether they contributed 20 trials
+   or 200.
+3. **Covariates are awkward.** Testing whether d′ depends on a continuous
+   predictor means computing d′ per participant and then regressing on it, which
+   is a two-stage procedure that loses the trial-level uncertainty.
+4. **Items are ignored entirely.** More on this below, since it is the most
+   consequential.
+
+The GLM formulation avoids all four by modelling the individual response rather
+than the per-participant summary. d′ follows directly from a probit regression,
+so nothing is lost by doing it this way.
+
+### Why a probit regression gives you d′
+
+The connection is exact rather than approximate.
+
+Signal detection theory says the witness's evidence is normally distributed with
+mean 0 for new items and mean d′ for old ones, with a criterion at some point
+\(c\). The probability of saying "old" is the area of that distribution above
+the criterion:
+
+$$P(\text{said old} \mid \text{new}) = \Phi(-c), \qquad
+P(\text{said old} \mid \text{old}) = \Phi(d' - c)$$
+
+A probit regression models exactly this form:
+
+$$\Phi^{-1}\bigl(P(\text{said old})\bigr) = \beta_0 + \beta_1 \cdot \text{is old}$$
+
+Matching the two, \(\beta_1 = d'\) and \(\beta_0 = -c\). **The coefficient on
+item status *is* d′** — not an analogue of it.
+
+The intercept needs one further step. With `is_old` coded 0/1, \(\beta_0\) is the
+value when `is_old = 0`, so it is the criterion measured from the new-item
+distribution. Coding `is_old` as −0.5/+0.5 instead centres it, and the intercept
+becomes the criterion measured from the midpoint of the two distributions —
+which is the conventional definition of \(c\). `fit_sdt_glm()` centres by
+default, which is why the criterion is only reported when `center_isold = TRUE`.
+
+With a **logit** link instead, the same coefficient is a log odds ratio rather
+than d′. It answers the same question about discriminability but on a different
+scale, and should not be reported as d′.
+
+## Simulated data
+
+```{r simulate}
+set.seed(123)
+n_subj  <- 40
+n_items <- 60
+
+df <- data.frame(
+  subject_id = rep(1:n_subj, each = n_items),
+  item_id    = rep(1:n_items, times = n_subj)
+)
+df$is_old <- rbinom(nrow(df), 1, 0.5)
+
+# True d' = 1.2, with both participants and items varying in difficulty
+subj_shift <- rnorm(n_subj,  0, 0.4)
+item_shift <- rnorm(n_items, 0, 0.4)
+
+df$said_old <- rbinom(
+  nrow(df), 1,
+  stats::pnorm(1.2 * df$is_old + subj_shift[df$subject_id] +
+                 item_shift[df$item_id])
+)
+```
+
+Note that both participants **and items** vary. That is realistic — some faces
+are simply more memorable than others — and it is what makes the next section
+important.
+
+## Single-level GLM
+
+```{r glm_fit}
+glm_fit <- fit_sdt_glm(df, is_old = "is_old", said_old = "said_old",
+                       link = "probit")
+extract_sdt_metrics(glm_fit)
+```
+
+## Multilevel GLMM
+
+`fit_sdt_glmm()` fits the same model with random effects, using
+`lme4::glmer()` internally:
+
+```{r glmm_fit}
+glmm_fit <- fit_sdt_glmm(df,
+                         is_old       = "is_old",
+                         said_old     = "said_old",
+                         subject_id   = "subject_id",
+                         item_id      = "item_id",
+                         link         = "probit",
+                         random_slope = FALSE)
+extract_sdt_metrics(glmm_fit)
+```
+
+## Participants, items, or both
+
+This is the main reason to prefer the multilevel formulation, and it is an old
+argument: Clark (1973) pointed out that treating stimulus items as fixed
+means any conclusion strictly applies only to the particular items used. In
+recognition memory the items are faces or words, and they differ in
+memorability. If your analysis treats them as fixed, you are entitled to
+conclude something about *those sixty faces*, not about faces in general.
+
+The traditional workaround was to run the analysis twice — once averaging over
+items to get a by-participants test, once averaging over participants to get a
+by-items test — and require both to be significant. Crossed random effects do
+the job properly in one model.
+
+The consequence is visible in the standard errors:
+
+```{r crossed_effects}
+structures <- list(
+  "GLM: no clustering"        = fit_sdt_glm(df, "is_old", "said_old",
+                                            link = "probit"),
+  "GLMM: subject only"        = fit_sdt_glmm(df, "is_old", "said_old",
+                                             subject_id = "subject_id",
+                                             link = "probit",
+                                             random_slope = FALSE),
+  "GLMM: subject and item"    = fit_sdt_glmm(df, "is_old", "said_old",
+                                             subject_id = "subject_id",
+                                             item_id = "item_id",
+                                             link = "probit",
+                                             random_slope = FALSE)
+)
+
+comparison <- do.call(rbind, lapply(names(structures), function(nm) {
+  m  <- structures[[nm]]
+  co <- summary(m)$coefficients
+  term <- attr(m, "sdt_is_old_term")
+  if (is.null(term)) term <- ".is_old_c"
+  data.frame(
+    `Random effects` = nm,
+    `d'`             = round(co[term, "Estimate"], 3),
+    `SE`             = round(co[term, "Std. Error"], 4),
+    check.names = FALSE
+  )
+}))
+
+knitr::kable(
+  comparison, row.names = FALSE,
+  caption = "Estimated d' and its standard error under three random-effect structures. Simulated data, 40 participants by 60 items, true d' = 1.2."
+)
+```
+
+The standard error grows as clustering is acknowledged. Ignoring it entirely
+treats every one of the `r nrow(df)` trials as independent, which they are not:
+trials from the same participant share that participant's ability, and trials on
+the same item share that item's memorability. **A GLM that ignores this reports
+a standard error that is too small, and a p-value that is too generous.**
+
+### The estimates move too, and predictably
+
+The d′ estimates also differ across the three rows, and this is not noise. The
+GLM estimate is **marginal** (population-averaged): it describes the average
+response probability across all participants and items. The GLMM estimate is
+**conditional** (subject- and item-specific): it describes the effect for a
+participant and item at the average of the random effects.
+
+For a probit link the two are related by a known attenuation:
+
+$$d'_{\text{marginal}} \approx \frac{d'_{\text{conditional}}}{\sqrt{1 + \sigma^2_{\text{subject}} + \sigma^2_{\text{item}}}}$$
+
+```{r attenuation}
+vc <- as.data.frame(lme4::VarCorr(structures[["GLMM: subject and item"]]))
+total_var <- sum(vc$vcov)
+
+cond <- lme4::fixef(structures[["GLMM: subject and item"]])[[".is_old_c"]]
+marg <- stats::coef(structures[["GLM: no clustering"]])[[".is_old_c"]]
+
+knitr::kable(
+  data.frame(
+    Quantity = c("Conditional d' (GLMM)",
+                 "Random-effect variance, total",
+                 "Attenuation factor",
+                 "Conditional / attenuation factor",
+                 "Marginal d' (GLM), observed"),
+    Value = round(c(cond, total_var, sqrt(1 + total_var),
+                    cond / sqrt(1 + total_var), marg), 3)
+  ),
+  row.names = FALSE,
+  caption = "Marginal and conditional d' are different quantities related by a known factor. Simulated data."
+)
+```
+
+The predicted marginal value and the observed one agree closely. So the two
+models are not disagreeing about the data; they are answering slightly different
+questions. Neither is wrong, but they should not be compared as though
+interchangeable, and a paper should say which is being reported. The conditional
+estimate is usually the one meant by "d′" in a cognitive model, since it refers
+to a typical participant rather than to an average over heterogeneity.
+
+## Including covariates
+
+```{r covariates}
+df$delay <- rnorm(nrow(df), 0, 1)
+
+glm_fit_cov <- fit_sdt_glm(df,
+                           is_old       = "is_old",
+                           said_old     = "said_old",
+                           covariates   = "delay",
+                           link         = "probit",
+                           interactions = TRUE)
+summary(glm_fit_cov)
+```
+
+With `interactions = TRUE`, the `is_old × delay` term tests whether
+discriminability itself depends on the covariate — which is the question usually
+intended, and which the two-stage classic approach cannot ask directly.
+
+## Technical Details
+
+### What is estimated
+
+| Link | Coefficient on `is_old` | Intercept (centred coding) |
+|---|---|---|
+| probit | d′ | −criterion |
+| logit | log odds ratio | −criterion on the logit scale |
+
+Standard errors for the GLM come from the usual Fisher information; for the
+GLMM they come from `lme4`'s Laplace approximation to the marginal likelihood.
+
+### Coding conventions
+
+`center_isold = TRUE` (the default) codes item status as −0.5/+0.5 rather than
+0/1. This does not change the coefficient on `is_old`, but it changes the
+intercept from "criterion relative to the new-item distribution" to "criterion
+relative to the midpoint", which is the conventional \(c\).
+`extract_sdt_metrics()` returns the criterion only under centred coding, since
+under 0/1 coding the intercept is not \(c\).
+
+### Assumptions
+
+1. **Equal variance.** The probit model as fitted assumes the old- and
+   new-item evidence distributions have the same variance. The unequal-variance
+   case — which is the empirically supported one in recognition memory — needs
+   a model with a scale parameter, for which see `fit_sdt_roc()` in
+   `R/zroc_sdt.R`, or the ordinal approach discussed below.
+2. **Random effects are normally distributed** with mean zero, and independent
+   of the predictors.
+3. **Crossed, not nested.** Participants and items are crossed: every
+   participant sees every item, or nearly so. `(1|subject_id) + (1|item_id)` is
+   correct for this. If items were nested within lists, the specification would
+   differ.
+4. Random intercepts only, unless `random_slope = TRUE`. Allowing d′ itself to
+   vary across participants is often the more realistic model and requires more
+   data to fit.
+
+### A limitation
+
+This treats the response as binary — "old" or "new". Recognition data usually
+carry confidence as well, and reducing a confidence rating to a binary response
+discards it. The natural extension is an **ordinal** (cumulative link) model with
+confidence as the ordered outcome, in which the coefficient on item status is
+still d′ and the thresholds are the criteria; allowing the scale to depend on
+condition then gives the unequal-variance model. That is not implemented here.
+
+## References
+
+::: {.hanging-indent}
+
+Bates, D., Mächler, M., Bolker, B., & Walker, S. (2015). Fitting linear mixed-effects models using lme4. *Journal of Statistical Software, 67*(1), 1-48.
+
+Clark, H. H. (1973). The language-as-fixed-effect fallacy: A critique of language statistics in psychological research. *Journal of Verbal Learning and Verbal Behavior, 12*(4), 335-359.
+
+Wright, D. B., Horry, R., & Skagerberg, E. M. (2009). Functions for traditional and multilevel approaches to signal detection theory. *Behavior Research Methods, 41*(2), 257-267.
+
+:::
+
+## Further Reading
+
+- `?fit_sdt_glm`, `?fit_sdt_glmm`, `?extract_sdt_metrics`
+- `vignette("sdt_summary_comparisons")` for comparing SDT parameters between
+  groups
+- `vignette("model_comparison")` for lineup-specific models

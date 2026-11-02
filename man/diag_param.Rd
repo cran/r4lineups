@@ -13,8 +13,10 @@ target was present}
 \item{lineup_abs_list}{A list containing k vectors of lineup choices for k lineups, in which the
 target was absent}
 
-\item{pos_list}{A list containing k numeric vectors indexing lineup member positions
-for each lineup pair}
+\item{pos_list}{Suspect positions for each lineup pair. Supply a numeric vector
+with one position per pair when TP and TA suspect positions match,
+or a list whose elements contain either one shared position or
+two positions in TP, TA order.}
 
 \item{k}{A vector indexing number of members in each lineup pair. Must be specified by user (scalar).}
 }
@@ -31,7 +33,7 @@ Returns a dataframe containing:
          \item \emph{n12}: Number of mock witnesses who identified the suspect in the target
              absent condition
 
-         \item \emph{n13}: Number of mock witnesses who did not identify the suspect in the
+         \item \emph{n22}: Number of mock witnesses who did not identify the suspect in the
              target absent condition
              }
 }
@@ -50,7 +52,7 @@ This function calculates the parameters needed to calculate the diagnosticity
 
                For a lineup pair A that consists of (1)TP lineup and (2)TA lineup:
                A(1) is the first vector in the TP list
-               A(2) is the first vector in the TP list
+               A(2) is the first vector in the TA list
        \item The order in which nominal size for each lineup pair is listed must
              also correspond with the positions of each respective lineup in the
              lineup lists (i.e., if lineup 1 has k = 6, then the first element of
@@ -58,33 +60,27 @@ This function calculates the parameters needed to calculate the diagnosticity
 
       \item Data must be in a list format. This allows the function to compare
             lineups in which the number of choices and number of lineup members differs.
-      \item The following warning will appear if vectors comprising lineup lists are of
-                   different lengths: \emph{longer object length is not a multiple of
-                   shorter object length}. \strong{This does not affect the accuracy of
-                   the function and can be ignored.}}
+      \item TP and TA vectors may have different sample sizes; they are counted
+            independently and are never compared element by element.}
 }
 \examples{
 #Target present data:
-A <-  round(runif(100,1,6))
-B <-  round(runif(70,1,5))
-C <-  round(runif(20,1,4))
+A <- rep(1:6, length.out = 100)
+B <- rep(1:5, length.out = 70)
+C <- rep(1:4, length.out = 20)
 lineup_pres_list <- list(A, B, C)
 rm(A, B, C)
 
 
 #Target absent data:
-A <-  round(runif(100,1,6))
-B <-  round(runif(70,1,5))
-C <-  round(runif(20,1,4))
+A <- rep(6:1, length.out = 100)
+B <- rep(5:1, length.out = 70)
+C <- rep(4:1, length.out = 20)
 lineup_abs_list <- list(A, B, C)
 rm(A, B, C)
 
-#Pos list
-lineup1_pos <- c(1, 2, 3, 4, 5, 6)
-lineup2_pos <- c(1, 2, 3, 4, 5)
-lineup3_pos <- c(1, 2, 3, 4)
-pos_list <- list(lineup1_pos, lineup2_pos, lineup3_pos)
-rm(lineup1_pos, lineup2_pos, lineup3_pos)
+# Suspect position for each TP/TA pair
+pos_list <- c(3, 2, 1)
 
 #Nominal size:
 k <- c(6, 5, 4)

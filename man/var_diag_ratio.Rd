@@ -2,7 +2,7 @@
 % Please edit documentation in R/var_d.R
 \name{var_diag_ratio}
 \alias{var_diag_ratio}
-\title{Variance of diagnosticity ratio (Tredoux)}
+\title{Asymptotic Variance of Log Diagnosticity}
 \usage{
 var_diag_ratio(lineup_pres, lineup_abs, pos_pres, pos_abs, k1, k2)
 }
@@ -22,7 +22,13 @@ the target was absent}
 \item{k2}{Number of targets in TA lineup. Must be specified by user (scalar).}
 }
 \description{
-Computes the variance of the diagnosticity ratio for a lineup pair
+Computes the large-sample variance of the log diagnosticity ratio for a lineup pair.
+}
+\details{
+Returns 1/h - 1/N_TP + 1/f - 1/N_TA for positive suspect-ID
+ counts h and f. This is on the log-ratio scale, as in Tredoux (1998),
+ not the raw ratio scale. A delta-method variance for the raw ratio is
+ the squared diagnosticity ratio times this value.
 }
 \examples{
 #Data:

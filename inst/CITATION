@@ -1,0 +1,14 @@
+citHeader("To cite r4lineups in publications, please use:")
+
+bibentry(
+  bibtype = "Manual",
+  title = "r4lineups: Statistical Inference on Lineup Fairness",
+  author = c(
+    person("Colin G.", "Tredoux"),
+    person("Tamsyn M.", "Naylor")
+  ),
+  year = "2026",
+  note = "R package version 2.3.0",
+  doi = "10.32614/CRAN.package.r4lineups",
+  url = "https://CRAN.R-project.org/package=r4lineups"
+)

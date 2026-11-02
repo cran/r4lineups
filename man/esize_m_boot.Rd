@@ -14,7 +14,7 @@ esize_m_boot(lineup_vec, d, k)
 \item{k}{A vector indexing number of members in each lineup pair. Must be specified by user (scalar).}
 }
 \value{
-If printarg=FALSE, provides only Malpass's priginal calculation of effective size
+The Tredoux-adjusted Malpass effective-size estimate for the resample.
 }
 \description{
 Base function for computing bootstrapped effective size
@@ -31,7 +31,7 @@ bootobject <- boot::boot(lineup_vec, esize_m_boot, k = 6, R=1000)
 bootobject
 
 #To get confidence intervals:
-cis <- boot::boot.ci(bootobject, conf = 0.95, type = "all")
+cis <- boot::boot.ci(bootobject, conf = 0.95, type = "all", k = 6)
 
 }
 \references{

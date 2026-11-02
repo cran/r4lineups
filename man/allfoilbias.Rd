@@ -4,10 +4,10 @@
 \alias{allfoilbias}
 \title{Bias for each lineup member}
 \usage{
-allfoilbias(lineup_table, target_pos, k)
+allfoilbias(lineup_tab, target_pos, k)
 }
 \arguments{
-\item{lineup_table}{A table of lineup choices}
+\item{lineup_tab}{A table of lineup choices}
 
 \item{target_pos}{A scalar, representing target position in lineup. Must be declared by user}
 
@@ -19,8 +19,8 @@ from Malpass, 1981)
 }
 \examples{
 lineup_vec <- round(runif(100, 1, 6))
-lineup_table <- table(lineup_vec)
-x <- allfoilbias(lineup_table, 5, 6)
+lineup_tab <- table(lineup_vec)
+x <- allfoilbias(lineup_tab, 5, 6)
 
 }
 \references{

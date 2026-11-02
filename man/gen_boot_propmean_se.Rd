@@ -14,7 +14,9 @@ Mean, median, standard deviation, standard error & 95 CIs of
        lineup proportion across a bootstrapped dataframe
 }
 \description{
-Function for computing mean. med and se of boot proportion
+Function for computing the mean, median, and bootstrap standard error. The
+standard deviation of the bootstrap replicates is the estimated standard error;
+it is not divided by the square root of the number of replicates.
 }
 \examples{
 #Data:

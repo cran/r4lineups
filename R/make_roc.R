@@ -1,39 +1,114 @@
-#'Compute and plot ROC curve for lineup accuracy ~ confidence
+#' Compute and Plot ROC Curve for Lineup Identification
 #'
-#'Function to compute and plot an ROC curve for data from an eyewitness
-#'experiment, where accuracy is recorded for target present and target
-#'absent lineups
+#' Main function to compute and plot an ROC curve for eyewitness lineup data.
+#' This follows the methodology of Wixted & Mickes (2012) and Mickes (2015).
 #'
-#'The approach is outlined in several papers by Mickes, Wixted, Gronlund,
-#'Clark, and others (see \strong{References})
+#' @param data A dataframe with the following columns:
+#'   \itemize{
+#'     \item target_present: Logical. TRUE if guilty suspect in lineup
+#'     \item identification: Character. "suspect", "filler", or "reject"
+#'     \item confidence: Numeric. Confidence rating
+#'   }
+#' @param lineup_size Integer. Number of people in lineup (default = 6)
+#' @param show_plot Logical. Whether to display the plot (default = TRUE)
+#' @inheritParams make_rocdata
+#' @param ... Additional arguments passed to make_roc_gg()
 #'
-#'@param df_confacc A dataframe with two columns, named confidence and accuracy (where accuracy = binary accuracy)
-#'@return An ROC object of package pROC
-#'@examples
-#'#Data:
-#'data(mickwick)
+#' @return A list containing:
+#'   \itemize{
+#'     \item plot: ggplot2 object. Always returned, whatever show_plot is
+#'       set to; show_plot controls only whether it is displayed immediately
+#'     \item roc_data: Dataframe with ROC curve points
+#'     \item pauc: Partial area under the curve
+#'     \item summary: Summary statistics
+#'   }
 #'
-#'#Call:
-#'make_roc(mickwick)
+#' @details
+#' ROC analysis measures discriminability - the ability to distinguish innocent
+#' from guilty suspects. According to Mickes (2015), ROC analysis is most relevant
+#' for policymakers deciding on system variables (e.g., simultaneous vs. sequential
+#' lineups, lineup size, etc.).
 #'
+#' For estimator variables (e.g., exposure duration, retention interval), use
+#' CAC analysis instead (see \code{\link{make_cac}}).
 #'
+#' @examples
+#' data(lineup_example)
+#' roc_result <- make_roc(lineup_example)
+#' print(roc_result$pauc)
 #'
-#'@references Gronlund, S. D., Wixted, J. T., & Mickes, L. (2014). Evaluating
-#'eyewitness identification procedures using receiver operating characteristic
-#'analysis. \emph{Current Directions in Psychological Science, 23}(1), 3-10.
+#' @references
+#' Wixted, J. T., & Mickes, L. (2012). The field of eyewitness memory should
+#' abandon probative value and embrace receiver operating characteristic analysis.
+#' \emph{Perspectives on Psychological Science, 7}(3), 275-278.
 #'
-#'@details This function is a user level function.  It chains the two roc functions
-#'together. The user must pass a dataframe, with one column indicating
-#'confidence, and another accuracy, and these must be named as such.
+#' Mickes, L. (2015). Receiver operating characteristic analysis and
+#' confidence-accuracy characteristic analysis in investigations of system
+#' variables and estimator variables that affect eyewitness memory.
+#' \emph{Journal of Applied Research in Memory and Cognition, 4}(2), 93-102.
 #'
-#'The approach is outlined in several papers by Mickes, Wixted, Gronlund,
-#'Clark, and others (see references)
-#'
-#'@export
-#'@import pROC ggplot2 ggrepel
+#' @export
+make_roc <- function(data, lineup_size = 6, show_plot = TRUE,
+                     innocent_suspect = "auto", ...) {
 
-make_roc <- function(df_confacc){
-  make_rocdata(df_confacc) %>%
-    make_roc_gg() -> rocplot
-  return(rocplot)
+  # Compute ROC data. make_rocdata() records a data-source label from its own
+  # call, which here would just be the formal name "data", so overwrite it with
+  # the expression this function was called with.
+  roc_obj <- make_rocdata(data, lineup_size = lineup_size,
+                          innocent_suspect = innocent_suspect)
+  attr(roc_obj, "data_source") <- deparse(substitute(data))[1]
+
+  # Create plot
+  # The plot is always built, so that it is available as $plot and to the
+  # plot() method. show_plot controls only whether it is displayed now:
+  # suppressing display should not destroy the object.
+  roc_plot <- make_roc_gg(roc_obj, ...)
+  if (show_plot) {
+    print(roc_plot)
+  }
+
+  # Create summary
+  summary_stats <- list(
+    pauc = roc_obj$pauc,
+    n_target_present = roc_obj$n_target_present,
+    n_target_absent = roc_obj$n_target_absent,
+    lineup_size = roc_obj$lineup_size,
+    n_confidence_levels = nrow(roc_obj$roc_data) - 1,  # Exclude (0,0) point
+    max_correct_id_rate = max(roc_obj$roc_data$correct_id_rate),
+    max_false_id_rate = max(roc_obj$roc_data$false_id_rate)
+  )
+
+  result <- list(
+    plot = roc_plot,
+    roc_data = roc_obj$roc_data,
+    pauc = roc_obj$pauc,
+    summary = summary_stats
+  )
+
+  class(result) <- c("lineup_roc", "list")
+  attr(result, "data_source") <- attr(roc_obj, "data_source")
+  result
+}
+
+
+#' Print Method for lineup_roc Objects
+#' @param x A lineup_roc object
+#' @param ... Additional arguments (ignored)
+#' @export
+print.lineup_roc <- function(x, ...) {
+  cat("\n=== Lineup ROC Analysis ===\n\n")
+  cat("Partial AUC:", round(x$pauc, 3), "\n")
+  cat("Target-present trials (N):", x$summary$n_target_present, "\n")
+  cat("Target-absent trials (N):", x$summary$n_target_absent, "\n")
+  cat("Lineup size:", x$summary$lineup_size, "\n")
+  cat("Confidence levels:", x$summary$n_confidence_levels, "\n\n")
+
+  cat("ROC Data:\n")
+  print(x$roc_data, n = Inf)
+
+  if (!is.null(x$plot)) {
+    cat("\nPlot: use plot(x), or save the object and extract x$plot\n")
+  }
+
+  invisible(x)
 }

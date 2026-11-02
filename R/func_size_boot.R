@@ -22,6 +22,15 @@
 #'            empirically assessing the fairness of a lineup. \emph{Law and Human Behavior,
 #'            3}(4), 285-293.
 #'
+#'@examples
+#' # Lineup choices of 50 mock witnesses; target in position 3
+#' set.seed(1)
+#' lineup_vec <- sample(1:6, 50, replace = TRUE)
+#' # Functional size for the observed data
+#' func_size.boot(lineup_vec, seq_along(lineup_vec), target_pos = 3)
+#' # Bootstrap functional size
+#' boot_fs <- boot::boot(lineup_vec, func_size.boot, R = 100, target_pos = 3)
+#' boot::boot.ci(boot_fs, type = "perc")
 #'@export
 
 func_size.boot <- function(lineup_vec, d=d, target_pos){

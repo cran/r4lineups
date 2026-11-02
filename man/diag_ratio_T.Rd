@@ -2,7 +2,7 @@
 % Please edit documentation in R/diag_ratio_T.R
 \name{diag_ratio_T}
 \alias{diag_ratio_T}
-\title{Diagnosticty Ratio (Tredoux, 1998)}
+\title{Diagnosticity Ratio (Tredoux, 1998)}
 \usage{
 diag_ratio_T(lineup_pres, lineup_abs, pos_pres, pos_abs, k1, k2)
 }
@@ -22,7 +22,18 @@ the target was absent}
 \item{k2}{Number of targets in TA lineup. Must be specified by user (scalar).}
 }
 \description{
-Computes Wells's adjusted diagnosticity ratio for one lineup pair (see: Tredoux, 1998)
+Computes Tredoux's small-cell corrected diagnosticity ratio for one
+target-present/target-absent lineup pair.
+}
+\details{
+The corrected estimator is:
+        \deqn{DR_T =
+        \frac{(n_{TP,s} + 0.5)/(N_{TP} + 0.5)}
+             {(n_{TA,s} + 0.5)/(N_{TA} + 0.5)},}
+        where \eqn{n_{TP,s}} and \eqn{n_{TA,s}} are suspect-selection
+        counts in target-present and target-absent lineups, respectively,
+        and \eqn{N_{TP}} and \eqn{N_{TA}} are the corresponding sample
+        sizes.
 }
 \examples{
 #Data:

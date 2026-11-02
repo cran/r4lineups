@@ -1,11 +1,17 @@
 #'Bootstrapped Effective Size (Tredoux, 1998)
 #'
-#' Base function for generating boostrapped Effective Size (Tredoux, 1998)
-#' @param lineup_table A table of lineup choices
+#' Base function for generating bootstrapped Effective Size (Tredoux, 1998)
+#' @param lineup_tab A vector of individual lineup choices. The historical
+#'   argument name is retained for compatibility.
 #' @param d Indices for bootstrap resampling
-#' @details Reduces the size of a lineup from a (corrected) nominal starting
-#'          value by the degree to which members are, in sum, chosen below
-#'          the level of chance expectation.
+#' @details
+#'   This is the statistic function passed to \code{boot::boot()} for
+#'   bootstrapping Tredoux's E'. The data argument must contain individual
+#'   lineup choices; \code{d} resamples mock witnesses rather than count-table cells.
+#'   For a higher-level interface that accepts raw lineup vectors, see
+#'   \code{\link{esize_boot_dist}}.
+#'   Percentile and BCa intervals from this plug-in statistic cannot be used to
+#'   test exact fairness E'=k; see the boundary warning in \code{\link{esize_boot_dist}}.
 #' @seealso \code{\link[boot:boot]{boot}}: https://cran.r-project.org/web/packages/boot/boot.pdf
 #' @references Davison,  A.C. & Hinkley,  D.V. (1997). \emph{Bootstrap methods and their
 #'             application}. Cambridge University Press.
@@ -25,10 +31,15 @@
 #'             Wells, G. L., Leippe, M. R., & Ostrom, T. M. (1979). Guidelines for
 #'                  empirically assessing the fairness of a lineup. \emph{Law and Human Behavior, 3}(4), 285-293.
 #'
+#'@examples
+#' # Choices from 50 mock witnesses to a 6-member lineup
+#' set.seed(1)
+#' lineup_tab <- sample(1:6, 50, replace = TRUE)
+#' # E' for the observed data
+#' esize_T_boot(lineup_tab, seq_along(lineup_tab))
 #'@export
 
-esize_T_boot <- function(lineup_table, d){
-  i <- 1-(1/(sum(lineup_table[d])^2))*sum(lineup_table[d]^2)
-  i <- 1/(1-i)
-  return(i)
+esize_T_boot <- function(lineup_tab, d){
+  lineup_vec <- typecheck(lineup_tab)
+  esize_T(table(lineup_vec[d]))
 }

@@ -9,10 +9,15 @@ allfoil_cihigh(linetabprops, sumlineup)
 \arguments{
 \item{linetabprops}{A dataframe of bootstrapped lineup proportions}
 
-\item{sumlineup}{Number of members in a lineup}
+\item{sumlineup}{Number of mock-witness observations used to estimate each proportion.}
 }
 \description{
 Function to compute ci high for each foil in a lineup
+}
+\examples{
+# Upper CI bounds for the choice proportions of three lineup members,
+# based on 20 mock witnesses
+allfoil_cihigh(c(0.5, 0.3, 0.2), 20)
 }
 \references{
 Malpass, R. S. (1981). Effective size and defendant bias in

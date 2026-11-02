@@ -2,26 +2,26 @@
 % Please edit documentation in R/gen_esize_m_ci.R
 \name{gen_esize_m_ci}
 \alias{gen_esize_m_ci}
-\title{Bootstrapped Confidence Intervals for Effective Size}
+\title{Bootstrap Quantile for Effective Size}
 \usage{
 gen_esize_m_ci(lineupsizes, perc = 0.05)
 }
 \arguments{
-\item{lineupsizes}{A vector of bootstrapped effective sizes}
+\item{lineupsizes}{A non-empty numeric vector of bootstrapped effective sizes.}
 
-\item{perc}{Defaults to .05. Can be specified by user, according to desired
-level of alpha (scalar)}
+\item{perc}{A single quantile probability between 0 and 1. Defaults to 0.05.}
 }
 \value{
-Confidence intervals for effective size
+A single named bootstrap quantile.
 }
 \description{
-Function for computing Effective Size (Malpass, 1981, as adjusted by Tredoux, 1998)
-with CIs from bootstrap df of lineups
+Computes one requested quantile from a vector of bootstrapped Malpass effective
+sizes. Call the function twice (for example, at 0.025 and 0.975) to obtain both
+endpoints of a percentile interval.
 }
 \examples{
 #Data:
-lineup_vec <- round(runif(100, 1, 6))
+lineup_vec <- rep(1:6, length.out = 100)
 k <- 6
 
 #Use gen_boot_samples to get bootstrapped data:

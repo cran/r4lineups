@@ -17,10 +17,10 @@
 #'          \item \emph{n12}: Number of mock witnesses who identified the suspect in the target
 #'              absent condition
 #'
-#'          \item \emph{n13}: Number of mock witnesses who did not identify the suspect in the
+#'          \item \emph{n22}: Number of mock witnesses who did not identify the suspect in the
 #'              target absent condition
 #'              }
-#'@return A dataframe containing ln of the variance of the diagnosticity ratio for
+#'@return A dataframe containing the estimated variance of the log diagnosticity ratio for
 #'        each lineup.
 #'
 #'@references Malpass, R. S. (1981). Effective size and defendant bias in
@@ -43,26 +43,22 @@
 #'
 #'@examples
 #'#Target present data:
-#'A <-  round(runif(100,1,6))
-#'B <-  round(runif(70,1,5))
-#'C <-  round(runif(20,1,4))
+#'A <- rep(1:6, length.out = 100)
+#'B <- rep(1:5, length.out = 70)
+#'C <- rep(1:4, length.out = 20)
 #'lineup_pres_list <- list(A, B, C)
 #'rm(A, B, C)
 #'
 #'
 #'#Target absent data:
-#'A <-  round(runif(100,1,6))
-#'B <-  round(runif(70,1,5))
-#'C <-  round(runif(20,1,4))
+#'A <- rep(6:1, length.out = 100)
+#'B <- rep(5:1, length.out = 70)
+#'C <- rep(4:1, length.out = 20)
 #'lineup_abs_list <- list(A, B, C)
 #'rm(A, B, C)
 #'
-#'#Pos list
-#'lineup1_pos <- c(1, 2, 3, 4, 5, 6)
-#'lineup2_pos <- c(1, 2, 3, 4, 5)
-#'lineup3_pos <- c(1, 2, 3, 4)
-#'pos_list <- list(lineup1_pos, lineup2_pos, lineup3_pos)
-#'rm(lineup1_pos, lineup2_pos, lineup3_pos)
+#'# Suspect position for each TP/TA pair
+#'pos_list <- c(3, 2, 1)
 #'
 #'#Nominal size:
 #'k <- c(6, 5, 4)
@@ -75,11 +71,21 @@
 #'@export
 
 var_lnd <- function(linedf){
-
-    var <- (linedf$n21/(linedf$n11+(linedf$n11+linedf$n21)))+
-        (linedf$n22/(linedf$n12+(linedf$n12+linedf$n22)))
-    var <- as.data.frame(var)
-
-    return(var)
-
-    }
+  required <- c("n11", "n21", "n12", "n22")
+  if (!all(required %in% names(linedf))) {
+    stop("linedf must contain n11, n21, n12, and n22.", call. = FALSE)
+  }
+  cells <- as.data.frame(linedf[required])
+  if (any(cells < 0) || any(!is.finite(as.matrix(cells)))) {
+    stop("linedf counts must be finite and non-negative.", call. = FALSE)
+  }
+  if (any(cells$n11 == 0 | cells$n12 == 0)) {
+    stop(paste0(
+      "The large-sample homogeneity variance requires positive suspect-ID ",
+      "counts in both conditions; Tredoux (1998) did not specify a zero-cell correction."
+    ), call. = FALSE)
+  }
+  var <- 1 / cells$n11 - 1 / (cells$n11 + cells$n21) +
+    1 / cells$n12 - 1 / (cells$n12 + cells$n22)
+  data.frame(var = var)
+}

@@ -25,3 +25,10 @@ This function ensures that a non-selected lineup member is not accidentally
         omitted from the dataframe due to lack of selection by all mock witnesses.
         It functions as a check that the total number of lineup members is accurate
 }
+\examples{
+# Target-present and target-absent lineups of 6 members each
+set.seed(1)
+lineup_pres <- sample(1:6, 50, replace = TRUE)
+lineup_abs <- sample(1:6, 50, replace = TRUE)
+datacheck2(lineup_pres, lineup_abs, 6, 6)
+}

@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Colin G. Tredoux" />
+<meta name="author" content="Tamsyn M. Naylor" />
+
+<meta name="date" content="2026-11-02" />
+
+<title>Face Similarity Analysis</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Face Similarity Analysis</h1>
+<h3 class="subtitle">Deep-learning measures of facial similarity in
+lineups</h3>
+<h4 class="author">Colin G. Tredoux</h4>
+<h4 class="author">Tamsyn M. Naylor</h4>
+<h4 class="date">2026-11-02</h4>
+
+
+
+<blockquote>
+<p><strong>Acknowledgement.</strong> Large language models supplied by
+Anthropic and OpenAI were used in preparing this vignette, to assist
+with checking code, testing the veracity of the approaches described,
+and on occasion editing the text. Responsibility for the content rests
+with the authors.</p>
+</blockquote>
+<blockquote>
+<p><strong>Note on the code in this vignette.</strong> Unlike the other
+vignettes in this package, the examples below are <strong>not
+executed</strong> when it is built. They require two things the package
+cannot supply: a working Python environment with DeepFace installed, and
+<strong>face image files of your own</strong>. No face images are
+distributed with r4lineups, for obvious reasons. The calls match the
+functions’ arguments and return values, and the code that works on their
+results has been run against objects of the same structure, but the
+outputs are described rather than computed here.</p>
+</blockquote>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p><strong>r4lineups</strong> provides deep learning methods for
+measuring facial similarity in eyewitness lineups. These tools
+complement mock-witness studies by giving analysts reproducible,
+continuous similarity summaries that can help screen candidate foils and
+document how a lineup was assembled. They should be treated as
+exploratory aids, not as a replacement for mock-witness or outcome-based
+evidence.</p>
+<div id="why-measure-face-similarity" class="section level3">
+<h3>Why measure face similarity?</h3>
+<p>Traditional lineup fairness assessment relies on mock witnesses
+viewing the lineup and choosing from it <strong>on the basis of a
+description</strong>. That dependence is the method’s foundation, and it
+is also where its difficulties lie.</p>
+<p><strong>Whose description?</strong> The mock-witness procedure asks
+people to pick the member who best matches a description, so the result
+is a property of the description-lineup pair, not of the lineup alone.
+Change the description and the measured fairness changes. In real cases
+the description is the witness’s own, given under conditions that may
+have been poor, and it is often the only one available. In laboratory
+studies it is frequently fabricated by the experimenters, which raises a
+different problem: a description written with a great deal of detail
+makes a lineup very hard to construct, because few candidate foils will
+match on every feature. Detail also tends to narrow the field towards
+the suspect, so an over-specified description can make a perfectly
+reasonable lineup look unfair — and an under-specified one can make an
+unfair lineup look acceptable.</p>
+<p>Beyond that, the procedure requires recruiting and testing
+participants, which is slow and costly, and returns categorical data —
+which member each mock witness chose — rather than a continuous measure
+of resemblance.</p>
+<p><strong>Deep learning face similarity</strong> measures something
+different: the resemblance between the images themselves, with no
+description and no participants. It is numeric, fast, scalable to
+hundreds of lineups, and exactly reproducible — the same images always
+give the same scores. It can also say <em>which</em> foils sit close to
+or far from the suspect, which a choice distribution can only do
+indirectly.</p>
+</div>
+<div id="an-important-caution-before-going-further" class="section level3">
+<h3>An important caution before going further</h3>
+<p>It is tempting to move from “we can measure similarity” to “here is
+the right amount of similarity”, and this vignette deliberately does not
+do that.</p>
+<p><strong>The literature is not settled on how similar lineup foils
+should be.</strong> The long-standing intuition that foils should
+closely resemble the suspect competes with evidence that very high
+similarity can impair discriminability by removing the diagnostic
+features a witness might use, and the balance appears to depend on the
+procedure, the encoding conditions and what is being optimised. There is
+no agreed optimum, and no threshold at which a lineup becomes “fair” on
+a similarity metric.</p>
+<p>So the functions here <strong>report degree of similarity</strong>;
+they do not grade it. Where the sections below give numbers, read them
+as descriptions of the images, not as verdicts on the lineup. Similarity
+scores are most defensible used comparatively — this foil against that
+one, this lineup against another constructed the same way — and as a
+screening aid during construction, rather than as evidence of fairness
+after the fact. The choice-based measures in the main vignette, and the
+outcome-based measures elsewhere in the package, remain the evidence
+about how a lineup actually performed.</p>
+</div>
+<div id="what-this-vignette-covers" class="section level3">
+<h3>What This Vignette Covers</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Setup</strong> - Installing Python dependencies</li>
+<li><strong>Basic Comparison</strong> - Comparing two face images</li>
+<li><strong>Lineup Analysis</strong> - Analyzing entire lineups</li>
+<li><strong>Models &amp; Metrics</strong> - Choosing the right
+configuration</li>
+<li><strong>Visualization</strong> - Displaying results</li>
+<li><strong>Advanced Features</strong> - Embeddings, batch processing,
+dimensionality reduction</li>
+<li><strong>Integration</strong> - Combining with traditional
+measures</li>
+<li><strong>Interpretation</strong> - What these scores do and do not
+establish</li>
+</ol>
+</div>
+</div>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<p>Face similarity analysis uses Python’s DeepFace library via R’s
+reticulate package. This requires a one-time setup.</p>
+<div id="check-current-setup" class="section level3">
+<h3>Check Current Setup</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(r4lineups)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># Check if Python and dependencies are available</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">check_python_deps</span>()</span></code></pre></div>
+</div>
+<div id="install-python-dependencies" class="section level3">
+<h3>Install Python Dependencies</h3>
+<p>If you don’t have the required dependencies, install them:</p>
+<p>The setup has one requirement that must be met first, so do it in the
+order below.</p>
+<p><strong>TensorFlow, which DeepFace depends on, does not publish
+wheels for every Python version.</strong> At the time of writing it
+supports Python 3.9 to 3.12. If your system Python is newer — 3.13 or
+3.14, which is increasingly common — the install will proceed a long way
+and then fail with
+<code>No matching distribution found for tensorflow</code>.
+<code>install_r4lineups_python()</code> checks the interpreter first and
+stops before downloading anything, rather than letting that happen.</p>
+<p>So pin the version, and <strong>obtain a suitable interpreter before
+asking for an environment built from one</strong>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Step 1: get a Python that TensorFlow supports. Skip if you already have one.</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">install_python</span>(<span class="at">version =</span> <span class="st">&quot;3.11&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Step 2: build the environment from it and install DeepFace</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">install_r4lineups_python</span>(<span class="at">envname =</span> <span class="st">&quot;r4lineups-face-env&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>                         <span class="at">python_version =</span> <span class="st">&quot;3.11&quot;</span>)</span></code></pre></div>
+<p>Requesting <code>python_version = &quot;3.11&quot;</code> without step 1 fails,
+because there is no 3.11 interpreter to build from.
+<code>install_r4lineups_python()</code> checks for this first and
+reports which versions it did find, along with the
+<code>reticulate::install_python()</code> call needed.</p>
+<p>The first run takes several minutes, as it downloads the deep
+learning models (ArcFace, FaceNet and others). They are cached
+afterwards.</p>
+</div>
+<div id="if-the-python-setup-defeats-you" class="section level3">
+<h3>If the Python setup defeats you</h3>
+<p>It is a genuine possibility — the dependency chain is long and
+platform dependent. Two fallbacks:</p>
+<ul>
+<li>The bundled Shiny application, <code>run_r4lineups_app()</code>,
+covers the lineup fairness measures that need no Python at all.</li>
+<li>Everything in the rest of this package — effective size, functional
+size, ROC, CAC, the SDT and MPT models — is pure R. Two optional
+components use Python: face similarity, and the pyWitness bridge behind
+<code>fit_lineup_models()</code>
+(<code>vignette(&quot;lineup_memory_models&quot;)</code>). Neither is a
+prerequisite for anything else.</li>
+</ul>
+</div>
+<div id="verify-installation" class="section level3">
+<h3>Verify Installation</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Check available models</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">available_models</span>()</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Check available face detectors</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">available_detectors</span>()</span></code></pre></div>
+</div>
+</div>
+<div id="basic-face-comparison" class="section level2">
+<h2>Basic Face Comparison</h2>
+<p>The simplest use case is comparing two face images.</p>
+<div id="compare-two-faces" class="section level3">
+<h3>Compare Two Faces</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Compare target to a foil</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># (Use your own image paths)</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">face_similarity</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">img1_path =</span> <span class="st">&quot;path/to/target.jpg&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">img2_path =</span> <span class="st">&quot;path/to/foil1.jpg&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;ArcFace&quot;</span>,     <span class="co"># State-of-the-art face recognition model</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">&quot;cosine&quot;</span>      <span class="co"># Similarity metric</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">print</span>(result)</span></code></pre></div>
+</div>
+<div id="understanding-the-output" class="section level3">
+<h3>Understanding the Output</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Similarity score (for cosine, 1 - distance: -1 to 1, higher = more similar)</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>result<span class="sc">$</span>similarity  <span class="co"># e.g., 0.85</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Distance (lower = more similar)</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>result<span class="sc">$</span>distance    <span class="co"># e.g., 0.15</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># Would the model judge these to be the same person?</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>result<span class="sc">$</span>verified    <span class="co"># see the note below on what this does and does not mean</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co"># Model&#39;s threshold for verification</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>result<span class="sc">$</span>threshold   <span class="co"># e.g., 0.68 for ArcFace + cosine</span></span></code></pre></div>
+<p><strong>Reading the output.</strong> <code>similarity</code> is a
+continuous score on the model’s own scale; higher means the two images
+are closer in the model’s embedding space. There is no table of bands
+here, because the literature does not establish what level of similarity
+a lineup foil ought to have. Compare scores against each other, not
+against a standard.</p>
+<p><code>verified</code> is a different kind of output. It is not a
+judgement about fairness; it is the model’s <strong>identity</strong>
+decision, whether the distance falls inside its threshold for “same
+person”. A <code>TRUE</code> is a reason to look at the two photographs,
+nothing more. Face recognition systems make false matches, especially
+between people of similar appearance, and a match does not establish
+that the photographs show the same person, that the foil fails as an
+alternative for witnesses, or that the lineup contains the suspect
+twice.</p>
+<p><code>threshold</code> is the model’s own cut-off for that identity
+decision. It is a <strong>distance</strong>, so on the similarity scale
+the corresponding value for cosine is <code>1 - threshold</code>. It
+varies by model and metric, and it is not a fairness criterion.</p>
+</div>
+</div>
+<div id="lineup-similarity-analysis" class="section level2">
+<h2>Lineup Similarity Analysis</h2>
+<p>Analyze all lineup members against the target in one call.</p>
+<div id="analyze-complete-lineup" class="section level3">
+<h3>Analyze Complete Lineup</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Paths to your own images; later chunks reuse these two objects</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>target_path <span class="ot">&lt;-</span> <span class="st">&quot;path/to/target.jpg&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>foil_paths <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="st">&quot;path/to/foil1.jpg&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="st">&quot;path/to/foil2.jpg&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="st">&quot;path/to/foil3.jpg&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="st">&quot;path/to/foil4.jpg&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="st">&quot;path/to/foil5.jpg&quot;</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co"># Analyze all foils in a lineup. Rows come back ordered by rank, most similar</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># first; foil_name and foil_path identify each foil.</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>lineup_result <span class="ot">&lt;-</span> <span class="fu">lineup_similarity</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>  <span class="at">target_path =</span> target_path,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  <span class="at">foil_paths =</span> foil_paths,</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;ArcFace&quot;</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">&quot;cosine&quot;</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>)</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="fu">print</span>(lineup_result)</span></code></pre></div>
+</div>
+<div id="examining-results" class="section level3">
+<h3>Examining Results</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># View as dataframe</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>lineup_result</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># Summary statistics</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">summary</span>(lineup_result)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co"># Foils the model judges to be the same identity as the suspect. Inspect</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co"># them by eye; the model can be wrong.</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>same_identity <span class="ot">&lt;-</span> lineup_result[<span class="fu">which</span>(lineup_result<span class="sc">$</span>verified), ]</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(same_identity) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Model judges these foils to be the same person as the target:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="co"># as.data.frame() first: a column subset keeps the lineup_similarity class,</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="co"># whose print method needs the distance and verified columns</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">as.data.frame</span>(same_identity)[, <span class="fu">c</span>(<span class="st">&quot;foil_path&quot;</span>, <span class="st">&quot;similarity&quot;</span>)])</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>}</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co"># Check similarity distribution</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Mean similarity:&quot;</span>, <span class="fu">round</span>(<span class="fu">mean</span>(lineup_result<span class="sc">$</span>similarity), <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;SD similarity:&quot;</span>, <span class="fu">round</span>(<span class="fu">sd</span>(lineup_result<span class="sc">$</span>similarity), <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Range:&quot;</span>, <span class="fu">range</span>(lineup_result<span class="sc">$</span>similarity), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+</div>
+<div id="describing-the-similarity-profile" class="section level3">
+<h3>Describing the similarity profile</h3>
+<p>These numbers describe the <strong>similarity profile</strong> of the
+lineup — where the foils sit relative to the suspect and to each other.
+Turning that into a verdict would require knowing what profile is
+desirable, which is exactly what is unsettled.</p>
+<p>Report three quantities:</p>
+<ul>
+<li><strong>Mean similarity</strong> — how close the foils are to the
+suspect on average.</li>
+<li><strong>Spread of similarity</strong> — whether the foils are
+homogeneous, or whether one or two sit much closer to the suspect than
+the rest. This is often the more informative of the two, since a lineup
+where one foil resembles the suspect far more than the others is
+unbalanced whatever the mean.</li>
+<li><strong>Identity matches</strong> — foils the model cannot
+distinguish from the suspect, as discussed above.</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Describe the similarity profile</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>mean_sim <span class="ot">&lt;-</span> <span class="fu">mean</span>(lineup_result<span class="sc">$</span>similarity)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>sd_sim <span class="ot">&lt;-</span> <span class="fu">sd</span>(lineup_result<span class="sc">$</span>similarity)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>n_verified <span class="ot">&lt;-</span> <span class="fu">sum</span>(lineup_result<span class="sc">$</span>verified)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Similarity profile:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Mean similarity:&quot;</span>, <span class="fu">round</span>(mean_sim, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  SD of similarity:&quot;</span>, <span class="fu">round</span>(sd_sim, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Range:&quot;</span>, <span class="fu">round</span>(<span class="fu">range</span>(lineup_result<span class="sc">$</span>similarity), <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Foils judged same identity:&quot;</span>, n_verified, <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co"># The one flag raised automatically, because it is an identity decision</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co"># rather than a fairness judgement</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="cf">if</span> (n_verified <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Note:&quot;</span>, n_verified, <span class="st">&quot;foil(s) judged the same person as the target.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Inspect these photographs by eye; the model&#39;s match may be false.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="models-and-metrics" class="section level2">
+<h2>Models and Metrics</h2>
+<p>Different models and metrics serve different purposes.</p>
+<div id="available-models" class="section level3">
+<h3>Available Models</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># List all models</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">available_models</span>()</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co"># Models ordered by identity-recognition accuracy on standard benchmarks.</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co"># That is accuracy at telling people apart, not agreement with human</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co"># similarity judgements or with mock-witness choices.</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co"># 1. ArcFace</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co"># 2. Facenet512</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co"># 3. Facenet</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co"># 4. VGG-Face</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co"># 5. OpenFace (fastest, least accurate)</span></span></code></pre></div>
+</div>
+<div id="distance-metrics" class="section level3">
+<h3>Distance Metrics</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Three metrics available:</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co"># 1. Cosine (the default, and the only metric with a similarity score)</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#    - Distance ranges from 0 to 2; similarity = 1 - distance, from -1 to 1</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#    - Depends only on the angle between embeddings</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co"># 2. Euclidean L2 (Euclidean distance between normalised embeddings)</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#    - Still specific to the model: not comparable across models</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co"># 3. Euclidean</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#    - Raw vector distance, on each model&#39;s own scale</span></span></code></pre></div>
+</div>
+<div id="comparing-models" class="section level3">
+<h3>Comparing Models</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Compare different models on same lineup</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>models_to_test <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ArcFace&quot;</span>, <span class="st">&quot;Facenet512&quot;</span>, <span class="st">&quot;VGG-Face&quot;</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>comparison_results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="cf">for</span> (model <span class="cf">in</span> models_to_test) {</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">lineup_similarity</span>(</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>    <span class="at">target_path =</span> <span class="st">&quot;path/to/target.jpg&quot;</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>    <span class="at">foil_paths =</span> foil_paths,</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>    <span class="at">model =</span> model,</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>    <span class="at">metric =</span> <span class="st">&quot;cosine&quot;</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>  )</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>  comparison_results[[model]] <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>    <span class="at">model =</span> model,</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>    <span class="at">mean_similarity =</span> <span class="fu">mean</span>(result<span class="sc">$</span>similarity),</span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>    <span class="at">sd_similarity =</span> <span class="fu">sd</span>(result<span class="sc">$</span>similarity),</span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>    <span class="at">n_verified =</span> <span class="fu">sum</span>(result<span class="sc">$</span>verified)</span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>  )</span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a>}</span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a></span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a>comparison_df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, comparison_results)</span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="fu">print</span>(comparison_df)</span></code></pre></div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>Models give different absolute scores, which are not comparable
+across models</li>
+<li>Check whether the ordering of foils agrees across models; do not
+assume it</li>
+<li>Use the same model consistently within a study</li>
+</ul>
+</div>
+</div>
+<div id="visualization" class="section level2">
+<h2>Visualization</h2>
+<div id="display-lineup-with-similarity-scores" class="section level3">
+<h3>Display Lineup with Similarity Scores</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Display the lineup as a grid of images, target outlined in red.</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co"># display_lineup() returns a magick image, not a ggplot.</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>lineup_img <span class="ot">&lt;-</span> <span class="fu">display_lineup</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">target_path =</span> target_path,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="at">foil_paths =</span> foil_paths,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">3</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="at">show_labels =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">highlight_target =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>)</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>lineup_img</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co"># Save it with magick (ggsave() would save the last ggplot instead)</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>magick<span class="sc">::</span><span class="fu">image_write</span>(lineup_img, <span class="st">&quot;lineup_display.png&quot;</span>)</span></code></pre></div>
+<p>The similarity scores are best shown alongside, for example with
+<code>plot_lineup_similarity(lineup_result)</code>.</p>
+</div>
+<div id="similarity-heatmap" class="section level3">
+<h3>Similarity Heatmap</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># For multiple lineups, create heatmap</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co"># Suppose we have analyzed multiple lineups</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>lineup_ids <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Lineup_1&quot;</span>, <span class="st">&quot;Lineup_2&quot;</span>, <span class="st">&quot;Lineup_3&quot;</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>foil_positions <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co"># Create example data (replace with your actual data)</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>similarity_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>  <span class="fu">runif</span>(<span class="dv">15</span>, <span class="fl">0.3</span>, <span class="fl">0.8</span>),  <span class="co"># Example data</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">5</span>,</span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>  <span class="at">dimnames =</span> <span class="fu">list</span>(lineup_ids, <span class="fu">paste</span>(<span class="st">&quot;Foil&quot;</span>, foil_positions))</span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>)</span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co"># Convert to long format for ggplot (base R, no extra package needed)</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a>sim_long <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">as.table</span>(similarity_matrix))</span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="fu">colnames</span>(sim_long) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Lineup&quot;</span>, <span class="st">&quot;Foil&quot;</span>, <span class="st">&quot;Similarity&quot;</span>)</span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co"># Create heatmap. The colour scale is descriptive; it marks no fair range.</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="fu">ggplot</span>(sim_long, <span class="fu">aes</span>(<span class="at">x =</span> Foil, <span class="at">y =</span> Lineup, <span class="at">fill =</span> Similarity)) <span class="sc">+</span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;grey95&quot;</span>, <span class="at">high =</span> <span class="st">&quot;steelblue4&quot;</span>) <span class="sc">+</span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(Similarity, <span class="dv">2</span>)), <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Lineup Similarity Heatmap&quot;</span>,</span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Color indicates target-foil similarity&quot;</span>)</span></code></pre></div>
+</div>
+<div id="similarity-distribution" class="section level3">
+<h3>Similarity Distribution</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># The model&#39;s threshold is a cosine *distance*, stored as an attribute.</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co"># On the similarity scale the identity cut-off is 1 - threshold.</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>sim_threshold <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">attr</span>(lineup_result, <span class="st">&quot;threshold&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">as.data.frame</span>(lineup_result), <span class="fu">aes</span>(<span class="at">x =</span> similarity)) <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.05</span>, <span class="at">fill =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> sim_threshold,</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> sim_threshold, <span class="at">y =</span> <span class="cn">Inf</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">&quot;Identity</span><span class="sc">\n</span><span class="st">threshold&quot;</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>           <span class="at">vjust =</span> <span class="fl">1.5</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Distribution of Target-Foil Similarity&quot;</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Similarity Score&quot;</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Count&quot;</span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+</div>
+</div>
+<div id="advanced-features" class="section level2">
+<h2>Advanced Features</h2>
+<div id="extract-face-embeddings" class="section level3">
+<h3>Extract Face Embeddings</h3>
+<p>Embeddings are the deep learning representations of faces. They can
+be used for advanced analyses.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># get_embedding() returns a list: the vector is in $embedding, alongside the</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co"># image path, model, detector and the detected face region</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>emb <span class="ot">&lt;-</span> <span class="fu">get_embedding</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>  <span class="at">img_path =</span> <span class="st">&quot;path/to/face.jpg&quot;</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;ArcFace&quot;</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>)</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>embedding <span class="ot">&lt;-</span> emb<span class="sc">$</span>embedding</span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="fu">length</span>(embedding)  <span class="co"># 512 for ArcFace</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co"># Get embeddings for comparison</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>result_with_emb <span class="ot">&lt;-</span> <span class="fu">face_similarity</span>(</span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>  <span class="at">img1_path =</span> <span class="st">&quot;path/to/target.jpg&quot;</span>,</span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>  <span class="at">img2_path =</span> <span class="st">&quot;path/to/foil.jpg&quot;</span>,</span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;ArcFace&quot;</span>,</span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a>  <span class="at">return_embeddings =</span> <span class="cn">TRUE</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a>)</span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a>target_embedding <span class="ot">&lt;-</span> result_with_emb<span class="sc">$</span>embeddings<span class="sc">$</span>emb1</span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a>foil_embedding <span class="ot">&lt;-</span> result_with_emb<span class="sc">$</span>embeddings<span class="sc">$</span>emb2</span></code></pre></div>
+</div>
+<div id="dimensionality-reduction-visualization" class="section level3">
+<h3>Dimensionality Reduction Visualization</h3>
+<p>Visualize the lineup in two dimensions. With six faces, principal
+components are the sensible projection; t-SNE needs far more points than
+a lineup has (its perplexity must be well below the number of
+observations), so keep it for collections of many faces.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Collect the numeric embedding vectors for all lineup members</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>member_paths <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Target =</span> target_path,</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>                  <span class="fu">setNames</span>(foil_paths, <span class="fu">paste0</span>(<span class="st">&quot;Foil_&quot;</span>, <span class="fu">seq_along</span>(foil_paths))))</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>embedding_matrix <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">vapply</span>(</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  member_paths,</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>  <span class="cf">function</span>(p) <span class="fu">get_embedding</span>(p, <span class="at">model =</span> <span class="st">&quot;ArcFace&quot;</span>)<span class="sc">$</span>embedding,</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>  <span class="fu">numeric</span>(<span class="dv">512</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>))</span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co"># Project onto the first two principal components</span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>pca <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(embedding_matrix)</span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>viz_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a>  <span class="at">x =</span> pca<span class="sc">$</span>x[, <span class="dv">1</span>],</span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>  <span class="at">y =</span> pca<span class="sc">$</span>x[, <span class="dv">2</span>],</span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a>  <span class="at">member =</span> <span class="fu">rownames</span>(embedding_matrix),</span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">ifelse</span>(<span class="fu">rownames</span>(embedding_matrix) <span class="sc">==</span> <span class="st">&quot;Target&quot;</span>, <span class="st">&quot;Target&quot;</span>, <span class="st">&quot;Foil&quot;</span>)</span>
+<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a>)</span>
+<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a><span class="fu">ggplot</span>(viz_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">color =</span> type, <span class="at">label =</span> member)) <span class="sc">+</span></span>
+<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb16-23"><a href="#cb16-23" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">vjust =</span> <span class="sc">-</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb16-24"><a href="#cb16-24" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Target&quot;</span> <span class="ot">=</span> <span class="st">&quot;red&quot;</span>, <span class="st">&quot;Foil&quot;</span> <span class="ot">=</span> <span class="st">&quot;blue&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb16-25"><a href="#cb16-25" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-26"><a href="#cb16-26" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Lineup Members in Embedding Space&quot;</span>,</span>
+<span id="cb16-27"><a href="#cb16-27" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;First two principal components of the face embeddings&quot;</span>,</span>
+<span id="cb16-28"><a href="#cb16-28" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;PC 1&quot;</span>,</span>
+<span id="cb16-29"><a href="#cb16-29" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;PC 2&quot;</span></span>
+<span id="cb16-30"><a href="#cb16-30" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb16-31"><a href="#cb16-31" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb16-32"><a href="#cb16-32" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+</div>
+<div id="batch-processing-multiple-lineups" class="section level3">
+<h3>Batch Processing Multiple Lineups</h3>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Process multiple lineups efficiently</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>lineup_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  <span class="at">lineup1 =</span> <span class="fu">list</span>(<span class="at">target =</span> <span class="st">&quot;target1.jpg&quot;</span>, <span class="at">foils =</span> <span class="fu">c</span>(<span class="st">&quot;1a.jpg&quot;</span>, <span class="st">&quot;1b.jpg&quot;</span>, <span class="st">&quot;1c.jpg&quot;</span>)),</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>  <span class="at">lineup2 =</span> <span class="fu">list</span>(<span class="at">target =</span> <span class="st">&quot;target2.jpg&quot;</span>, <span class="at">foils =</span> <span class="fu">c</span>(<span class="st">&quot;2a.jpg&quot;</span>, <span class="st">&quot;2b.jpg&quot;</span>, <span class="st">&quot;2c.jpg&quot;</span>)),</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  <span class="at">lineup3 =</span> <span class="fu">list</span>(<span class="at">target =</span> <span class="st">&quot;target3.jpg&quot;</span>, <span class="at">foils =</span> <span class="fu">c</span>(<span class="st">&quot;3a.jpg&quot;</span>, <span class="st">&quot;3b.jpg&quot;</span>, <span class="st">&quot;3c.jpg&quot;</span>))</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>)</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co"># Analyze all lineups</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>results_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">names</span>(lineup_list), <span class="cf">function</span>(lineup_name) {</span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>  lineup <span class="ot">&lt;-</span> lineup_list[[lineup_name]]</span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">lineup_similarity</span>(</span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>    <span class="at">target_path =</span> lineup<span class="sc">$</span>target,</span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a>    <span class="at">foil_paths =</span> lineup<span class="sc">$</span>foils,</span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>    <span class="at">model =</span> <span class="st">&quot;ArcFace&quot;</span></span>
+<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a>  )</span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a></span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>  <span class="co"># Add lineup identifier</span></span>
+<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a>  result<span class="sc">$</span>lineup_id <span class="ot">&lt;-</span> lineup_name</span>
+<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a></span>
+<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a>  result</span>
+<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a>})</span>
+<span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a></span>
+<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a><span class="co"># Combine results</span></span>
+<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a>all_results <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, results_list)</span>
+<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a></span>
+<span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a><span class="co"># Summary by lineup</span></span>
+<span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a>lineup_summary <span class="ot">&lt;-</span> all_results <span class="sc">%&gt;%</span></span>
+<span id="cb17-30"><a href="#cb17-30" tabindex="-1"></a>  <span class="fu">group_by</span>(lineup_id) <span class="sc">%&gt;%</span></span>
+<span id="cb17-31"><a href="#cb17-31" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb17-32"><a href="#cb17-32" tabindex="-1"></a>    <span class="at">mean_similarity =</span> <span class="fu">mean</span>(similarity),</span>
+<span id="cb17-33"><a href="#cb17-33" tabindex="-1"></a>    <span class="at">sd_similarity =</span> <span class="fu">sd</span>(similarity),</span>
+<span id="cb17-34"><a href="#cb17-34" tabindex="-1"></a>    <span class="at">min_similarity =</span> <span class="fu">min</span>(similarity),</span>
+<span id="cb17-35"><a href="#cb17-35" tabindex="-1"></a>    <span class="at">max_similarity =</span> <span class="fu">max</span>(similarity),</span>
+<span id="cb17-36"><a href="#cb17-36" tabindex="-1"></a>    <span class="at">n_verified =</span> <span class="fu">sum</span>(verified)</span>
+<span id="cb17-37"><a href="#cb17-37" tabindex="-1"></a>  )</span>
+<span id="cb17-38"><a href="#cb17-38" tabindex="-1"></a></span>
+<span id="cb17-39"><a href="#cb17-39" tabindex="-1"></a><span class="fu">print</span>(lineup_summary)</span></code></pre></div>
+</div>
+</div>
+<div id="integration-with-traditional-measures" class="section level2">
+<h2>Integration with Traditional Measures</h2>
+<p>Combine deep learning similarity with traditional lineup fairness
+measures.</p>
+<div id="compare-with-effective-size" class="section level3">
+<h3>Compare with Effective Size</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Traditional effective size from mock witnesses</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="co"># (Using example data)</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>mock_choices <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">4</span>)  <span class="co"># Position 3 is suspect</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>trad_eff_size <span class="ot">&lt;-</span> <span class="fu">esize_T</span>(<span class="fu">table</span>(<span class="fu">factor</span>(mock_choices, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>)))</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Traditional effective size:&quot;</span>, <span class="fu">round</span>(trad_eff_size, <span class="dv">2</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co"># Face similarity, for comparison. Note these measure different things:</span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co"># effective size describes how mock witnesses distributed their choices,</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="co"># similarity describes the images themselves.</span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>mean_similarity <span class="ot">&lt;-</span> <span class="fu">mean</span>(lineup_result<span class="sc">$</span>similarity)</span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Mean face similarity:&quot;</span>, <span class="fu">round</span>(mean_similarity, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a><span class="co"># Correlation across multiple lineups</span></span>
+<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a><span class="co"># (With sufficient data, examine relationship)</span></span></code></pre></div>
+</div>
+<div id="similarity-and-mock-witness-choices-a-hypothesis-to-test" class="section level3">
+<h3>Similarity and mock-witness choices: a hypothesis to test</h3>
+<p>The direction of the relationship is important here, and it is easy
+to state backwards. Mock witnesses choose the member who best matches
+<strong>the description</strong>. A foil that closely resembles the
+suspect also resembles the description, so it draws choices
+<em>away</em> from the suspect — which is precisely what makes a lineup
+fair. A foil that resembles the suspect very little matches the
+description poorly and tends to be chosen by nobody: it is a null foil,
+and it contributes nothing.</p>
+<p>So the expectation runs: <strong>higher foil-suspect similarity
+should mean a higher share of mock-witness choices</strong>, and hence a
+larger effective size. That is a hypothesis, not an established result:
+embedding similarity is not human perceived similarity, and Lee, Mansour
+and Penrod (2024) report that different families of fairness measures
+can disagree. The sketch below shows the comparison to make; it is not a
+validated measure.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># Expected selection shares implied by similarity. Foils more similar to the</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="co"># suspect match the description better and should attract more choices.</span></span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>similarities <span class="ot">&lt;-</span> lineup_result<span class="sc">$</span>similarity</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>expected_prob <span class="ot">&lt;-</span> similarities <span class="sc">/</span> <span class="fu">sum</span>(similarities)</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="co"># Compare to observed selections</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="co"># observed_prob &lt;- table(mock_choices[-which(mock_choices == suspect_pos)]) /</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="co">#                  length(mock_choices[-which(mock_choices == suspect_pos)])</span></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a><span class="co"># A discrepancy between expected and observed shares is a question to</span></span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a><span class="co"># investigate, not a validated measure of bias.</span></span></code></pre></div>
+</div>
+<div id="validation-studies" class="section level3">
+<h3>Validation Studies</h3>
+<p>Examine predictive validity:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Research question: Do objective similarity scores predict mock witness choices?</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co"># For each lineup:</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co"># - Get face similarity scores</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co"># - Collect mock witness data</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="co"># - Correlate: Do more similar foils get chosen more often?</span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="co"># Example correlation structure (use your data):</span></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="co"># cor.test(foil_similarities, foil_selection_rates)</span></span></code></pre></div>
+</div>
+</div>
+<div id="practical-guidelines" class="section level2">
+<h2>Practical Guidelines</h2>
+<div id="interpreting-similarity-scores" class="section level3">
+<h3>Interpreting Similarity Scores</h3>
+<p>This vignette gives no similarity bands, for the reason set out at
+the start: no study has established what similarity a foil should have,
+and a band labelled “acceptable” would read as a finding when it is a
+guess. Two points in particular resist a simple rule. Low similarity
+between suspect and foils can make the suspect conspicuous, so it does
+not certify a fair lineup. And high similarity, or an identity match, is
+a reason to look at the photographs, not a verdict. Report the scores
+descriptively, compare them within a study, and use mock-witness and
+outcome data for claims about fairness.</p>
+</div>
+<div id="best-practices" class="section level3">
+<h3>Best Practices</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Consistency</strong>
+<ul>
+<li>Use same model throughout a study</li>
+<li>Use same metric throughout a study</li>
+<li>Use same verification thresholds</li>
+</ul></li>
+<li><strong>Validation</strong>
+<ul>
+<li>Compare similarity scores to mock witness data when available</li>
+<li>Treat any cut-off you adopt as a proposal to be tested, not a
+standard</li>
+</ul></li>
+<li><strong>Complementarity</strong>
+<ul>
+<li>Use face similarity alongside traditional mock witness studies</li>
+<li>Similarity describes the images; mock-witness and outcome data
+describe how the lineup performs</li>
+</ul></li>
+<li><strong>Documentation</strong>
+<ul>
+<li>Report model and metric used</li>
+<li>Report mean and SD of similarities</li>
+<li>Report verification threshold and number verified</li>
+</ul></li>
+<li><strong>Image Quality</strong>
+<ul>
+<li>Use high-quality, front-facing photos</li>
+<li>Ensure good lighting and resolution</li>
+<li>Consistent photo conditions across lineup members</li>
+</ul></li>
+</ol>
+</div>
+<div id="troubleshooting" class="section level3">
+<h3>Troubleshooting</h3>
+<p><strong>“No face detected”</strong></p>
+<ul>
+<li>Image quality too poor</li>
+<li>Face not front-facing enough</li>
+<li>Try different detector: <code>detector = &quot;opencv&quot;</code> is more
+lenient</li>
+</ul>
+<p><strong>Embeddings fail</strong></p>
+<ul>
+<li>Check image file paths are correct</li>
+<li>Ensure images are standard formats (jpg, png)</li>
+<li>Verify Python environment is activated</li>
+</ul>
+<p><strong>Inconsistent results</strong></p>
+<ul>
+<li>Deep learning models are deterministic</li>
+<li>If results change, check if images were modified</li>
+<li>Verify same model/metric used</li>
+</ul>
+<p><strong>Very high/low similarities</strong></p>
+<ul>
+<li>Check image quality</li>
+<li>Verify correct target-foil pairing</li>
+<li>Look at the photographs before drawing any conclusion</li>
+</ul>
+</div>
+</div>
+<div id="example-workflow" class="section level2">
+<h2>Example Workflow</h2>
+<p>Complete analysis from start to finish:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># 1. Setup (first time only)</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="co"># install_r4lineups_python()</span></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a><span class="co"># 2. Load package</span></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a><span class="fu">library</span>(r4lineups)</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a><span class="co"># 3. Analyze lineup</span></span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>lineup_sim <span class="ot">&lt;-</span> <span class="fu">lineup_similarity</span>(</span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>  <span class="at">target_path =</span> <span class="st">&quot;suspect_photo.jpg&quot;</span>,</span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a>  <span class="at">foil_paths =</span> <span class="fu">c</span>(<span class="st">&quot;foil1.jpg&quot;</span>, <span class="st">&quot;foil2.jpg&quot;</span>, <span class="st">&quot;foil3.jpg&quot;</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a>                 <span class="st">&quot;foil4.jpg&quot;</span>, <span class="st">&quot;foil5.jpg&quot;</span>),</span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;ArcFace&quot;</span>,</span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">&quot;cosine&quot;</span></span>
+<span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a>)</span>
+<span id="cb21-15"><a href="#cb21-15" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a><span class="co"># 4. Describe the similarity profile</span></span>
+<span id="cb21-17"><a href="#cb21-17" tabindex="-1"></a>mean_sim <span class="ot">&lt;-</span> <span class="fu">mean</span>(lineup_sim<span class="sc">$</span>similarity)</span>
+<span id="cb21-18"><a href="#cb21-18" tabindex="-1"></a>sd_sim <span class="ot">&lt;-</span> <span class="fu">sd</span>(lineup_sim<span class="sc">$</span>similarity)</span>
+<span id="cb21-19"><a href="#cb21-19" tabindex="-1"></a>n_verified <span class="ot">&lt;-</span> <span class="fu">sum</span>(lineup_sim<span class="sc">$</span>verified)</span>
+<span id="cb21-20"><a href="#cb21-20" tabindex="-1"></a></span>
+<span id="cb21-21"><a href="#cb21-21" tabindex="-1"></a><span class="co"># 5. Generate report</span></span>
+<span id="cb21-22"><a href="#cb21-22" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Lineup Similarity Profile ===</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-23"><a href="#cb21-23" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Model: ArcFace | Metric: Cosine</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-24"><a href="#cb21-24" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Results:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-25"><a href="#cb21-25" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Mean similarity:&quot;</span>, <span class="fu">round</span>(mean_sim, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-26"><a href="#cb21-26" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  SD similarity:&quot;</span>, <span class="fu">round</span>(sd_sim, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-27"><a href="#cb21-27" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Range:&quot;</span>, <span class="fu">round</span>(<span class="fu">min</span>(lineup_sim<span class="sc">$</span>similarity), <span class="dv">3</span>), <span class="st">&quot;-&quot;</span>,</span>
+<span id="cb21-28"><a href="#cb21-28" tabindex="-1"></a>    <span class="fu">round</span>(<span class="fu">max</span>(lineup_sim<span class="sc">$</span>similarity), <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-29"><a href="#cb21-29" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  Judged same person by the model:&quot;</span>, n_verified, <span class="st">&quot;of 5 foils</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-30"><a href="#cb21-30" tabindex="-1"></a><span class="cf">if</span> (n_verified <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb21-31"><a href="#cb21-31" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;  Inspect those photographs; the model&#39;s match may be false.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-32"><a href="#cb21-32" tabindex="-1"></a>}</span>
+<span id="cb21-33"><a href="#cb21-33" tabindex="-1"></a><span class="co"># No fairness verdict is printed: no validated similarity range defines one.</span></span>
+<span id="cb21-34"><a href="#cb21-34" tabindex="-1"></a></span>
+<span id="cb21-35"><a href="#cb21-35" tabindex="-1"></a><span class="co"># 6. Visualize</span></span>
+<span id="cb21-36"><a href="#cb21-36" tabindex="-1"></a>lineup_img <span class="ot">&lt;-</span> <span class="fu">display_lineup</span>(</span>
+<span id="cb21-37"><a href="#cb21-37" tabindex="-1"></a>  <span class="at">target_path =</span> <span class="st">&quot;suspect_photo.jpg&quot;</span>,</span>
+<span id="cb21-38"><a href="#cb21-38" tabindex="-1"></a>  <span class="at">foil_paths =</span> <span class="fu">c</span>(<span class="st">&quot;foil1.jpg&quot;</span>, <span class="st">&quot;foil2.jpg&quot;</span>, <span class="st">&quot;foil3.jpg&quot;</span>,</span>
+<span id="cb21-39"><a href="#cb21-39" tabindex="-1"></a>                 <span class="st">&quot;foil4.jpg&quot;</span>, <span class="st">&quot;foil5.jpg&quot;</span>)</span>
+<span id="cb21-40"><a href="#cb21-40" tabindex="-1"></a>)</span>
+<span id="cb21-41"><a href="#cb21-41" tabindex="-1"></a>magick<span class="sc">::</span><span class="fu">image_write</span>(lineup_img, <span class="st">&quot;lineup_001.png&quot;</span>)</span>
+<span id="cb21-42"><a href="#cb21-42" tabindex="-1"></a><span class="fu">plot_lineup_similarity</span>(lineup_sim)</span>
+<span id="cb21-43"><a href="#cb21-43" tabindex="-1"></a></span>
+<span id="cb21-44"><a href="#cb21-44" tabindex="-1"></a><span class="co"># 7. Save results</span></span>
+<span id="cb21-45"><a href="#cb21-45" tabindex="-1"></a><span class="fu">write.csv</span>(lineup_sim, <span class="st">&quot;lineup_001_similarity.csv&quot;</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<div class="hanging-indent">
+<p>Colloff, M. F., Wade, K. A., &amp; Strange, D. (2016). Unfair lineups
+make witnesses more likely to confuse innocent and guilty suspects.
+<em>Psychological Science, 27</em>(9), 1227-1239.</p>
+<p>Deng, J., Guo, J., Xue, N., &amp; Zafeiriou, S. (2019). ArcFace:
+Additive angular margin loss for deep face recognition. <em>CVPR
+2019</em>.</p>
+<p>Lee, J., Mansour, J. K., &amp; Penrod, S. D. (2024). How to measure
+lineup fairness: Concurrent and predictive validity of lineup-fairness
+measures. <em>Psychology, Crime &amp; Law</em>. <a href="https://doi.org/10.1080/1068316X.2024.2307358" class="uri">https://doi.org/10.1080/1068316X.2024.2307358</a></p>
+<p>Schroff, F., Kalenichenko, D., &amp; Philbin, J. (2015). FaceNet: A
+unified embedding for face recognition and clustering. <em>CVPR
+2015</em>.</p>
+<p>Serengil, S. I., &amp; Ozpinar, A. (2020). LightFace: A hybrid deep
+face recognition framework. <em>ASYU 2020</em>.</p>
+<p>Tredoux, C. G. (2002). A direct measure of facial similarity and its
+relation to human similarity perceptions. <em>Journal of Experimental
+Psychology: Applied, 8</em>(3), 180-193.</p>
+</div>
+</div>
+<div id="technical-details" class="section level2">
+<h2>Technical Details</h2>
+<div id="what-is-computed" class="section level3">
+<h3>What is computed</h3>
+<p>Each image is passed through a pretrained deep face-recognition
+network, which maps it to an <strong>embedding</strong> — a vector,
+typically 128 or 512 dimensional, positioned so that images of the same
+person land close together. Similarity between two faces is then a
+distance in that space, converted to a similarity score.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>model</code></td>
+<td>Which network produces the embedding (ArcFace, FaceNet, VGG-Face,
+…). Different networks give different embedding spaces, so scores are
+<strong>not comparable across models</strong></td>
+</tr>
+<tr class="even">
+<td><code>metric</code></td>
+<td>How distance is measured in that space — cosine, Euclidean, or
+Euclidean on L2-normalised vectors</td>
+</tr>
+<tr class="odd">
+<td><code>similarity</code></td>
+<td>For cosine, 1 − distance, from −1 to 1, higher meaning closer;
+<code>NA</code> for the Euclidean metrics</td>
+</tr>
+<tr class="even">
+<td><code>threshold</code></td>
+<td>The model’s own <strong>distance</strong> cut-off for judging two
+images the same identity (on the similarity scale,
+<code>1 - threshold</code> for cosine). Model- and metric-specific</td>
+</tr>
+<tr class="odd">
+<td><code>verified</code></td>
+<td>Whether the distance falls inside that threshold</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="assumptions-and-limitations" class="section level3">
+<h3>Assumptions and limitations</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Scores are model-relative.</strong> ArcFace and FaceNet
+place faces in different spaces. Never compare a similarity score from
+one against another, and always report which model and metric produced a
+number.</li>
+<li><strong>The networks were trained for recognition, not for lineup
+construction.</strong> They are optimised to tell identities apart,
+which is related to but not the same as capturing what makes two faces
+look alike to a witness. Whether the embedding distance corresponds to
+<em>human</em> perceived similarity is an empirical question, and the
+appropriate reference here is Tredoux (2002) on direct similarity
+measurement and its relation to human judgements.</li>
+<li><strong>Image conditions are important.</strong> Pose, lighting,
+expression, resolution and background all affect embeddings. Lineup
+photographs taken under different conditions may differ in similarity
+for reasons that have nothing to do with facial resemblance.
+Standardised images are essential.</li>
+<li><strong>Demographic differences in accuracy</strong> are well
+documented for face recognition systems, with error rates varying by
+ethnicity, sex and age. That is a serious caution in a forensic context,
+where the consequences of systematic error fall unevenly.</li>
+<li><strong>No fairness threshold exists.</strong> The point of the
+caution at the top of this vignette, restated: these functions describe
+similarity, they do not adjudicate fairness.</li>
+</ol>
+</div>
+<div id="reproducibility" class="section level3">
+<h3>Reproducibility</h3>
+<p>Given the same images, model and metric, scores are exactly
+reproducible — one of the method’s genuine advantages over mock-witness
+testing. Record the model, the metric and the package versions, since a
+different DeepFace release may ship different weights.</p>
+</div>
+</div>
+<div id="session-info" class="section level2">
+<h2>Session Info</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="co"># Check Python environment</span></span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">py_config</span>()</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

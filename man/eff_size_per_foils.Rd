@@ -4,7 +4,7 @@
 \alias{eff_size_per_foils}
 \title{Effective Size per Foils}
 \usage{
-eff_size_per_foils(lineup_vec, target_pos, k, conf = 0.95)
+eff_size_per_foils(lineup_vec, target_pos, k, conf = 0.95, R = 1000)
 }
 \arguments{
 \item{lineup_vec}{A numeric vector of lineup choices}
@@ -13,11 +13,32 @@ eff_size_per_foils(lineup_vec, target_pos, k, conf = 0.95)
 
 \item{k}{Number of members in lineup. Must be specified by user (scalar).}
 
-\item{conf}{Desired level of alpha. Defaults to 0.95. May be specified by user (scalar).}
+\item{conf}{Confidence level for the intervals, e.g. 0.95 for 95 percent
+intervals. Defaults to 0.95. May be specified by user (scalar).}
+
+\item{R}{Number of bootstrap replications. Defaults to 1000.}
+}
+\value{
+A single integer: the number of lineup members whose bootstrapped
+       confidence interval for the proportion choosing them includes the
+       chance value \eqn{1/k}. These are the members that a mock witness
+       chose at a rate not distinguishable from guessing.
 }
 \description{
-Function for computing effective size (Malpass, 1981) counting foils who fall
-within the CI for chance guessing
+A package-specific count of members whose choice-proportion intervals include
+chance guessing. This is distinct from Malpass' continuous effective size.
+}
+\details{
+Because the result is a count of members rather than a continuous
+        quantity, it changes only in whole steps as \code{conf} varies, and
+        it is flat across ranges of \code{conf} in which no member's interval
+        crosses \eqn{1/k}. A value that does not move when \code{conf} is
+        changed from, say, 0.95 to 0.99 is therefore expected behaviour and
+        not a sign that the argument is being ignored. Widening the interval
+        can only ever increase the count.
+
+        Intervals are computed by \code{\link{lineup_boot_allprop}}, and are
+        not corrected for the fact that \code{k} of them are examined at once.
 }
 \examples{
 #Data:

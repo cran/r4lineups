@@ -4,10 +4,10 @@
 \alias{lineup_prop_tab}
 \title{Lineup proportion}
 \usage{
-lineup_prop_tab(lineup_table, target_pos)
+lineup_prop_tab(lineup_tab, target_pos)
 }
 \arguments{
-\item{lineup_table}{A table of lineup choices}
+\item{lineup_tab}{A table of lineup choices}
 
 \item{target_pos}{A scalar, representing target position in lineup. Must be declared by user}
 }
@@ -21,10 +21,10 @@ Computes the proportion of mock witnesses identifying a particular lineup member
 \examples{
 #Data:
 lineup_vec <- round(runif(100, 1))
-lineup_table <- table(lineup_vec)
+lineup_tab <- table(lineup_vec)
 
 #Call:
-lineup_prop_tab(lineup_table, 3)
+lineup_prop_tab(lineup_tab, 3)
 lineup_prop_tab(table(lineup_vec), 2)
 
 }

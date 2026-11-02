@@ -4,7 +4,9 @@
 \name{mickwick}
 \alias{mickwick}
 \title{Confidence & Accuracy data (Mickes & Wixted)}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 100 rows and 2 columns.}
+\format{
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 100 rows and 2 columns.
+}
 \usage{
 data(mickwick)
 }

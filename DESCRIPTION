@@ -1,37 +1,39 @@
 Package: r4lineups
 Title: Statistical Inference on Lineup Fairness
-Version: 0.1.1
+Version: 2.3.0
+URL: https://github.com/CGTZA2/r4lineups,
+        https://cgtza2.github.io/r4lineups/
+BugReports: https://github.com/CGTZA2/r4lineups/issues
 Authors@R: c(
-            person("Colin", "Tredoux", email = "colin.tredoux@uct.ac.za", role = c("aut", "cre")),
-            person("Tamsyn", "Naylor", email = "tmnaylor@outlook.com", role = "aut"))
-Maintainer: Colin Tredoux <colin.tredoux@uct.ac.za>
-Description: Since the early 1970s eyewitness testimony researchers have recognised the 
-    importance of estimating properties such as lineup bias (is the lineup biased against 
-    the suspect, leading to a rate of choosing higher than one would expect by chance?), 
-    and lineup size (how many reasonable choices are in fact available to the witness? 
-    A lineup is supposed to consist of a suspect and a number of additional members, 
-    or foils, whom a poor-quality witness might mistake for the perpetrator). Lineup 
-    measures are descriptive, in the first instance, but since the earliest articles in 
-    the literature researchers have recognised the importance of reasoning inferentially 
-    about them. This package contains functions to compute various properties of 
-    laboratory or police lineups, and is intended for use by researchers in forensic 
-    psychology and/or eyewitness testimony research. Among others, the r4lineups package 
-    includes functions for calculating lineup proportion, functional size, various 
-    estimates of effective size, diagnosticity ratio, homogeneity of the diagnosticity 
-    ratio, ROC curves for confidence x accuracy data and the degree of similarity of 
-    faces in a lineup. 
-Depends: R (>= 3.4.0)
-Imports: boot, dplyr, ggplot2, ggrepel, here, magick, magrittr, pROC,
-        psych, purrr, stats, utils
-License: CC0
+    person("Colin", "Tredoux", email = "colin.tredoux@uct.ac.za",
+           role = c("aut", "cre"),
+           comment = "Co-author of the original package"),
+    person("Tamsyn", "Naylor", email = "tmnaylor@outlook.com",
+           role = "aut",
+           comment = "Co-author of the original package"))
+Description: Computes statistical measures for laboratory and police lineups in
+    forensic psychology, including lineup bias, functional and effective size,
+    diagnosticity, confidence-accuracy curves, signal detection models, and
+    simulation tools. Optional face-similarity functions use numeric face
+    representations computed by Python's 'deepface' library; optional
+    lineup-memory model fitting uses a separately installed, pinned
+    'pyWitness' engine.
+Depends: R (>= 4.1.0)
+Imports: boot, dplyr, ggplot2, ggrepel, gridExtra, magick, magrittr,
+        purrr, reticulate (>= 1.26), stats, tibble, utils
+Suggests: bslib, chromote, here, knitr, lme4, pander, patchwork, DT,
+        rmarkdown, Rtsne, shiny, shinytest2, splines, testthat (>=
+        3.0.0), umap
+License: MIT + file LICENSE
 Encoding: UTF-8
+Language: en-US
 LazyData: true
-RoxygenNote: 6.0.1.9000
-Suggests: knitr, rmarkdown, pander
 VignetteBuilder: knitr
+Maintainer: Colin Tredoux <colin.tredoux@uct.ac.za>
+Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2018-07-12 07:42:53 UTC; Tamsyn Naylor
-Author: Colin Tredoux [aut, cre],
-  Tamsyn Naylor [aut]
+Packaged: 2026-11-02 09:28:28 UTC; colintredoux
+Author: Colin Tredoux [aut, cre] (Co-author of the original package),
+  Tamsyn Naylor [aut] (Co-author of the original package)
 Repository: CRAN
-Date/Publication: 2018-07-18 13:20:02 UTC
+Date/Publication: 2026-11-02 10:20:11 UTC

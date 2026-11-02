@@ -4,11 +4,13 @@
 \alias{effsize_compare}
 \title{Master Function: Comparing Effective Size}
 \usage{
-effsize_compare(linedf)
+effsize_compare(linedf, R = 1000)
 }
 \arguments{
 \item{linedf}{A dataframe of lineup data. Contains 2 columns, each of which
 hold data for 2 independent lineups}
+
+\item{R}{Number of bootstrap replications.}
 }
 \value{
 Effective size, significance level, and confidence intervals (95% ,
@@ -20,6 +22,12 @@ Function for comparing effective size of two independent lineups (Tredoux, 1998)
 \details{
 This function is a master function, calling other functions
         it needs, and reporting results in some detail
+        Each lineup is resampled independently; row alignment has no sampling
+        meaning. Confidence intervals are bootstrap approximations and can be
+        unreliable for small or nearly uniform empirical choice distributions.
+        Normal and BCa intervals can under-cover in finite concentrated samples;
+        percentile intervals can be conservative near uniformity. None provides
+        a distribution-free level-.05 test of equal population effective sizes.
 }
 \examples{
 #Data:
@@ -29,7 +37,7 @@ lineup_vec2 <- round(runif(100, 1, 6))
 linedf <- as.data.frame(cbind(lineup_vec1, lineup_vec2))
 
 #Call:
-x <- effsize_compare(linedf)
+x <- effsize_compare(linedf, R = 100)
 
 }
 \references{

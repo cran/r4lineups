@@ -4,7 +4,9 @@
 \name{line73}
 \alias{line73}
 \title{line73}
-\format{An object of class \code{data.frame} with 42 rows and 1 columns.}
+\format{
+An object of class \code{data.frame} with 42 rows and 1 columns.
+}
 \usage{
 data(line73)
 }

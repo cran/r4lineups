@@ -21,7 +21,10 @@
 lineup_prop_vec <- function(lineup_vec, target_pos, k){
   lineup_vec <- typecheck(lineup_vec)
   datacheck1(lineup_vec, k)
-    sum(lineup_vec == target_pos)/length(lineup_vec)
+  if (!is.numeric(target_pos) || length(target_pos) != 1L || is.na(target_pos) ||
+      target_pos < 1 || target_pos > k || target_pos != as.integer(target_pos)) {
+    stop("target_pos must be one integer member position between 1 and k.", call. = FALSE)
+  }
+  sum(lineup_vec == target_pos) / length(lineup_vec)
 }
-
 

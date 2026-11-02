@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Colin G. Tredoux" />
+<meta name="author" content="Tamsyn M. Naylor" />
+
+<meta name="date" content="2026-11-02" />
+
+<title>Comparing Models for Eyewitness Identification Data</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Comparing Models for Eyewitness
+Identification Data</h1>
+<h4 class="author">Colin G. Tredoux</h4>
+<h4 class="author">Tamsyn M. Naylor</h4>
+<h4 class="date">2026-11-02</h4>
+
+
+
+<blockquote>
+<p><strong>Acknowledgement.</strong> Large language models supplied by
+Anthropic and OpenAI were used in preparing this vignette, to assist
+with checking code, testing the veracity of the approaches described,
+and on occasion editing the text. Responsibility for the content rests
+with the authors.</p>
+</blockquote>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Eyewitness identification data can be analyzed using multiple
+theoretical frameworks, each providing different information. This
+vignette demonstrates how to use r4lineups’ model comparison framework
+to fit and compare:</p>
+<ol style="list-style-type: decimal">
+<li><strong>2-HT Model</strong> (Winter et al., 2022): Multinomial
+Processing Tree model</li>
+<li><strong>EIG</strong> (Starns et al., 2023): Expected Information
+Gain</li>
+<li><strong>Full ROC</strong> (Smith &amp; Yang, 2020): Receiver
+Operating Characteristic</li>
+</ol>
+<p>The <code>compare_models()</code> function provides a unified
+interface for fitting all models and generating comparison tables and
+visualizations.</p>
+</div>
+<div id="the-three-models" class="section level2">
+<h2>The Three Models</h2>
+<div id="ht-model-latent-cognitive-processes" class="section level3">
+<h3>2-HT Model: Latent Cognitive Processes</h3>
+<p>The Two-High Threshold (2-HT) model is a multinomial processing tree
+(MPT) that separates identification decisions into distinct latent
+processes:</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong>dP</strong>: Detection of culprit presence (0-1)</li>
+<li><strong>dA</strong>: Detection of culprit absence (0-1)</li>
+<li><strong>b</strong>: Biased suspect selection (0-1)</li>
+<li><strong>g</strong>: Guessing-based selection (0-1)</li>
+</ul>
+<p><strong>Model equations</strong> (target-present):</p>
+<ul>
+<li>P(suspect ID) = dP + (1-dP) × [b + (1-b) × g × (1/L)]</li>
+<li>P(filler ID) = (1-dP) × (1-b) × g × ((L-1)/L)</li>
+<li>P(reject) = (1-dP) × (1-b) × (1-g)</li>
+</ul>
+<p><strong>Use when:</strong></p>
+<ul>
+<li>You want to understand underlying cognitive mechanisms</li>
+<li>Testing theories about detection vs. guessing</li>
+<li>Comparing conditions with different bias levels</li>
+</ul>
+</div>
+<div id="eig-information-theoretic-measure" class="section level3">
+<h3>EIG: Information-Theoretic Measure</h3>
+<p>Expected Information Gain quantifies how much information witness
+responses provide about guilt vs. innocence using Shannon entropy:</p>
+<p><strong>Formula:</strong> EIG = Σ p(x) × [H(prior) -
+H(p(guilty|x))]</p>
+<p>where x = response category (e.g., “suspect_high_confidence”)</p>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>EIG = 0: No information (responses don’t distinguish
+guilty/innocent)</li>
+<li>The maximum is the prior entropy, reached when every response
+resolves guilt completely. That is 1 bit only when the prior probability
+of guilt is .5; at a prior of .1 it is about .47 bits. Compare EIG
+values only at the same prior.</li>
+<li>Higher EIG = more diagnostic procedure</li>
+</ul>
+<p><strong>Use when:</strong></p>
+<ul>
+<li>Evaluating overall diagnosticity of procedures</li>
+<li>Comparing different identification methods</li>
+<li>Assessing policy-relevant cutoffs</li>
+</ul>
+</div>
+<div id="full-roc-investigator-discriminability" class="section level3">
+<h3>Full ROC: Investigator Discriminability</h3>
+<p>Full ROC uses ALL witness responses (suspect IDs, filler IDs,
+rejections) to compute a threshold-free measure of discriminability:</p>
+<p><strong>Measure:</strong></p>
+<ul>
+<li>AUC (Area Under the Curve)</li>
+<li>Range: 0 to 1. A value of .5 is the no-discrimination reference, not
+a lower bound: with the a-priori ordering a procedure that does worse
+than chance gives an AUC below .5.</li>
+</ul>
+<p><strong>Use when:</strong></p>
+<ul>
+<li>Measuring investigator discriminability</li>
+<li>Comparing system variables (lineup procedures)</li>
+<li>Need threshold-free performance measure</li>
+</ul>
+</div>
+</div>
+<div id="basic-model-comparison" class="section level2">
+<h2>Basic Model Comparison</h2>
+<div id="loading-data" class="section level3">
+<h3>Loading Data</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(r4lineups)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>lineup_data <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">simulate_lineup_data</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">n_tp        =</span> <span class="dv">300</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">n_ta        =</span> <span class="dv">300</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">d_prime     =</span> <span class="fl">1.5</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">c_criterion =</span> <span class="fl">0.9</span>,   <span class="co"># see the note below: 0 would be far too liberal</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="at">lineup_size =</span> <span class="dv">6</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="at">conf_levels =</span> <span class="dv">5</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">foil_bias   =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.2</span>, <span class="fl">0.0</span>, <span class="sc">-</span><span class="fl">0.4</span>, <span class="sc">-</span><span class="fl">1.0</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="at">seed        =</span> <span class="dv">2024</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>))</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">head</span>(lineup_data)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt;   participant_id target_present lineup_member suspect_pos identification</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; 1             64           TRUE             1           1        suspect</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; 2             89           TRUE             1           1        suspect</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; 3            573          FALSE             2           1         filler</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; 4            393          FALSE             0           1         reject</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; 5            188           TRUE             3           1         filler</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; 6            526          FALSE             3           1         filler</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt;   confidence</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; 1          5</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; 2          3</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt; 3          5</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt; 4          1</span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; 5          2</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; 6          5</span></span></code></pre></div>
+<p>The <code>c_criterion = 0.9</code> is not incidental: getting it
+wrong makes one of the three models impossible to fit.</p>
+<p><code>c_criterion</code> is a threshold on the
+<strong>maximum</strong> of the lineup members’ memory strengths, not a
+textbook signal-detection criterion. The maximum of six draws from a
+standard normal averages about 1.27, so a criterion of 0 — the function
+default — is cleared by almost every lineup, and produces a rejection
+rate near zero:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>too_liberal <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">simulate_lineup_data</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">n_tp =</span> <span class="dv">300</span>, <span class="at">n_ta =</span> <span class="dv">300</span>, <span class="at">d_prime =</span> <span class="fl">1.5</span>, <span class="at">c_criterion =</span> <span class="dv">0</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">lineup_size =</span> <span class="dv">6</span>, <span class="at">conf_levels =</span> <span class="dv">5</span>, <span class="at">seed =</span> <span class="dv">2024</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>))</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="st">`</span><span class="at">c_criterion</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.9</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="st">`</span><span class="at">Rejection rate (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>      <span class="fu">mean</span>(too_liberal<span class="sc">$</span>identification <span class="sc">==</span> <span class="st">&quot;reject&quot;</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>      <span class="fu">mean</span>(lineup_data<span class="sc">$</span>identification <span class="sc">==</span> <span class="st">&quot;reject&quot;</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    ), <span class="dv">1</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  ),</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Rejection rate under two decision criteria, simulated data (300 target-present and 300 target-absent lineups).&quot;</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption>Rejection rate under two decision criteria, simulated data (300
+target-present and 300 target-absent lineups).</caption>
+<thead>
+<tr class="header">
+<th align="right">c_criterion</th>
+<th align="right">Rejection rate (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.0</td>
+<td align="right">0.2</td>
+</tr>
+<tr class="even">
+<td align="right">0.9</td>
+<td align="right">20.5</td>
+</tr>
+</tbody>
+</table>
+<p>The 2-HT model’s detect-absence parameter <code>dA</code> is
+identified almost entirely by rejections — it is the probability of
+correctly concluding the culprit is absent. Here only one witness in 600
+rejects, so the likelihood carries almost no information about
+<code>dA</code> and the fit fails; <code>fit_winter_2ht()</code> stops
+with a message naming that cause. A low rejection percentage is not by
+itself fatal in a large sample; the information about <code>dA</code>
+depends on the number of rejections.</p>
+</div>
+<div id="comparing-all-models" class="section level3">
+<h3>Comparing All Models</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Fit all three models</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">compare_models</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  lineup_data,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">c</span>(<span class="st">&quot;2ht&quot;</span>, <span class="st">&quot;eig&quot;</span>, <span class="st">&quot;fullroc&quot;</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">lineup_size =</span> <span class="dv">6</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">prior_guilt =</span> <span class="fl">0.5</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># View comparison table</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="fu">print</span>(comparison)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; === Lineup Model Comparison ===</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; Models fit: 2ht, eig, fullroc </span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; Sample size: 600 </span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; Lineup size: 6 </span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; Comparison Table:</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt;                          Model                   Measure     Value</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)            Log-likelihood -557.8100</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)                       AIC 1123.6200</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)                       BIC 1141.2100</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)   dP (detection presence)    0.4850</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)    dA (detection absence)    0.0490</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023) Expected Information Gain    0.1869</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)    Information Efficiency   18.7000</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)             Prior Entropy    1.0000</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)                  Full AUC    0.7471</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)          Operating Points   11.0000</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)              Max Hit Rate    1.0000</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt;               Interpretation</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt;            Model fit quality</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt;              Lower is better</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt;              Lower is better</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt;                       0 to 1</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt;                       0 to 1</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt;      Higher is better (bits)</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt;          Percentage (0-100%)</span></span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt;          Maximum possible IG</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt;       Higher is better (0-1)</span></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt;  Number of decision criteria</span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt;             Cumulative (0-1)</span></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a><span class="co">#&gt; Metrics describe different estimands and are not a single model-selection scale.</span></span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="co">#&gt; Access fitted models via: $fitted_models$&lt;model_name&gt;</span></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="co">#&gt; Available models: 2ht, eig, fullroc</span></span></code></pre></div>
+</div>
+<div id="detailed-summary" class="section level3">
+<h3>Detailed Summary</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># More detailed output</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">summary</span>(comparison)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; === Model Comparison Summary ===</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; Dataset:</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   Total observations: 600 </span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt;   Target-present: 300 </span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;   Target-absent: 300 </span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;   Lineup size: 6 </span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; Models fitted: 3 </span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt;    2ht, eig, fullroc </span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; --- 2-HT Model Summary ---</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt;   Parameters: dP = 0.485 , dA = 0.049 , b = 0 , g = 0.754 </span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt;   AIC: 1123.62 </span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt;   BIC: 1141.21 </span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; --- EIG Summary ---</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt;   EIG: 0.1869 bits</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt;   Information efficiency: 18.7 %</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt;   Number of response categories: 11 </span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; --- Full ROC Summary ---</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt;   Full AUC: 0.7471 </span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt;   Operating points: 11 </span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt;   Ordering method: diagnosticity </span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; Interpretation Guidance:</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt;   - 2-HT: AIC/BIC are comparable only to other likelihood models fit to the same outcomes</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt;   - EIG: Higher values = more informative procedure</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt;   - Full ROC: Higher AUC = better investigator discriminability</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; Each model provides different information; consider reporting more than one.</span></span></code></pre></div>
+</div>
+<div id="visualizing-model-comparisons" class="section level3">
+<h3>Visualizing Model Comparisons</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Side-by-side plots</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">plot</span>(comparison, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+<div id="individual-model-access" class="section level2">
+<h2>Individual Model Access</h2>
+<div id="ht-model-results" class="section level3">
+<h3>2-HT Model Results</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Access 2-HT model</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>model_2ht <span class="ot">&lt;-</span> comparison<span class="sc">$</span>fitted_models<span class="sc">$</span><span class="st">`</span><span class="at">2ht</span><span class="st">`</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Parameter =</span> <span class="fu">names</span>(model_2ht<span class="sc">$</span>parameters),</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>             <span class="at">Estimate  =</span> <span class="fu">round</span>(<span class="fu">unname</span>(model_2ht<span class="sc">$</span>parameters), <span class="dv">3</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>             <span class="at">SE        =</span> <span class="fu">round</span>(<span class="fu">unname</span>(model_2ht<span class="sc">$</span>se), <span class="dv">3</span>)),</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;2-HT parameter estimates with standard errors, simulated data.&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption>2-HT parameter estimates with standard errors, simulated
+data.</caption>
+<thead>
+<tr class="header">
+<th align="left">Parameter</th>
+<th align="right">Estimate</th>
+<th align="right">SE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">dP</td>
+<td align="right">0.485</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">dA</td>
+<td align="right">0.049</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">b</td>
+<td align="right">0.000</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">g</td>
+<td align="right">0.754</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;AIC:&quot;</span>, <span class="fu">round</span>(model_2ht<span class="sc">$</span>aic, <span class="dv">2</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="st">&quot; BIC:&quot;</span>, <span class="fu">round</span>(model_2ht<span class="sc">$</span>bic, <span class="dv">2</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="st">&quot; log-likelihood:&quot;</span>, <span class="fu">round</span>(model_2ht<span class="sc">$</span>loglik, <span class="dv">2</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; AIC: 1123.62  BIC: 1141.21  log-likelihood: -557.81</span></span></code></pre></div>
+<p><strong>Interpreting 2-HT parameters (when available):</strong></p>
+<ul>
+<li><strong>dP</strong>: Probability of detecting guilty suspect</li>
+<li><strong>dA</strong>: Probability of detecting the culprit’s
+absence</li>
+<li><strong>b</strong>: Bias toward suspect</li>
+<li><strong>g</strong>: Tendency to guess vs. reject</li>
+</ul>
+</div>
+<div id="eig-results" class="section level3">
+<h3>EIG Results</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Access EIG model</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>model_eig <span class="ot">&lt;-</span> comparison<span class="sc">$</span>fitted_models<span class="sc">$</span>eig</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># View EIG value</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Expected Information Gain:&quot;</span>, <span class="fu">round</span>(model_eig<span class="sc">$</span>eig, <span class="dv">4</span>), <span class="st">&quot;bits</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; Expected Information Gain: 0.1869 bits</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Information Efficiency:&quot;</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>    <span class="fu">round</span>(model_eig<span class="sc">$</span>eig <span class="sc">/</span> model_eig<span class="sc">$</span>prior_entropy <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">&quot;%</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; Information Efficiency: 18.7 %</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co"># Most informative responses</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Top 5 most informative response categories:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; Top 5 most informative response categories:</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(model_eig<span class="sc">$</span>response_data[, <span class="fu">c</span>(<span class="st">&quot;response&quot;</span>, <span class="st">&quot;information_gain&quot;</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>                                        <span class="st">&quot;posterior_guilty&quot;</span>)], <span class="dv">5</span>))</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 3</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt;   response  information_gain posterior_guilty</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; 1 suspect_5            0.742            0.957</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; 2 suspect_3            0.525            0.898</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; 3 suspect_4            0.445            0.871</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; 4 suspect_2            0.278            0.8  </span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; 5 suspect_1            0.119            0.7</span></span></code></pre></div>
+<p><strong>Interpreting EIG:</strong></p>
+<ul>
+<li>Total information provided: 0.187 bits</li>
+<li>Efficiency: 18.7% of maximum possible</li>
+<li>Most informative responses push posterior beliefs strongly toward
+guilt or innocence</li>
+</ul>
+</div>
+<div id="full-roc-results" class="section level3">
+<h3>Full ROC Results</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Access Full ROC model</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>model_fullroc <span class="ot">&lt;-</span> comparison<span class="sc">$</span>fitted_models<span class="sc">$</span>fullroc</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co"># View AUC</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Full ROC AUC:&quot;</span>, <span class="fu">round</span>(model_fullroc<span class="sc">$</span>auc, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; Full ROC AUC: 0.7471</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Operating Points:&quot;</span>, model_fullroc<span class="sc">$</span>summary<span class="sc">$</span>n_operating_points, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; Operating Points: 11</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co"># View diagnosticity table (top 10 points)</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Top 10 most diagnostic evidence categories:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; Top 10 most diagnostic evidence categories:</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(model_fullroc<span class="sc">$</span>diagnosticity_table[, <span class="fu">c</span>(<span class="st">&quot;evidence_label&quot;</span>,</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>                                                  <span class="st">&quot;diagnosticity_ratio&quot;</span>)], <span class="dv">10</span>))</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt;    evidence_label diagnosticity_ratio</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; 13      suspect_5          22.0000000</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; 7       suspect_3           8.8000000</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; 10      suspect_4           6.7500000</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; 4       suspect_2           4.0000000</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt; 1       suspect_1           2.3333333</span></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; 14       filler_5           1.3333333</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt; 11       filler_4           1.1111111</span></span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#&gt; 8        filler_3           0.5312500</span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#&gt; 5        filler_2           0.4920635</span></span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co">#&gt; 2        filler_1           0.4666667</span></span></code></pre></div>
+<p><strong>Interpreting Full ROC:</strong></p>
+<ul>
+<li>AUC = 0.747: Investigator’s ability to discriminate</li>
+<li>Values closer to 1.0 indicate better discriminability</li>
+<li>All witness responses contribute to overall discriminability</li>
+</ul>
+</div>
+</div>
+<div id="method-choice-guidance" class="section level2">
+<h2>Method-Choice Guidance</h2>
+<p>These methods estimate different quantities; their displayed numbers
+are not a common model-selection scale and the wrapper does not declare
+a “best model.”</p>
+<div id="when-to-use-each-model" class="section level3">
+<h3>When to Use Each Model</h3>
+<p><strong>Use 2-HT when:</strong></p>
+<ul>
+<li>Testing cognitive theories (detection, guessing, bias)</li>
+<li>Need to separate memory from response bias</li>
+<li>Comparing procedures that might differ in bias</li>
+<li>Want to understand latent psychological processes</li>
+</ul>
+<p><strong>Use EIG when:</strong></p>
+<ul>
+<li>Evaluating overall diagnosticity</li>
+<li>Comparing identification procedures</li>
+<li>Need a single summary measure</li>
+<li>Want information-theoretic interpretation</li>
+</ul>
+<p><strong>Use Full ROC when:</strong></p>
+<ul>
+<li>Need threshold-free discriminability measure</li>
+<li>Comparing system variables</li>
+<li>Want to use all available information</li>
+<li>Policy/practical decision-making focus</li>
+</ul>
+</div>
+<div id="comparing-model-fits" class="section level3">
+<h3>Comparing Model Fits</h3>
+<p>The 2-HT fit reports AIC/BIC, but these values are comparative rather
+than absolute. They can only be compared with alternative likelihood
+models fitted to the same observations and outcome representation; they
+cannot be compared with EIG or AUC. A single-condition 2-HT fit is
+saturated: it has zero residual degrees of freedom, so it reproduces the
+observed counts exactly and its absolute fit cannot be tested.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;2-HT Model Fit:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; 2-HT Model Fit:</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  AIC:&quot;</span>, <span class="fu">round</span>(comparison<span class="sc">$</span>fitted_models<span class="sc">$</span><span class="st">`</span><span class="at">2ht</span><span class="st">`</span><span class="sc">$</span>aic, <span class="dv">2</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt;   AIC: 1123.62</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  BIC:&quot;</span>, <span class="fu">round</span>(comparison<span class="sc">$</span>fitted_models<span class="sc">$</span><span class="st">`</span><span class="at">2ht</span><span class="st">`</span><span class="sc">$</span>bic, <span class="dv">2</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt;   BIC: 1141.21</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">AIC and BIC compare likelihood-based models fitted to the same data.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; AIC and BIC compare likelihood-based models fitted to the same data.</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;EIG and full-ROC AUC are not likelihoods, so they cannot be ranked</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt; EIG and full-ROC AUC are not likelihoods, so they cannot be ranked</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;against the 2-HT model by information criteria.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; against the 2-HT model by information criteria.</span></span></code></pre></div>
+</div>
+</div>
+<div id="advanced-usage" class="section level2">
+<h2>Advanced Usage</h2>
+<div id="fitting-specific-models-only" class="section level3">
+<h3>Fitting Specific Models Only</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Fit only 2-HT and EIG (skip Full ROC)</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>comparison_subset <span class="ot">&lt;-</span> <span class="fu">compare_models</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  lineup_data,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">c</span>(<span class="st">&quot;2ht&quot;</span>, <span class="st">&quot;eig&quot;</span>),</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">lineup_size =</span> <span class="dv">6</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">prior_guilt =</span> <span class="fl">0.5</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>)</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="fu">print</span>(comparison_subset)</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt; === Lineup Model Comparison ===</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt; Models fit: 2ht, eig </span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt; Sample size: 600 </span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt; Lineup size: 6 </span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt; Comparison Table:</span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="co">#&gt;                       Model                   Measure     Value</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="co">#&gt;  2-HT (Winter et al., 2022)            Log-likelihood -557.8100</span></span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt;  2-HT (Winter et al., 2022)                       AIC 1123.6200</span></span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="co">#&gt;  2-HT (Winter et al., 2022)                       BIC 1141.2100</span></span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt;  2-HT (Winter et al., 2022)   dP (detection presence)    0.4850</span></span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt;  2-HT (Winter et al., 2022)    dA (detection absence)    0.0490</span></span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt;   EIG (Starns et al., 2023) Expected Information Gain    0.1869</span></span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a><span class="co">#&gt;   EIG (Starns et al., 2023)    Information Efficiency   18.7000</span></span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a><span class="co">#&gt;   EIG (Starns et al., 2023)             Prior Entropy    1.0000</span></span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a><span class="co">#&gt;           Interpretation</span></span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a><span class="co">#&gt;        Model fit quality</span></span>
+<span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a><span class="co">#&gt;          Lower is better</span></span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a><span class="co">#&gt;          Lower is better</span></span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a><span class="co">#&gt;                   0 to 1</span></span>
+<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a><span class="co">#&gt;                   0 to 1</span></span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a><span class="co">#&gt;  Higher is better (bits)</span></span>
+<span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a><span class="co">#&gt;      Percentage (0-100%)</span></span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a><span class="co">#&gt;      Maximum possible IG</span></span>
+<span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a><span class="co">#&gt; Metrics describe different estimands and are not a single model-selection scale.</span></span>
+<span id="cb11-38"><a href="#cb11-38" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-39"><a href="#cb11-39" tabindex="-1"></a><span class="co">#&gt; Access fitted models via: $fitted_models$&lt;model_name&gt;</span></span>
+<span id="cb11-40"><a href="#cb11-40" tabindex="-1"></a><span class="co">#&gt; Available models: 2ht, eig</span></span></code></pre></div>
+</div>
+<div id="using-confidence-bins" class="section level3">
+<h3>Using Confidence Bins</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Bin confidence for EIG and Full ROC</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>comparison_binned <span class="ot">&lt;-</span> <span class="fu">compare_models</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  lineup_data,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">c</span>(<span class="st">&quot;eig&quot;</span>, <span class="st">&quot;fullroc&quot;</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="at">lineup_size =</span> <span class="dv">6</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="at">confidence_bins =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">40</span>, <span class="dv">70</span>, <span class="dv">100</span>)  <span class="co"># Low, medium, high</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>)</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Binned confidence results:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; Binned confidence results:</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="fu">print</span>(comparison_binned)</span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; === Lineup Model Comparison ===</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; Models fit: eig, fullroc </span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt; Sample size: 600 </span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; Lineup size: 6 </span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; Comparison Table:</span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt;                          Model                   Measure   Value</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023) Expected Information Gain  0.1693</span></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)    Information Efficiency 16.9000</span></span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)             Prior Entropy  1.0000</span></span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)                  Full AUC  0.7274</span></span>
+<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)          Operating Points  3.0000</span></span>
+<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)              Max Hit Rate  1.0000</span></span>
+<span id="cb12-27"><a href="#cb12-27" tabindex="-1"></a><span class="co">#&gt;               Interpretation</span></span>
+<span id="cb12-28"><a href="#cb12-28" tabindex="-1"></a><span class="co">#&gt;      Higher is better (bits)</span></span>
+<span id="cb12-29"><a href="#cb12-29" tabindex="-1"></a><span class="co">#&gt;          Percentage (0-100%)</span></span>
+<span id="cb12-30"><a href="#cb12-30" tabindex="-1"></a><span class="co">#&gt;          Maximum possible IG</span></span>
+<span id="cb12-31"><a href="#cb12-31" tabindex="-1"></a><span class="co">#&gt;       Higher is better (0-1)</span></span>
+<span id="cb12-32"><a href="#cb12-32" tabindex="-1"></a><span class="co">#&gt;  Number of decision criteria</span></span>
+<span id="cb12-33"><a href="#cb12-33" tabindex="-1"></a><span class="co">#&gt;             Cumulative (0-1)</span></span>
+<span id="cb12-34"><a href="#cb12-34" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-35"><a href="#cb12-35" tabindex="-1"></a><span class="co">#&gt; Metrics describe different estimands and are not a single model-selection scale.</span></span>
+<span id="cb12-36"><a href="#cb12-36" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-37"><a href="#cb12-37" tabindex="-1"></a><span class="co">#&gt; Access fitted models via: $fitted_models$&lt;model_name&gt;</span></span>
+<span id="cb12-38"><a href="#cb12-38" tabindex="-1"></a><span class="co">#&gt; Available models: eig, fullroc</span></span></code></pre></div>
+</div>
+<div id="custom-prior-for-eig" class="section level3">
+<h3>Custom Prior for EIG</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Use different prior probability for EIG</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>comparison_prior <span class="ot">&lt;-</span> <span class="fu">compare_models</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  lineup_data,</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="at">models =</span> <span class="st">&quot;eig&quot;</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>  <span class="at">prior_guilt =</span> <span class="fl">0.3</span>  <span class="co"># Assume 30% base rate</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>)</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;EIG with prior = 0.3:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; EIG with prior = 0.3:</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="fu">print</span>(comparison_prior<span class="sc">$</span>fitted_models<span class="sc">$</span>eig<span class="sc">$</span>eig)</span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; [1] 0.1694035</span></span></code></pre></div>
+</div>
+</div>
+<div id="simulated-data-example" class="section level2">
+<h2>Simulated Data Example</h2>
+<div id="comparing-models-with-known-parameters" class="section level3">
+<h3>Comparing Models with Known Parameters</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">simulate_lineup_data</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="at">n_tp =</span> <span class="dv">300</span>, <span class="at">n_ta =</span> <span class="dv">300</span>, <span class="at">d_prime =</span> <span class="fl">1.5</span>, <span class="at">c_criterion =</span> <span class="fl">0.9</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="at">lineup_size =</span> <span class="dv">6</span>, <span class="at">conf_levels =</span> <span class="dv">5</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="at">foil_bias =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.2</span>, <span class="fl">0.0</span>, <span class="sc">-</span><span class="fl">0.4</span>, <span class="sc">-</span><span class="fl">1.0</span>), <span class="at">seed =</span> <span class="dv">2026</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>))</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>sim_comparison <span class="ot">&lt;-</span> <span class="fu">compare_models</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>  sim_data,</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">c</span>(<span class="st">&quot;2ht&quot;</span>, <span class="st">&quot;eig&quot;</span>, <span class="st">&quot;fullroc&quot;</span>),</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>  <span class="at">lineup_size =</span> <span class="dv">6</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>)</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="fu">print</span>(sim_comparison)</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; === Lineup Model Comparison ===</span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; Models fit: 2ht, eig, fullroc </span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; Sample size: 600 </span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; Lineup size: 6 </span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="co">#&gt; Comparison Table:</span></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt;                          Model                   Measure     Value</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)            Log-likelihood -559.1500</span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)                       AIC 1126.3000</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)                       BIC 1143.8900</span></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)   dP (detection presence)    0.4950</span></span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt;     2-HT (Winter et al., 2022)    dA (detection absence)    0.0260</span></span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023) Expected Information Gain    0.2264</span></span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)    Information Efficiency   22.6000</span></span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)             Prior Entropy    1.0000</span></span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)                  Full AUC    0.7858</span></span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)          Operating Points   11.0000</span></span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)              Max Hit Rate    1.0000</span></span>
+<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a><span class="co">#&gt;               Interpretation</span></span>
+<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt;            Model fit quality</span></span>
+<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a><span class="co">#&gt;              Lower is better</span></span>
+<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a><span class="co">#&gt;              Lower is better</span></span>
+<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a><span class="co">#&gt;                       0 to 1</span></span>
+<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co">#&gt;                       0 to 1</span></span>
+<span id="cb14-40"><a href="#cb14-40" tabindex="-1"></a><span class="co">#&gt;      Higher is better (bits)</span></span>
+<span id="cb14-41"><a href="#cb14-41" tabindex="-1"></a><span class="co">#&gt;          Percentage (0-100%)</span></span>
+<span id="cb14-42"><a href="#cb14-42" tabindex="-1"></a><span class="co">#&gt;          Maximum possible IG</span></span>
+<span id="cb14-43"><a href="#cb14-43" tabindex="-1"></a><span class="co">#&gt;       Higher is better (0-1)</span></span>
+<span id="cb14-44"><a href="#cb14-44" tabindex="-1"></a><span class="co">#&gt;  Number of decision criteria</span></span>
+<span id="cb14-45"><a href="#cb14-45" tabindex="-1"></a><span class="co">#&gt;             Cumulative (0-1)</span></span>
+<span id="cb14-46"><a href="#cb14-46" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-47"><a href="#cb14-47" tabindex="-1"></a><span class="co">#&gt; Metrics describe different estimands and are not a single model-selection scale.</span></span>
+<span id="cb14-48"><a href="#cb14-48" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-49"><a href="#cb14-49" tabindex="-1"></a><span class="co">#&gt; Access fitted models via: $fitted_models$&lt;model_name&gt;</span></span>
+<span id="cb14-50"><a href="#cb14-50" tabindex="-1"></a><span class="co">#&gt; Available models: 2ht, eig, fullroc</span></span></code></pre></div>
+</div>
+<div id="sensitivity-to-the-generating-d" class="section level3">
+<h3>Sensitivity to the Generating d′</h3>
+<p>A single fit tells you little. A useful check is whether the 2-HT
+parameters <em>move</em> as the generating d′ moves. The data come from
+a signal detection (MAX) model, not from the 2-HT model, so there are no
+true 2-HT parameter values to recover:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>recovery <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="fl">1.5</span>, <span class="fl">2.0</span>, <span class="fl">2.5</span>), <span class="cf">function</span>(dp) {</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">simulate_lineup_data</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>    <span class="at">n_tp =</span> <span class="dv">400</span>, <span class="at">n_ta =</span> <span class="dv">400</span>, <span class="at">d_prime =</span> dp, <span class="at">c_criterion =</span> <span class="fl">0.9</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>    <span class="at">lineup_size =</span> <span class="dv">6</span>, <span class="at">conf_levels =</span> <span class="dv">5</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>    <span class="at">foil_bias =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.2</span>, <span class="fl">0.0</span>, <span class="sc">-</span><span class="fl">0.4</span>, <span class="sc">-</span><span class="fl">1.0</span>), <span class="at">seed =</span> <span class="dv">500</span> <span class="sc">+</span> <span class="fu">round</span>(<span class="dv">10</span> <span class="sc">*</span> dp)</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>  ))</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">fit_winter_2ht</span>(d, <span class="at">lineup_size =</span> <span class="dv">6</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>                        <span class="at">target_present =</span> <span class="st">&quot;target_present&quot;</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>                        <span class="at">identification =</span> <span class="st">&quot;identification&quot;</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="st">`</span><span class="at">True d&#39;</span><span class="st">`</span> <span class="ot">=</span> dp,</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>             <span class="st">`</span><span class="at">Fitted dP</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(fit<span class="sc">$</span>parameters[[<span class="st">&quot;dP&quot;</span>]], <span class="dv">3</span>),</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>             <span class="st">`</span><span class="at">Fitted dA</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(fit<span class="sc">$</span>parameters[[<span class="st">&quot;dA&quot;</span>]], <span class="dv">3</span>),</span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>             <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>}))</span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a>  recovery, <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;2-HT detection parameters fitted to data simulated from a signal detection model at known d&#39;, 400 lineups per arm.&quot;</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption>2-HT detection parameters fitted to data simulated from a
+signal detection model at known d’, 400 lineups per arm.</caption>
+<thead>
+<tr class="header">
+<th align="right">True d’</th>
+<th align="right">Fitted dP</th>
+<th align="right">Fitted dA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.5</td>
+<td align="right">0.113</td>
+<td align="right">0.038</td>
+</tr>
+<tr class="even">
+<td align="right">1.0</td>
+<td align="right">0.313</td>
+<td align="right">0.140</td>
+</tr>
+<tr class="odd">
+<td align="right">1.5</td>
+<td align="right">0.522</td>
+<td align="right">0.169</td>
+</tr>
+<tr class="even">
+<td align="right">2.0</td>
+<td align="right">0.677</td>
+<td align="right">0.124</td>
+</tr>
+<tr class="odd">
+<td align="right">2.5</td>
+<td align="right">0.806</td>
+<td align="right">0.214</td>
+</tr>
+</tbody>
+</table>
+<p><code>dP</code> increases monotonically with the generating d′. That
+shows the parameter is sensitive to memory strength. It is not parameter
+recovery: <code>dP</code> is not on the same scale as d′, the generating
+model is not the 2-HT model, and the check says nothing about bias,
+interval coverage or whether the process interpretation is correct.
+Recovery would need data simulated from <code>fit_winter_2ht()</code>’s
+own equations.</p>
+</div>
+</div>
+<div id="practical-examples" class="section level2">
+<h2>Practical Examples</h2>
+<div id="example-1-evaluating-a-lineup-procedure" class="section level3">
+<h3>Example 1: Evaluating a Lineup Procedure</h3>
+<p>Research question: How well does this lineup procedure discriminate
+between guilty and innocent suspects?</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Fit all models to assess procedure</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>procedure_eval <span class="ot">&lt;-</span> <span class="fu">compare_models</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  lineup_data,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">c</span>(<span class="st">&quot;2ht&quot;</span>, <span class="st">&quot;eig&quot;</span>, <span class="st">&quot;fullroc&quot;</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>)</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>fm <span class="ot">&lt;-</span> procedure_eval<span class="sc">$</span>fitted_models</span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>    <span class="at">Measure  =</span> <span class="fu">c</span>(<span class="st">&quot;2-HT dP (SE)&quot;</span>, <span class="st">&quot;EIG, bits (share of prior entropy)&quot;</span>,</span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>                 <span class="st">&quot;Full ROC AUC (diagnosticity ordering)&quot;</span>),</span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a>    <span class="at">Estimate =</span> <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">&quot;%.3f (%.3f)&quot;</span>, fm<span class="sc">$</span><span class="st">`</span><span class="at">2ht</span><span class="st">`</span><span class="sc">$</span>parameters[[<span class="st">&quot;dP&quot;</span>]],</span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>                         fm<span class="sc">$</span><span class="st">`</span><span class="at">2ht</span><span class="st">`</span><span class="sc">$</span>se[[<span class="st">&quot;dP&quot;</span>]]),</span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a>                 <span class="fu">sprintf</span>(<span class="st">&quot;%.3f (%.0f%%)&quot;</span>, fm<span class="sc">$</span>eig<span class="sc">$</span>eig,</span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>                         <span class="dv">100</span> <span class="sc">*</span> fm<span class="sc">$</span>eig<span class="sc">$</span>eig <span class="sc">/</span> fm<span class="sc">$</span>eig<span class="sc">$</span>prior_entropy),</span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a>                 <span class="fu">sprintf</span>(<span class="st">&quot;%.3f&quot;</span>, fm<span class="sc">$</span>fullroc<span class="sc">$</span>auc))</span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a>  ),</span>
+<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Three summaries of the same simulated procedure, prior guilt .5.&quot;</span></span>
+<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption>Three summaries of the same simulated procedure, prior guilt
+.5.</caption>
+<thead>
+<tr class="header">
+<th align="left">Measure</th>
+<th align="left">Estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2-HT dP (SE)</td>
+<td align="left">0.485 (NA)</td>
+</tr>
+<tr class="even">
+<td align="left">EIG, bits (share of prior entropy)</td>
+<td align="left">0.187 (19%)</td>
+</tr>
+<tr class="odd">
+<td align="left">Full ROC AUC (diagnosticity ordering)</td>
+<td align="left">0.747</td>
+</tr>
+</tbody>
+</table>
+<p>The table reports estimates, not verdicts. No validated benchmarks
+exist that would let a value of <code>dP</code>, EIG or AUC be called
+good or poor in itself; the <code>vignette(&quot;fullroc_analysis&quot;)</code>
+makes the same point about AUC. These numbers are informative when
+compared with another procedure or condition analysed the same way, with
+their uncertainty.</p>
+</div>
+<div id="example-2-identifying-sources-of-bias" class="section level3">
+<h3>Example 2: Identifying Sources of Bias</h3>
+<p>Use 2-HT model to check for bias:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>params <span class="ot">&lt;-</span> comparison<span class="sc">$</span>fitted_models<span class="sc">$</span><span class="st">`</span><span class="at">2ht</span><span class="st">`</span><span class="sc">$</span>parameters</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>model_2ht <span class="ot">&lt;-</span> comparison<span class="sc">$</span>fitted_models<span class="sc">$</span><span class="st">`</span><span class="at">2ht</span><span class="st">`</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Parameter =</span> <span class="st">&quot;b (biased suspect selection)&quot;</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>             <span class="at">Estimate =</span> <span class="fu">round</span>(params[[<span class="st">&quot;b&quot;</span>]], <span class="dv">3</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>             <span class="st">`</span><span class="at">95% Wald interval</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">&quot;[%.3f, %.3f]&quot;</span>,</span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>               <span class="fu">max</span>(<span class="dv">0</span>, params[[<span class="st">&quot;b&quot;</span>]] <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> model_2ht<span class="sc">$</span>se[[<span class="st">&quot;b&quot;</span>]]),</span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>               <span class="fu">min</span>(<span class="dv">1</span>, params[[<span class="st">&quot;b&quot;</span>]] <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> model_2ht<span class="sc">$</span>se[[<span class="st">&quot;b&quot;</span>]])),</span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>             <span class="at">check.names =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;2-HT bias parameter, simulated data (300 target-present and 300 target-absent lineups).&quot;</span></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption>2-HT bias parameter, simulated data (300 target-present and 300
+target-absent lineups).</caption>
+<thead>
+<tr class="header">
+<th align="left">Parameter</th>
+<th align="right">Estimate</th>
+<th align="left">95% Wald interval</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">b (biased suspect selection)</td>
+<td align="right">0</td>
+<td align="left">[NA, NA]</td>
+</tr>
+</tbody>
+</table>
+<p><code>b</code> is the probability that a witness who detects nothing
+picks the suspect because the suspect stands out. An interval clearly
+above zero is a reason to inspect the lineup; how large a <code>b</code>
+is acceptable is a policy judgement that the model cannot make. Note
+that the interval is a Wald interval clipped to [0, 1];
+<code>boot_winter_2ht()</code> gives bootstrap intervals that respect
+the boundary.</p>
+</div>
+<div id="example-3-comparing-detection-vs.-guessing" class="section level3">
+<h3>Example 3: Comparing Detection vs. Guessing</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>    <span class="at">Parameter =</span> <span class="fu">c</span>(<span class="st">&quot;dP (detect culprit present)&quot;</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>                  <span class="st">&quot;dA (detect culprit absent)&quot;</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>                  <span class="st">&quot;g (guessing-based selection)&quot;</span>),</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>    <span class="at">Estimate  =</span> <span class="fu">round</span>(<span class="fu">c</span>(params[[<span class="st">&quot;dP&quot;</span>]], params[[<span class="st">&quot;dA&quot;</span>]], params[[<span class="st">&quot;g&quot;</span>]]), <span class="dv">3</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>  ),</span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;2-HT detection and guessing parameters, simulated data.&quot;</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption>2-HT detection and guessing parameters, simulated
+data.</caption>
+<thead>
+<tr class="header">
+<th align="left">Parameter</th>
+<th align="right">Estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">dP (detect culprit present)</td>
+<td align="right">0.485</td>
+</tr>
+<tr class="even">
+<td align="left">dA (detect culprit absent)</td>
+<td align="right">0.049</td>
+</tr>
+<tr class="odd">
+<td align="left">g (guessing-based selection)</td>
+<td align="right">0.754</td>
+</tr>
+</tbody>
+</table>
+<p>Detection and guessing are separately identified here, which is the
+point of the model: an identification rate on its own cannot tell you
+whether witnesses recognised the culprit or simply picked someone
+plausible. Note that <code>dP</code> and <code>g</code> are
+probabilities of different events and are not in competition — a
+procedure can have both high detection and a high tendency to choose
+when detection fails.</p>
+</div>
+</div>
+<div id="formatted-comparison-tables" class="section level2">
+<h2>Formatted Comparison Tables</h2>
+<div id="console-format" class="section level3">
+<h3>Console Format</h3>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># Console-friendly table</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>table_console <span class="ot">&lt;-</span> <span class="fu">format_comparison_table</span>(comparison, <span class="at">format =</span> <span class="st">&quot;console&quot;</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="fu">print</span>(table_console)</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="co">#&gt;                            Model                   Measure     Value</span></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="co">#&gt; 1     2-HT (Winter et al., 2022)            Log-likelihood -557.8100</span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="co">#&gt; 2     2-HT (Winter et al., 2022)                       AIC 1123.6200</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="co">#&gt; 3     2-HT (Winter et al., 2022)                       BIC 1141.2100</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="co">#&gt; dP    2-HT (Winter et al., 2022)   dP (detection presence)    0.4850</span></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="co">#&gt; dA    2-HT (Winter et al., 2022)    dA (detection absence)    0.0490</span></span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a><span class="co">#&gt; 11     EIG (Starns et al., 2023) Expected Information Gain    0.1869</span></span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a><span class="co">#&gt; 12     EIG (Starns et al., 2023)    Information Efficiency   18.7000</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="co">#&gt; 13     EIG (Starns et al., 2023)             Prior Entropy    1.0000</span></span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a><span class="co">#&gt; 14 Full ROC (Smith &amp; Yang, 2020)                  Full AUC    0.7471</span></span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="co">#&gt; 15 Full ROC (Smith &amp; Yang, 2020)          Operating Points   11.0000</span></span>
+<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a><span class="co">#&gt; 16 Full ROC (Smith &amp; Yang, 2020)              Max Hit Rate    1.0000</span></span>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="co">#&gt;                 Interpretation</span></span>
+<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a><span class="co">#&gt; 1            Model fit quality</span></span>
+<span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a><span class="co">#&gt; 2              Lower is better</span></span>
+<span id="cb19-19"><a href="#cb19-19" tabindex="-1"></a><span class="co">#&gt; 3              Lower is better</span></span>
+<span id="cb19-20"><a href="#cb19-20" tabindex="-1"></a><span class="co">#&gt; dP                      0 to 1</span></span>
+<span id="cb19-21"><a href="#cb19-21" tabindex="-1"></a><span class="co">#&gt; dA                      0 to 1</span></span>
+<span id="cb19-22"><a href="#cb19-22" tabindex="-1"></a><span class="co">#&gt; 11     Higher is better (bits)</span></span>
+<span id="cb19-23"><a href="#cb19-23" tabindex="-1"></a><span class="co">#&gt; 12         Percentage (0-100%)</span></span>
+<span id="cb19-24"><a href="#cb19-24" tabindex="-1"></a><span class="co">#&gt; 13         Maximum possible IG</span></span>
+<span id="cb19-25"><a href="#cb19-25" tabindex="-1"></a><span class="co">#&gt; 14      Higher is better (0-1)</span></span>
+<span id="cb19-26"><a href="#cb19-26" tabindex="-1"></a><span class="co">#&gt; 15 Number of decision criteria</span></span>
+<span id="cb19-27"><a href="#cb19-27" tabindex="-1"></a><span class="co">#&gt; 16            Cumulative (0-1)</span></span></code></pre></div>
+</div>
+<div id="markdown-format" class="section level3">
+<h3>Markdown Format</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>table_md <span class="ot">&lt;-</span> <span class="fu">format_comparison_table</span>(comparison, <span class="at">format =</span> <span class="st">&quot;markdown&quot;</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co"># One element per line, so sep = &quot;\n&quot; is required. Plain cat(table_md) joins</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co"># the lines with spaces and the table collapses into a single paragraph.</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="fu">cat</span>(table_md, <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="31%" />
+<col width="27%" />
+<col width="10%" />
+<col width="29%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="left">Measure</th>
+<th align="right">Value</th>
+<th align="left">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2-HT (Winter et al., 2022)</td>
+<td align="left">Log-likelihood</td>
+<td align="right">-557.8100</td>
+<td align="left">Model fit quality</td>
+</tr>
+<tr class="even">
+<td align="left">2-HT (Winter et al., 2022)</td>
+<td align="left">AIC</td>
+<td align="right">1123.6200</td>
+<td align="left">Lower is better</td>
+</tr>
+<tr class="odd">
+<td align="left">2-HT (Winter et al., 2022)</td>
+<td align="left">BIC</td>
+<td align="right">1141.2100</td>
+<td align="left">Lower is better</td>
+</tr>
+<tr class="even">
+<td align="left">2-HT (Winter et al., 2022)</td>
+<td align="left">dP (detection presence)</td>
+<td align="right">0.4850</td>
+<td align="left">0 to 1</td>
+</tr>
+<tr class="odd">
+<td align="left">2-HT (Winter et al., 2022)</td>
+<td align="left">dA (detection absence)</td>
+<td align="right">0.0490</td>
+<td align="left">0 to 1</td>
+</tr>
+<tr class="even">
+<td align="left">EIG (Starns et al., 2023)</td>
+<td align="left">Expected Information Gain</td>
+<td align="right">0.1869</td>
+<td align="left">Higher is better (bits)</td>
+</tr>
+<tr class="odd">
+<td align="left">EIG (Starns et al., 2023)</td>
+<td align="left">Information Efficiency</td>
+<td align="right">18.7000</td>
+<td align="left">Percentage (0-100%)</td>
+</tr>
+<tr class="even">
+<td align="left">EIG (Starns et al., 2023)</td>
+<td align="left">Prior Entropy</td>
+<td align="right">1.0000</td>
+<td align="left">Maximum possible IG</td>
+</tr>
+<tr class="odd">
+<td align="left">Full ROC (Smith &amp; Yang, 2020)</td>
+<td align="left">Full AUC</td>
+<td align="right">0.7471</td>
+<td align="left">Higher is better (0-1)</td>
+</tr>
+<tr class="even">
+<td align="left">Full ROC (Smith &amp; Yang, 2020)</td>
+<td align="left">Operating Points</td>
+<td align="right">11.0000</td>
+<td align="left">Number of decision criteria</td>
+</tr>
+<tr class="odd">
+<td align="left">Full ROC (Smith &amp; Yang, 2020)</td>
+<td align="left">Max Hit Rate</td>
+<td align="right">1.0000</td>
+<td align="left">Cumulative (0-1)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="interpretation-guidelines" class="section level2">
+<h2>Interpretation Guidelines</h2>
+<p>This vignette deliberately gives no poor/moderate/good bands for the
+2-HT parameters, EIG or AUC. No study has calibrated such bands, and
+cut-offs of that kind would read as findings when they are conventions.
+Interpret each estimate on its own scale, with its uncertainty and its
+assumptions:</p>
+<ul>
+<li><strong>2-HT parameters</strong> are probabilities of latent states.
+Compare them across conditions, ideally with parameters constrained
+across conditions so that the differences can be tested.</li>
+<li><strong>EIG</strong> runs from 0 to the prior entropy, which depends
+on <code>prior_guilt</code> (1 bit only at .5). Compare procedures at
+the same prior.</li>
+<li><strong>Full-ROC AUC</strong> lies between 0 and 1, with .5 the
+no-discrimination reference. The default diagnosticity ordering is
+optimistically biased (see Technical Details), so compare procedures
+with the a-priori ordering.</li>
+</ul>
+</div>
+<div id="common-pitfalls" class="section level2">
+<h2>Common Pitfalls</h2>
+<div id="insufficient-sample-size" class="section level3">
+<h3>1. Insufficient Sample Size</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># Small sample may lead to unreliable estimates</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>small_data <span class="ot">&lt;-</span> <span class="fu">simulate_lineup_data</span>(<span class="at">n_tp =</span> <span class="dv">30</span>, <span class="at">n_ta =</span> <span class="dv">30</span>, <span class="at">d_prime =</span> <span class="fl">1.5</span>, <span class="at">conf_levels =</span> <span class="dv">5</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>small_comparison <span class="ot">&lt;-</span> <span class="fu">compare_models</span>(</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>  small_data,</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">c</span>(<span class="st">&quot;2ht&quot;</span>, <span class="st">&quot;eig&quot;</span>),</span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>  <span class="at">show_warnings =</span> <span class="cn">FALSE</span></span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>)</span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Warning: Small samples (n=60) may produce unstable parameter estimates</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a><span class="co">#&gt; Warning: Small samples (n=60) may produce unstable parameter estimates</span></span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Recommend: n ≥ 100 per condition for reliable model fitting</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a><span class="co">#&gt; Recommend: n ≥ 100 per condition for reliable model fitting</span></span></code></pre></div>
+</div>
+<div id="model-convergence-issues" class="section level3">
+<h3>2. Model Convergence Issues</h3>
+<p>If 2-HT model fails to converge:</p>
+<ul>
+<li>Check data quality (sufficient variability)</li>
+<li>Try different starting parameters</li>
+<li>Ensure adequate sample size</li>
+<li>Consider data preprocessing</li>
+</ul>
+</div>
+<div id="comparing-non-comparable-measures" class="section level3">
+<h3>3. Comparing Non-Comparable Measures</h3>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Important: Don&#39;t directly compare across models!</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="co">#&gt; Important: Don&#39;t directly compare across models!</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;✗ Wrong: &#39;dP = 0.6 is better than EIG = 0.4&#39;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a><span class="co">#&gt; ✗ Wrong: &#39;dP = 0.6 is better than EIG = 0.4&#39;</span></span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  → These are different scales and constructs</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a><span class="co">#&gt;   → These are different scales and constructs</span></span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;✓ Right: &#39;dP rose from 0.45 to 0.60 between conditions, and EIG</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a><span class="co">#&gt; ✓ Right: &#39;dP rose from 0.45 to 0.60 between conditions, and EIG</span></span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;          (prior .5) rose from 0.30 to 0.40 bits&#39;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a><span class="co">#&gt;           (prior .5) rose from 0.30 to 0.40 bits&#39;</span></span>
+<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  → Compare each measure with itself across conditions</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a><span class="co">#&gt;   → Compare each measure with itself across conditions</span></span></code></pre></div>
+</div>
+</div>
+<div id="best-practices" class="section level2">
+<h2>Best Practices</h2>
+<div id="fit-multiple-models" class="section level3">
+<h3>1. Fit Multiple Models</h3>
+<p>Don’t rely on a single model: each answers a different question, as
+set out in <a href="#the-three-models">The Three Models</a> above. The
+2-HT model separates detection from guessing and bias, EIG summarises
+how much the responses tell an investigator about guilt, and the full
+ROC measures investigator discriminability.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co"># Always fit at least 2-3 models</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>comprehensive <span class="ot">&lt;-</span> <span class="fu">compare_models</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>  lineup_data,</span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">c</span>(<span class="st">&quot;2ht&quot;</span>, <span class="st">&quot;eig&quot;</span>, <span class="st">&quot;fullroc&quot;</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>)</span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Fitting multiple models provides:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a><span class="co">#&gt; Fitting multiple models provides:</span></span>
+<span id="cb23-9"><a href="#cb23-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  • Process-level understanding (2-HT)</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" tabindex="-1"></a><span class="co">#&gt;   • Process-level understanding (2-HT)</span></span>
+<span id="cb23-11"><a href="#cb23-11" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  • Overall diagnosticity (EIG)</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" tabindex="-1"></a><span class="co">#&gt;   • Overall diagnosticity (EIG)</span></span>
+<span id="cb23-13"><a href="#cb23-13" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  • Threshold-free performance (Full ROC)</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-14"><a href="#cb23-14" tabindex="-1"></a><span class="co">#&gt;   • Threshold-free performance (Full ROC)</span></span></code></pre></div>
+</div>
+<div id="report-all-model-results" class="section level3">
+<h3>2. Report All Model Results</h3>
+<p>When publishing, consider reporting results from all fitted
+models:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;In your paper, report:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="co">#&gt; In your paper, report:</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  • 2-HT: Parameters with SE, AIC/BIC, convergence</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a><span class="co">#&gt;   • 2-HT: Parameters with SE, AIC/BIC, convergence</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  • EIG: Value in bits, efficiency percentage</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a><span class="co">#&gt;   • EIG: Value in bits, efficiency percentage</span></span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  • Full ROC: AUC, number of operating points</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a><span class="co">#&gt;   • Full ROC: AUC, number of operating points</span></span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  • What each model&#39;s estimates say about the procedure</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a><span class="co">#&gt;   • What each model&#39;s estimates say about the procedure</span></span></code></pre></div>
+</div>
+<div id="check-model-assumptions" class="section level3">
+<h3>3. Check Model Assumptions</h3>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">summary</span>(comparison<span class="sc">$</span>fitted_models<span class="sc">$</span><span class="st">`</span><span class="at">2ht</span><span class="st">`</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="co">#&gt; Winter et al. (2022) Two-High Threshold MPT Model</span></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="co">#&gt; ==================================================</span></span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="co">#&gt; Sample size:</span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="co">#&gt;   Target-present: 300</span></span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="co">#&gt;   Target-absent:  300</span></span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="co">#&gt;   Total:          600</span></span>
+<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="co">#&gt;   Lineup size:    6</span></span>
+<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a><span class="co">#&gt; Parameter Estimates:</span></span>
+<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a><span class="co">#&gt;                       Estimate SE Lower_95 Upper_95</span></span>
+<span id="cb25-14"><a href="#cb25-14" tabindex="-1"></a><span class="co">#&gt; dP (culprit presence)   0.4853 NA       NA       NA</span></span>
+<span id="cb25-15"><a href="#cb25-15" tabindex="-1"></a><span class="co">#&gt; dA (culprit absence)    0.0494 NA       NA       NA</span></span>
+<span id="cb25-16"><a href="#cb25-16" tabindex="-1"></a><span class="co">#&gt; b  (biased selection)   0.0000 NA       NA       NA</span></span>
+<span id="cb25-17"><a href="#cb25-17" tabindex="-1"></a><span class="co">#&gt; g  (guessing)           0.7539 NA       NA       NA</span></span>
+<span id="cb25-18"><a href="#cb25-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb25-19"><a href="#cb25-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb25-20"><a href="#cb25-20" tabindex="-1"></a><span class="co">#&gt; Model Fit:</span></span>
+<span id="cb25-21"><a href="#cb25-21" tabindex="-1"></a><span class="co">#&gt;   Log-likelihood: -557.81</span></span>
+<span id="cb25-22"><a href="#cb25-22" tabindex="-1"></a><span class="co">#&gt;   AIC: 1123.62</span></span>
+<span id="cb25-23"><a href="#cb25-23" tabindex="-1"></a><span class="co">#&gt;   BIC: 1141.21</span></span>
+<span id="cb25-24"><a href="#cb25-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb25-25"><a href="#cb25-25" tabindex="-1"></a><span class="co">#&gt; Observed vs. Expected Counts:</span></span>
+<span id="cb25-26"><a href="#cb25-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb25-27"><a href="#cb25-27" tabindex="-1"></a><span class="co">#&gt; Target-Present Lineups:</span></span>
+<span id="cb25-28"><a href="#cb25-28" tabindex="-1"></a><span class="co">#&gt;            Observed Expected      Residual</span></span>
+<span id="cb25-29"><a href="#cb25-29" tabindex="-1"></a><span class="co">#&gt; Suspect ID      165      165  1.000703e-06</span></span>
+<span id="cb25-30"><a href="#cb25-30" tabindex="-1"></a><span class="co">#&gt; Filler ID        97       97 -6.372616e-07</span></span>
+<span id="cb25-31"><a href="#cb25-31" tabindex="-1"></a><span class="co">#&gt; Reject           38       38 -3.634414e-07</span></span>
+<span id="cb25-32"><a href="#cb25-32" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb25-33"><a href="#cb25-33" tabindex="-1"></a><span class="co">#&gt; Target-Absent Lineups:</span></span>
+<span id="cb25-34"><a href="#cb25-34" tabindex="-1"></a><span class="co">#&gt;            Observed Expected      Residual</span></span>
+<span id="cb25-35"><a href="#cb25-35" tabindex="-1"></a><span class="co">#&gt; Suspect ID       33     35.8 -2.833333e+00</span></span>
+<span id="cb25-36"><a href="#cb25-36" tabindex="-1"></a><span class="co">#&gt; Filler ID       182    179.2  2.833334e+00</span></span>
+<span id="cb25-37"><a href="#cb25-37" tabindex="-1"></a><span class="co">#&gt; Reject           85     85.0 -3.343707e-07</span></span>
+<span id="cb25-38"><a href="#cb25-38" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb25-39"><a href="#cb25-39" tabindex="-1"></a><span class="co">#&gt; Model identification:</span></span>
+<span id="cb25-40"><a href="#cb25-40" tabindex="-1"></a><span class="co">#&gt;   Saturated (just-identified): 4 parameters, 4 data df, 0 residual df.</span></span>
+<span id="cb25-41"><a href="#cb25-41" tabindex="-1"></a><span class="co">#&gt;   Absolute fit is not testable from a single condition (the model reproduces the</span></span>
+<span id="cb25-42"><a href="#cb25-42" tabindex="-1"></a><span class="co">#&gt;   data by construction); use multiple conditions or constraints to test fit.</span></span>
+<span id="cb25-43"><a href="#cb25-43" tabindex="-1"></a><span class="co">#&gt;   Residual obs-vs-expected discrepancy = 0.2688 (~= 0 confirms convergence).</span></span></code></pre></div>
+<p>The summary’s identification note is the part to read. With one
+target-present and one target-absent condition the 2-HT model has zero
+residual degrees of freedom, so it reproduces the counts exactly and
+there is no goodness-of-fit test to read. Convergence, identifiability
+(enough rejections to estimate <code>dA</code>) and fit are separate
+questions. Fit can be tested only with several conditions and parameters
+constrained across them, as in Winter et al. (2022).</p>
+</div>
+</div>
+<div id="technical-details" class="section level2">
+<h2>Technical Details</h2>
+<div id="what-each-model-estimates-and-on-what-scale" class="section level3">
+<h3>What each model estimates, and on what scale</h3>
+<p>The three models are <strong>not</strong> three estimates of one
+quantity, and cannot be ranked against each other directly.</p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Estimand</th>
+<th>Scale</th>
+<th>Inference available</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2-HT</td>
+<td>Latent probabilities of detection, bias and guessing</td>
+<td>Four probabilities in [0, 1]</td>
+<td>Standard errors from the observed information matrix; bootstrap
+intervals via <code>boot_winter_2ht()</code>. No fit test for a single
+condition (zero residual df)</td>
+</tr>
+<tr class="even">
+<td>EIG</td>
+<td>Expected reduction in uncertainty about guilt</td>
+<td>Bits, 0 to the prior entropy</td>
+<td>None in this package. Tuttle, Starns and Cohen (2025) give 95%
+credible intervals for EIG from a Bayesian multinomial model of the
+response proportions; adding this is planned</td>
+</tr>
+<tr class="odd">
+<td>Full ROC</td>
+<td>Investigator discriminability</td>
+<td>AUC in [0, 1], .5 = no discrimination</td>
+<td>None in this package; see the note on ordering bias below</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="ht-estimation" class="section level3">
+<h3>2-HT estimation</h3>
+<p>The model is a multinomial processing tree. Response probabilities
+are as given in the introduction, and the parameters are estimated by
+maximum likelihood over the six observed cell counts (three responses by
+two lineup types). The target-present and target-absent totals are
+fixed, so the data have 2 × (3 − 1) = 4 degrees of freedom, the same as
+the number of parameters: a single-condition fit is saturated, with zero
+residual degrees of freedom (Winter et al., 2022, Figure 1). The
+standard errors measure how sharply the data pin each parameter down. At
+the best-fitting values, the log-likelihood falls away steeply in some
+directions and gently in others; that curvature, the <em>Hessian</em>
+matrix of second derivatives, is computed numerically, and its inverse
+gives the sampling variances of the estimates. A flat likelihood (little
+curvature) means a large standard error. Winter et al. (2022) describe
+the model and its estimation in full.</p>
+<p><strong>Identifiability.</strong> The detect-absence parameter
+<code>dA</code> is identified almost entirely by rejections. If very few
+witnesses reject, the likelihood is close to flat in <code>dA</code> and
+the optimiser fails. <code>fit_winter_2ht()</code> checks for this and
+reports it as such, rather than failing with a message about non-finite
+differences.</p>
+</div>
+<div id="eig" class="section level3">
+<h3>EIG</h3>
+<p>Expected information gain is computed over the observed response
+categories with the prior supplied by <code>prior_guilt</code>. Because
+it is an expectation over a set of categories estimated from the data,
+it inherits the binning issue discussed in
+<code>vignette(&quot;calibration_decision_analysis&quot;)</code>, and it has no
+standard error here.</p>
+</div>
+<div id="full-roc" class="section level3">
+<h3>Full ROC</h3>
+<p>Computed as described in <code>vignette(&quot;fullroc_analysis&quot;)</code>.
+The default ordering by sample diagnosticity ratio is
+<strong>optimistically biased</strong>, because the ordering is
+estimated from the same data used to compute the area; on data with no
+signal at all it returns AUC near 0.65 at 100 lineups per arm.
+<code>compare_models()</code> uses the default ordering, so treat the
+AUC it reports as an upper bound rather than an estimate, and refit with
+<code>order = &quot;apriori&quot;</code> for anything inferential.</p>
+</div>
+<div id="assumptions-common-to-all-three" class="section level3">
+<h3>Assumptions common to all three</h3>
+<ol style="list-style-type: decimal">
+<li>Each witness contributes one response, so the response categories
+partition the sample.</li>
+<li>Target-present and target-absent lineups are independent
+samples.</li>
+<li>All lineup members other than the suspect are functioning foils.
+Where some members are implausible alternatives, the effective lineup
+size is smaller than the nominal <code>lineup_size</code> passed here,
+and all three models will be misspecified in the same direction. A
+member nobody chose in the sample is not necessarily such a foil: in a
+fair six-person lineup, a given member receives no choices from ten
+witnesses with probability (5/6)^10 ≈ .16. Fitzgerald, Tredoux and Juncu
+(2023) discuss correcting error-rate estimates for unequal foil choices
+by using effective rather than nominal size; passing an effective size
+to these models is planned for a future version.</li>
+</ol>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p><strong>Key Functions:</strong></p>
+<ul>
+<li><code>compare_models()</code>: Fit multiple models</li>
+<li><code>print.model_comparison()</code>: View comparison table</li>
+<li><code>summary.model_comparison()</code>: Detailed results</li>
+<li><code>plot.model_comparison()</code>: Visualizations</li>
+<li><code>format_comparison_table()</code>: Publication tables</li>
+</ul>
+<p><strong>When to Use Each Model:</strong></p>
+<ul>
+<li><strong>2-HT</strong>: Understanding cognitive processes</li>
+<li><strong>EIG</strong>: Overall diagnosticity assessment</li>
+<li><strong>Full ROC</strong>: Threshold-free discriminability</li>
+</ul>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Fit multiple models for comprehensive analysis</li>
+<li>Report all model results</li>
+<li>Check convergence and identifiability; test fit only across
+constrained conditions</li>
+<li>Use adequate sample sizes (n ≥ 100 per condition)</li>
+<li>Interpret each model’s estimates on their own scale</li>
+</ul>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<div class="hanging-indent">
+<p>Fitzgerald, R. J., Tredoux, C. G., &amp; Juncu, S. (2023). Estimation
+of eyewitness error rates in fair and biased lineups. <em>Law and Human
+Behavior, 47</em>(4), 463-483.</p>
+<p>Smith, A. M., Yang, Y., &amp; Wells, G. L. (2020). Distinguishing
+between investigator discriminability and eyewitness discriminability: A
+method for creating full receiver operating characteristic curves of
+lineup identification performance. <em>Perspectives on Psychological
+Science, 15</em>(3), 589-607.</p>
+<p>Starns, J. J., Cohen, A. L., &amp; Rotello, C. M. (2023). A complete
+method for assessing the effectiveness of eyewitness identification
+procedures: Expected information gain. <em>Psychological Review,
+130</em>(3), 677–719. <a href="https://doi.org/10.1037/rev0000332" class="uri">https://doi.org/10.1037/rev0000332</a></p>
+<p>Tuttle, M. D., Starns, J. J., &amp; Cohen, A. L. (2025). Protecting
+the innocent in eyewitness identification: An analysis of simultaneous
+and ranking lineups. <em>Journal of Memory and Language, 140</em>,
+104581. <a href="https://doi.org/10.1016/j.jml.2024.104581" class="uri">https://doi.org/10.1016/j.jml.2024.104581</a></p>
+<p>Winter, K., Menne, N. M., Bell, R., &amp; Buchner, A. (2022).
+Experimental validation of a multinomial processing tree model for
+analyzing eyewitness identification decisions. <em>Scientific Reports,
+12</em>, 15571.</p>
+</div>
+</div>
+<div id="further-reading" class="section level2">
+<h2>Further Reading</h2>
+<ul>
+<li>See <code>?compare_models</code> for complete parameter
+documentation</li>
+<li>See vignette(“simulation_power_analysis”) for data simulation</li>
+<li>See vignette(“pauc_statistical_comparison”) for statistical
+comparison of conditions</li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

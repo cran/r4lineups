@@ -1,0 +1,52 @@
+#' Example Lineup Identification Data
+#'
+#' A dataset containing simulated eyewitness lineup identification data with
+#' target-present and target-absent lineups, including confidence ratings.
+#'
+#' @format A data frame with 1400 rows and 5 variables:
+#' \describe{
+#'   \item{target_present}{Logical indicating whether the guilty suspect was in the lineup}
+#'   \item{lineup_member}{Integer position of the lineup member chosen, with 0 for a rejection}
+#'   \item{suspect_pos}{Integer position occupied by the suspect (1 throughout)}
+#'   \item{identification}{Character indicating the witness decision: "suspect", "filler", or "reject"}
+#'   \item{confidence}{Numeric confidence rating (0-100 scale)}
+#' }
+#'
+#' @details
+#' This dataset is used for demonstrating ROC, CAC, and EIG analyses in the
+#' r4lineups package. It contains 700 target-present and 700 target-absent
+#' lineups of size 6.
+#'
+#' \code{lineup_member} records \emph{which} member each witness chose, so foils
+#' keep their separate identities and are not treated as interchangeable. They
+#' are not merely simulated separately: each foil is given its own mean memory
+#' strength, so some are strong alternatives to the suspect and others are
+#' chosen only rarely. In this dataset the five foils attract roughly 248, 203,
+#' 115, 53 and 10 identifications respectively.
+#'
+#' \code{identification} is derived from \code{lineup_member} and
+#' \code{suspect_pos}, and can be recovered exactly with
+#' \code{\link{classify_lineup_choices}}; it is retained because the analysis
+#' functions in this package take it directly.
+#'
+#' High confidence is strongly diagnostic here but deliberately \emph{not}
+#' perfect: a small number of innocent suspects are identified at the highest
+#' confidence levels, as happens in real cases. Data in which no innocent
+#' suspect is ever identified with high confidence produces an infinite
+#' likelihood ratio and degenerate prior-posterior curves.
+#'
+#' @source Simulated with \code{\link{simulate_lineup_data}}. The generating
+#'   script is \code{data-raw/lineup_example.R}, which carries the acceptance
+#'   criteria the dataset must satisfy as explicit checks.
+#'
+#' @seealso \code{\link{classify_lineup_choices}}, \code{\link{lineup_table}}
+#'
+#' @examples
+#' data(lineup_example)
+#' str(lineup_example)
+#' table(lineup_example$identification, lineup_example$target_present)
+#'
+#' # Which lineup members were chosen, and were any never chosen?
+#' lineup_table(lineup_example$lineup_member[lineup_example$lineup_member > 0],
+#'              k = 6, suspect_pos = 1)
+"lineup_example"

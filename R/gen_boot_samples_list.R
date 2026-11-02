@@ -5,7 +5,7 @@
 #'                        in which the target was either absent or present
 #'@param bootno Number of bootstrap samples
 #'@return A list of bootstrapped lineup data
-#'         Length of list = no. of boostrap sample draws
+#'         Length of list = number of bootstrap sample draws
 #'@examples
 #'#Data:
 #'A <-  round(runif(100,1,6))
@@ -22,14 +22,21 @@
 #'@export
 
 gen_boot_samples_list <- function(lineup_list, bootno){
+  if (!is.list(lineup_list) || length(lineup_list) == 0L) {
+    stop("lineup_list must be a non-empty list.", call. = FALSE)
+  }
+  if (!is.numeric(bootno) || length(bootno) != 1L || bootno < 1 ||
+      bootno != as.integer(bootno)) {
+    stop("bootno must be a positive integer.", call. = FALSE)
+  }
   lineup_boot_samples <- NULL
-  for (i in 1:length(lineup_list)){
+  for (i in seq_along(lineup_list)){
 
     names_a <- rep("sample_",bootno)
-    names_b <- as.character(1:bootno)
-    bootno %>% rerun(sample(lineup_list[[i]], length(lineup_list[[i]]), replace = TRUE))  -> x
+    names_b <- as.character(seq_len(bootno))
+    x <- purrr::map(seq_len(bootno), ~ .resample_values(lineup_list[[i]]))
     names(x) <- paste(names_a,names_b,sep = "")
-    lineup_boot_samples[[i]] <- map_df(x, magrittr::extract, c(1:length(lineup_list[[i]])))
+    lineup_boot_samples[[i]] <- map_df(x, magrittr::extract, seq_along(lineup_list[[i]]))
   }
   return(lineup_boot_samples)
 }

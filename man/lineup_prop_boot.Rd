@@ -24,7 +24,7 @@ Function to call when bootstrap resampling using boot function
 lineup_vec <- round(runif(100, 1, 6))
 
 bootobject <- boot::boot(lineup_vec, lineup_prop_boot, target_pos = 3, R = 1000)
-cis <- boot::boot.ci(bootobject, conf = 0.95, type = "all")
+cis <- boot::boot.ci(bootobject, conf = 0.95, type = "all", target_pos = 3)
 
 }
 \references{
