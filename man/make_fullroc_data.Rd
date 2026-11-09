@@ -2,7 +2,7 @@
 % Please edit documentation in R/fullroc_functions.R
 \name{make_fullroc_data}
 \alias{make_fullroc_data}
-\title{Compute Full ROC Data for Lineup Identification (Smith & Yang, 2020)}
+\title{Compute Full ROC Data for Lineup Identification (Smith, Yang & Wells, 2020)}
 \usage{
 make_fullroc_data(
   data,
@@ -28,7 +28,9 @@ create low (0-60), medium (60-80), and high (80-100) confidence categories.}
 \item{order}{Character. Method for ordering response categories:
 \itemize{
   \item "diagnosticity": Order by diagnosticity ratio (DR = HR/FAR) (default)
-  \item "apriori": Use a-priori ordering (suspect high conf → filler/reject low conf)
+  \item "apriori": The a priori order of Smith, Yang and Wells (2020):
+    suspect IDs from high to low confidence, then rejections and filler IDs
+    alternately from low to high confidence (rejection first at each level)
 }}
 
 \item{lineup_size}{Integer. Number of people in the lineup (default = 6)}
@@ -59,12 +61,12 @@ A list containing:
 }
 \description{
 Computes full Receiver Operating Characteristic (ROC) data using ALL response
-categories (suspect ID, filler ID, rejection) following Smith & Yang (2020).
+categories (suspect ID, filler ID, rejection) following Smith, Yang & Wells (2020).
 This method distinguishes between investigator discriminability and eyewitness
 discriminability.
 }
 \details{
-This function implements the "full ROC" method described in Smith & Yang (2020).
+This function implements the "full ROC" method described in Smith, Yang & Wells (2020).
 Unlike traditional partial ROC curves that only use suspect identifications,
 this method uses ALL eyewitness responses:
 \itemize{
@@ -77,6 +79,12 @@ Each response type is crossed with confidence levels to create decision criteria
 These are ordered by their diagnosticity ratio (HR/FAR) or by a-priori ordering,
 then cumulative hit and false alarm rates are computed to form the full ROC curve.
 
+Without a designated innocent suspect, target-absent filler IDs are split
+into an estimated innocent-suspect share (1 / lineup size) and the remainder.
+This assumes the innocent suspect is chosen at the average filler rate, which
+holds for a fair lineup; with a biased lineup the estimated false-alarm rates
+are wrong, and a designated innocent suspect should be used when available.
+
 The full ROC provides a threshold-free measure of investigator discriminability—
 the ability to distinguish guilty from innocent suspects using ALL available
 eyewitness evidence.
@@ -88,7 +96,7 @@ target-present and target-absent response distributions yield AUC slightly
 above 0.5, with the bias growing with the number of decision-by-confidence
 cells and shrinking with sample size. For inference or comparisons across
 conditions, prefer \code{order = "apriori"} (the theoretically fixed
-ordering suggested by Smith & Yang, 2020) or compare against a permutation
+ordering used by Smith, Yang & Wells, 2020, and Yang & Smith, 2023) or compare against a permutation
 baseline.
 }
 \examples{

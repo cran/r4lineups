@@ -57,7 +57,11 @@ RAC analysis computes, for each response time bin:
 
 Explicit target-absent suspect IDs are used when present. Otherwise,
 target-absent filler IDs are divided by lineup size to estimate incorrect
-suspect IDs. The two estimators are never added together.
+suspect IDs. The two estimators are never added together. Dividing by lineup
+size assumes the innocent suspect is chosen at the average filler rate, which
+holds for a fair lineup; with a biased lineup the estimated false-ID rate and
+the accuracy are wrong, and a designated innocent suspect should be used when
+one is available.
 The bin mean time uses the same suspect-ID observations as accuracy;
 estimated-mode TA filler times receive weight \eqn{1/k}. Bin edges must
 cover all supplied observations. Count accuracy depends on TP/TA sampling
@@ -65,8 +69,9 @@ fractions and does not adjust to a different population base rate. The
 displayed binomial SE is approximate, especially for estimated counts.
 
 RAC analysis is useful for examining the speed-accuracy tradeoff in
-eyewitness identifications. Faster responses typically indicate stronger
-memory, and RAC curves often show higher accuracy for faster response times.
+eyewitness identifications. The hypothesis it examines is that faster
+responses indicate stronger memory, which would appear as higher accuracy
+for faster response times.
 }
 \examples{
 data <- create_example_lineup_data(n_trials = 200,

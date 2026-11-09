@@ -287,22 +287,8 @@ boot_hist_layer <- function(values, bins = NULL, binwidth = NULL, n = NULL) {
 
 msdt_make_lineup_vector <- function(lineup_input, k, input_type) {
   if (input_type == "vector") {
-    if (is.data.frame(lineup_input) || is.matrix(lineup_input)) {
-      if (ncol(lineup_input) != 1L) stop("Vector input must have one column.", call. = FALSE)
-      vec <- if (is.matrix(lineup_input)) lineup_input[, 1L] else lineup_input[[1L]]
-    } else {
-      vec <- lineup_input
-    }
-    if (!is.numeric(vec)) {
-      vec <- as.numeric(vec)
-    }
-    vec <- vec[!is.na(vec)]
-    if (any(vec %% 1 != 0)) {
-      stop("Lineup vector must use integer positions.", call. = FALSE)
-    }
-    if (any(vec < 1 | vec > k)) {
-      stop("Lineup vector values must be between 1 and k.", call. = FALSE)
-    }
+    vec <- typecheck(lineup_input)
+    datacheck1(vec, k)
     return(as.integer(vec))
   }
   gen_linevec(lineup_input, k)

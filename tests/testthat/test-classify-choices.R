@@ -11,10 +11,10 @@ test_that("classify_lineup_choices derives the three outcomes correctly", {
   expect_equal(nrow(out), nrow(trials))
 })
 
-test_that("NA choices are treated as rejections", {
+test_that("NA choices are missing outcomes, not rejections", {
   trials <- data.frame(lineup_member = c(2, NA, 0), suspect_pos = 2)
-  expect_equal(classify_lineup_choices(trials)$identification,
-               c("suspect", "reject", "reject"))
+  expect_warning(out <- classify_lineup_choices(trials, k = 6), "missing chosen position")
+  expect_equal(out$identification, c("suspect", NA, "reject"))
 })
 
 test_that("suspect position may be given as a scalar or a column", {

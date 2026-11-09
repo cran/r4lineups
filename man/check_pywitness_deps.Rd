@@ -20,7 +20,8 @@ Python, and import pyWitness. The default performs no initialization.}
 }
 \value{
 A one-row tibble with environment and engine status, including
-  whether the imported version encodes the audited revision when
+  whether the imported version encodes the pinned revision (fields
+  \code{audited_revision} and \code{audited_revision_matches}) when
   \code{initialize = TRUE}.
 }
 \description{

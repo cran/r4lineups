@@ -13,7 +13,7 @@
 <meta name="author" content="Colin G. Tredoux" />
 <meta name="author" content="Tamsyn M. Naylor" />
 
-<meta name="date" content="2026-11-02" />
+<meta name="date" content="2026-11-09" />
 
 <title>Information and Error-Rate Metrics</title>
 
@@ -344,7 +344,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h3 class="subtitle">EIG and PPV-Range for Lineup Decisions</h3>
 <h4 class="author">Colin G. Tredoux</h4>
 <h4 class="author">Tamsyn M. Naylor</h4>
-<h4 class="date">2026-11-02</h4>
+<h4 class="date">2026-11-09</h4>
 
 
 
@@ -593,17 +593,30 @@ assumption about lineup size (Fitzgerald, Tredoux &amp; Juncu,
 <ul>
 <li><strong>Nominal size.</strong> Errors are spread evenly over all
 <span class="math inline">\(k\)</span> members, so <span class="math inline">\(1/k\)</span> of them fall on the innocent suspect.
-The most optimistic assumption, and it requires the lineup to be
-perfectly fair.</li>
+This shows the risk to an innocent suspect if the lineup had been fair
+(Fitzgerald et al., 2023), and it requires the lineup to be perfectly
+fair.</li>
 <li><strong>Effective size.</strong> Errors are spread over the members
 that actually attract choices, estimated from the data. Fewer
-functioning alternatives means more errors land on the suspect.</li>
+functioning alternatives means more errors land on the suspect. The
+correction assumes that the innocent suspect is one of the more
+plausible members of the lineup.</li>
 <li><strong>No correction.</strong> Every mistaken identification is
 treated as an innocent-suspect identification. The worst case, and a
 genuine lower bound.</li>
 </ul>
 <p>Reporting all three gives a <em>range</em> rather than a single
-figure resting on an assumption that cannot be checked.</p>
+figure resting on an assumption that cannot be checked. Only the
+uncorrected figure rests on no assumption about the suspect; the other
+two are conditional on where the innocent suspect falls among the
+members.</p>
+<p>The PPVs in this vignette also rest on a prior. With
+<code>base_rate = NULL</code>, the default, PPV is a ratio of counts, so
+the implicit prior is the study’s own ratio of target-present to
+target-absent lineups. <code>lineup_example</code> has equal numbers of
+each, so every PPV below assumes a prior of .5. Supply the base rate
+that applies to the case at hand through the <code>base_rate</code>
+argument.</p>
 <div id="when-the-three-coincide-and-why" class="section level3">
 <h3>When the three coincide, and why</h3>
 <p><code>lineup_example</code> has a <strong>designated innocent
@@ -682,7 +695,7 @@ identifications, giving PPV = 1 under every correction.</p>
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a></span>
 <span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
 <span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">Correction =</span> <span class="fu">c</span>(<span class="st">&quot;Nominal size (best case)&quot;</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">Correction =</span> <span class="fu">c</span>(<span class="st">&quot;Nominal size (fair lineup)&quot;</span>,</span>
 <span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>                   <span class="st">&quot;Effective size&quot;</span>,</span>
 <span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>                   <span class="st">&quot;None (worst case)&quot;</span>),</span>
 <span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>    <span class="st">`</span><span class="at">Overall PPV</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">c</span>(ppv_estimated<span class="sc">$</span>ppv_nominal<span class="sc">$</span>overall_ppv,</span>
@@ -705,7 +718,7 @@ exists to report.</caption>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Nominal size (best case)</td>
+<td align="left">Nominal size (fair lineup)</td>
 <td align="right">0.8331</td>
 </tr>
 <tr class="even">
@@ -791,6 +804,13 @@ nominal size of 6.</caption>
 </tr>
 </tbody>
 </table>
+<p>The error rate in this table is the proportion of target-absent
+responses in the bin that are identifications. Rejections fall into few
+of these confidence bins, so most bins contain only identifications and
+show 1.000. The estimated number of innocent-suspect identifications,
+and so the PPV, does not depend on that denominator, because the error
+rate is multiplied back by the same number of target-absent
+responses.</p>
 </div>
 <div id="plots-1" class="section level3">
 <h3>Plots</h3>
@@ -812,10 +832,12 @@ often is an identification of this kind correct — and makes visible how
 much the answer depends on an untestable assumption about lineup
 size.</li>
 </ul>
-<p>The two are complementary: EIG is base-rate-dependent through
-<code>prior_guilt</code> and covers all responses; PPV concerns
-identifications only, and is the quantity with direct forensic
-meaning.</p>
+<p>The two are complementary: EIG covers all responses and depends on
+the prior through <code>prior_guilt</code>; PPV concerns identifications
+only, and is the quantity with direct forensic meaning. PPV depends on
+the prior as well, through the study’s ratio of target-present to
+target-absent lineups or the <code>base_rate</code> argument, so a court
+needs the base rate for the case at hand.</p>
 </div>
 <div id="technical-details" class="section level2">
 <h2>Technical Details</h2>
@@ -826,9 +848,13 @@ confidence bin. For each category the posterior comes from Bayes’
 theorem using the observed likelihoods <span class="math inline">\(P(x
 \mid G)\)</span> and <span class="math inline">\(P(x \mid \neg
 G)\)</span>, estimated as response proportions within the target-present
-and target-absent arms respectively. Entropies are in bits (base-2
-logarithms). The prior is set by <code>prior_guilt</code>, defaulting to
-0.5, at which the prior entropy is exactly 1 bit.</p>
+and target-absent arms respectively. When no innocent suspect is
+designated, <code>make_eig_data()</code> first moves <span class="math inline">\(1/k\)</span> of the target-absent filler
+identifications into the matching suspect category, so EIG then assumes
+a fair lineup in the same way as the nominal-size correction. Entropies
+are in bits (base-2 logarithms). The prior is set by
+<code>prior_guilt</code>, defaulting to 0.5, at which the prior entropy
+is exactly 1 bit.</p>
 <p>EIG inherits the binning issue discussed in
 <code>vignette(&quot;calibration_decision_analysis&quot;)</code>: it is computed
 over discrete categories, so a category with no observations in one arm
@@ -855,8 +881,11 @@ innocent-suspect identifications).</p>
 <ol style="list-style-type: decimal">
 <li>Target-present and target-absent lineups are independent
 samples.</li>
-<li>The nominal-size correction assumes a perfectly fair lineup. It is a
-bound, not an estimate.</li>
+<li>The nominal-size correction assumes a perfectly fair lineup. It
+shows the risk to an innocent suspect if the lineup had been fair, not
+an estimate of the actual risk. The effective-size correction assumes
+that the innocent suspect is one of the more plausible members of the
+lineup.</li>
 <li>Effective size is estimated per confidence bin, so bins with few
 observations give unstable corrections — check the counts before relying
 on a bin.</li>

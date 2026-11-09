@@ -71,7 +71,7 @@ diag_post <- diag_ratio_T_bayes(
   lineup_pres = tp_vec,
   lineup_abs = ta_vec,
   pos_pres = 3,
-  pos_abs = 3,
+  pos_abs = 6,
   k1 = max(tp_vec, na.rm = TRUE),
   k2 = max(ta_vec, na.rm = TRUE),
   alpha = 0.5,

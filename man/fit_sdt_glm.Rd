@@ -34,8 +34,9 @@ A \code{glm} object with SDT attributes.
 }
 \description{
 Fits a single-level GLM (binomial link) to estimate SDT metrics from
-old/new recognition responses. With centered item coding, the coefficient
-on item status corresponds to d' (probit) or ln(OR) (logit).
+old/new recognition responses. The coefficient on item status is
+d' (probit) or ln(OR) (logit); with centered item coding the intercept is
+also minus the criterion.
 }
 \examples{
 set.seed(123)

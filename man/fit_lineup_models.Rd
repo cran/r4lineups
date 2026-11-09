@@ -87,6 +87,9 @@ historically important comparator, not a recommended default.
 \examples{
 \dontrun{
 install_pywitness()
+# lineup_example was generated with unequal filler means, so the equal-filler
+# (IID) models fit it only approximately; this call illustrates syntax and
+# the fit is not a valid test of the models.
 fits <- fit_lineup_models(
   lineup_example,
   confidence_bins = c(0, 60, 80, 100)

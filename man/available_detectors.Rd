@@ -13,9 +13,10 @@ Character vector of detector names.
 Returns a character vector of available face detection backends.
 }
 \details{
-Available detectors (in rough order of accuracy/speed tradeoff):
+Available detectors (not ranked here; accuracy and speed depend on the
+images and the installed version):
 \itemize{
-  \item retinaface - Most accurate, recommended for research
+  \item retinaface - Package default
   \item mtcnn - Good accuracy, moderate speed
   \item mediapipe - Fast, good for real-time
   \item opencv - Fastest, less accurate

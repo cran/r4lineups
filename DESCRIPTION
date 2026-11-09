@@ -1,6 +1,6 @@
 Package: r4lineups
 Title: Statistical Inference on Lineup Fairness
-Version: 2.3.0
+Version: 2.3.1
 URL: https://github.com/CGTZA2/r4lineups,
         https://cgtza2.github.io/r4lineups/
 BugReports: https://github.com/CGTZA2/r4lineups/issues
@@ -32,8 +32,8 @@ VignetteBuilder: knitr
 Maintainer: Colin Tredoux <colin.tredoux@uct.ac.za>
 Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-11-02 09:28:28 UTC; colintredoux
+Packaged: 2026-11-09 17:41:07 UTC; colintredoux
 Author: Colin Tredoux [aut, cre] (Co-author of the original package),
   Tamsyn Naylor [aut] (Co-author of the original package)
 Repository: CRAN
-Date/Publication: 2026-11-02 10:20:11 UTC
+Date/Publication: 2026-11-09 19:10:02 UTC

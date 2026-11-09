@@ -92,8 +92,10 @@ testthat::test_that("d'(GI) decomposition holds exactly", {
 
 testthat::test_that("fair reference matches the average-filler values in the paper", {
   # No rejections in a 6-person lineup: d'(IFa) = z(1/6) - z(5/6)
-  md <- make_multid(counts = c(G = 50, Fp = 50, Rp = 0, Fa = 60, Ra = 0),
-                    correction = "none")
+  md <- testthat::expect_warning(
+    make_multid(counts = c(G = 50, Fp = 50, Rp = 0, Fa = 60, Ra = 0),
+                correction = "none"),
+    "infinite")
   est <- idx(md)
   testthat::expect_equal(md$innocent_method, "estimated_from_fillers")
   testthat::expect_equal(unname(est["fair_reference"]),

@@ -20,7 +20,9 @@ Estimates innocent-suspect identification rate using nominal lineup size,
 assuming all lineup members are equally plausible (perfectly fair lineup).
 }
 \details{
-This represents the "best case" estimate assuming perfect lineup fairness.
+This shows the risk to an innocent suspect if the lineup had been fair
+(Fitzgerald et al., 2023), the "best case" if the suspect is no more likely
+than a filler to be chosen.
 The formula is: innocent_id_rate = error_rate / lineup_size
 }
 \examples{

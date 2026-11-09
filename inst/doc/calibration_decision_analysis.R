@@ -102,7 +102,7 @@ cal_by_cond <- make_calibration_by_condition(
 
 knitr::kable(
   cal_by_cond$condition_summary, digits = 3,
-  caption = "Calibration statistics by procedure, simulated data (choosers only)."
+  caption = "Calibration statistics by procedure, simulated data (suspect identifications)."
 )
 
 ## ----calibration-by-condition-plot--------------------------------------------
@@ -140,6 +140,15 @@ plot_bayes_prior_posterior(bayes_result)
 
 ## ----bayes-information-gain---------------------------------------------------
 plot_bayes_information_gain(bayes_result)
+
+## ----bayes-information-gain-entropy-------------------------------------------
+bayes_entropy <- make_bayes_curves(
+  lineup_example,
+  response_categories = "simple",
+  prior_grid = seq(0.01, 0.99, 0.01),
+  gain = "entropy"
+)
+plot_bayes_information_gain(bayes_entropy)
 
 ## ----bayes-confidence---------------------------------------------------------
 bayes_conf <- make_bayes_curves(
@@ -211,7 +220,7 @@ knitr::kable(
                        utility_rule(util_proc_b$max_utility)),
     check.names = FALSE
   ),
-  caption = "Expected utility at the optimal confidence criterion, simulated data (200 target-present and 200 target-absent lineups per procedure)."
+  caption = "Expected utility at the optimal confidence criterion, simulated data (400 target-present and 400 target-absent lineups per procedure)."
 )
 
 ## ----utility-base-rates-------------------------------------------------------

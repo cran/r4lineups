@@ -21,7 +21,10 @@ bootstrap_anri(
 
 \item{confidence_bins}{Numeric vector of bin edges}
 
-\item{choosers_only}{Logical. Whether to analyze only suspect IDs (default = TRUE)}
+\item{choosers_only}{Logical. If \code{TRUE} (default), suspect
+identifications are analysed. If \code{FALSE}, choosers are analysed:
+identifications, with target-present filler IDs excluded, as with
+\code{make_calibration_data(population = "choosers")}.}
 
 \item{lineup_size}{Integer. Lineup size (default = 6)}
 
@@ -63,7 +66,8 @@ percentile method.
 }
 \details{
 Bootstrap resampling procedure:
-1. Resample observations with replacement
+1. Resample lineups with replacement, separately within the target-present
+   and target-absent lineups, so both totals stay fixed
 2. Compute ANRI for each bootstrap sample
 3. Construct percentile-based confidence interval
 

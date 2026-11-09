@@ -56,6 +56,11 @@ Response categories are defined as combinations of identification decision
 (suspect/filler/reject) and confidence level or bin. This function counts
 the frequency of each response category separately for target-present
 (guilty) and target-absent (innocent) lineups.
+
+When no innocent suspect is designated (\code{innocent_suspect =
+"estimated"}, or \code{"auto"} on such data), \code{1 / lineup_size} of each
+target-absent filler count is moved into the matching suspect category, so
+the result assumes a fair lineup of \code{lineup_size} members.
 }
 \examples{
 data(lineup_example)

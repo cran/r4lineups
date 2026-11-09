@@ -2,7 +2,7 @@
 #'
 #' Computes ANRI, a bias-corrected version of NRI following Yaniv et al. (1991).
 #' ANRI adjusts NRI for the number of confidence bins and sample size, providing
-#' more accurate estimates especially when J (bins) is small relative to N.
+#' more accurate estimates especially when J (bins) is large relative to N.
 #'
 #' @param data A dataframe with the following columns:
 #'   \itemize{
@@ -11,7 +11,10 @@
 #'     \item confidence: Numeric. Confidence rating
 #'   }
 #' @param confidence_bins Numeric vector of bin edges (required for ANRI)
-#' @param choosers_only Logical. Whether to analyze only suspect IDs (default = TRUE)
+#' @param choosers_only Logical. If \code{TRUE} (default), suspect
+#'   identifications are analysed. If \code{FALSE}, choosers are analysed:
+#'   identifications, with target-present filler IDs excluded, as with
+#'   \code{make_calibration_data(population = "choosers")}.
 #' @param lineup_size Integer. Lineup size (default = 6)
 #' @param confidence_scale How the confidence scale is interpreted: "auto" (default),
 #'   "0-1", or "0-100". See \code{\link{make_calibration_data}}.
@@ -44,7 +47,9 @@
 #'
 #' **When to use ANRI vs NRI:**
 #' \itemize{
-#'   \item Use ANRI when J is small (e.g., 3-5 bins)
+#'   \item The upward bias of NRI is about (J - 1) / N, so the correction is
+#'     largest when J / N is not negligible: many bins, modest N, or both
+#'     (J = 5, N = 400 gives .01; J = 11, N = 50 gives .20)
 #'   \item Use ANRI when N is modest (e.g., < 200)
 #'   \item Use ANRI when comparing across different numbers of bins
 #'   \item NRI is asymptotically unbiased as N approaches infinity
@@ -97,7 +102,7 @@ compute_anri <- function(data,
   cal_obj <- make_calibration_data(
     data,
     confidence_bins = confidence_bins,
-    choosers_only = choosers_only,
+    population = if (choosers_only) "suspect_ids" else "choosers",
     lineup_size = lineup_size,
     confidence_scale = confidence_scale,
     innocent_suspect = innocent_suspect
@@ -135,7 +140,10 @@ compute_anri <- function(data,
 #'
 #' @param data Dataframe with standard lineup format
 #' @param confidence_bins Numeric vector of bin edges
-#' @param choosers_only Logical. Whether to analyze only suspect IDs (default = TRUE)
+#' @param choosers_only Logical. If \code{TRUE} (default), suspect
+#'   identifications are analysed. If \code{FALSE}, choosers are analysed:
+#'   identifications, with target-present filler IDs excluded, as with
+#'   \code{make_calibration_data(population = "choosers")}.
 #' @param lineup_size Integer. Lineup size (default = 6)
 #' @param confidence_scale How the confidence scale is interpreted: "auto" (default),
 #'   "0-1", or "0-100". See \code{\link{make_calibration_data}}.
@@ -156,7 +164,8 @@ compute_anri <- function(data,
 #'
 #' @details
 #' Bootstrap resampling procedure:
-#' 1. Resample observations with replacement
+#' 1. Resample lineups with replacement, separately within the target-present
+#'    and target-absent lineups, so both totals stay fixed
 #' 2. Compute ANRI for each bootstrap sample
 #' 3. Construct percentile-based confidence interval
 #'
@@ -267,7 +276,10 @@ bootstrap_anri <- function(data,
 #' @param data Dataframe with standard lineup format plus a grouping variable
 #' @param group_var Character. Name of grouping variable (must have exactly 2 levels)
 #' @param confidence_bins Numeric vector of bin edges
-#' @param choosers_only Logical. Whether to analyze only suspect IDs (default = TRUE)
+#' @param choosers_only Logical. If \code{TRUE} (default), suspect
+#'   identifications are analysed. If \code{FALSE}, choosers are analysed:
+#'   identifications, with target-present filler IDs excluded, as with
+#'   \code{make_calibration_data(population = "choosers")}.
 #' @param lineup_size Integer. Lineup size (default = 6)
 #' @param confidence_scale How the confidence scale is interpreted: "auto" (default),
 #'   "0-1", or "0-100". See \code{\link{make_calibration_data}}.
@@ -565,7 +577,8 @@ plot_anri_difference_distribution <- function(compare_obj) {
 #' @export
 print.lineup_anri <- function(x, ...) {
   cat("\n=== ANRI (Adjusted Normalized Resolution Index) ===\n\n")
-  cat("Analysis type:", ifelse(x$choosers_only, "Choosers only\n", "All responses\n"))
+  cat("Responses:", ifelse(x$choosers_only, "Suspect identifications\n",
+                            "Choosers (target-present filler IDs excluded)\n"))
   cat("Total N:", x$n_total, "\n")
   cat("Number of bins:", x$n_bins, "\n\n")
 

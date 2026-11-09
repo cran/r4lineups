@@ -32,7 +32,11 @@ Default = 0.5.}
   \item fp: False positive (innocent suspect ID) - typically very negative
   \item tn: True negative (correct rejection of innocent) - typically positive
 }
-Default: c(tp=1, fn=-0.5, fp=-2, tn=0.5)}
+Default: c(tp=1, fn=-0.5, fp=-2, tn=0.5).
+Only the differences \code{tp - fn} and \code{tn - fp} affect the optimal
+rule and any utility difference between procedures; the signs and absolute
+levels do not. The trade-off between the two kinds of error is the ratio of
+those differences (2.5 to 1.5 for the default).}
 
 \item{lineup_size}{Integer. Number of people in lineup (default = 6).
 Used to estimate false IDs from filler choices.}

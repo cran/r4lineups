@@ -94,10 +94,18 @@ not implement a paired or clustered bootstrap.
 
 **Interpretation:**
 \itemize{
-  \item Positive pAUC difference: Condition 1 has better discriminability
-  \item Negative pAUC difference: Condition 2 has better discriminability
-  \item p < 0.05: Significant difference between conditions
+  \item Positive pAUC difference: Condition 1 has the larger pAUC over the
+    shared false-ID range
+  \item Negative pAUC difference: Condition 2 has the larger pAUC over the
+    shared false-ID range
+  \item p < 0.05: Significant difference in pAUC between conditions; otherwise
+    there is no significant difference
 }
+
+The comparison covers only the shared false-ID range and uses suspect IDs
+only, so it is not a general statement about discriminability. A common-range
+pAUC can mislead when a procedure raises both culprit and innocent-suspect
+IDs (Smith et al., 2019).
 
 The independent-sample bootstrap estimates uncertainty in an empirical
   partial-area functional; the final comparison uses a normal/Wald interval.
@@ -125,6 +133,12 @@ plot(comparison)
 
 }
 \references{
+Smith, A. M., Lampinen, J. M., Wells, G. L., Smalarz, L., & Mackovichova,
+S. (2019). Deviation from perfect performance measures the diagnostic
+utility of eyewitness lineups but partial area under the ROC curve does
+not. \emph{Journal of Applied Research in Memory and Cognition, 8}(1),
+50-59. \doi{10.1016/j.jarmac.2018.09.003}
+
 Mickes, L., Seale-Carlisle, T. M., Chen, X., & Boogert, S. (2024). pyWitness 1.0:
 A python eyewitness identification analysis toolkit. \emph{Behavior Research
 Methods, 56}, 1533-1550.

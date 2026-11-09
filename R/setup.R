@@ -21,11 +21,11 @@
 #'   \item numpy - Numerical computing
 #'   \item tf-keras - TensorFlow/Keras backend
 #'   \item mediapipe - For 478-point face mesh (optional but recommended)
-#'   \item retinaface - Best face detector
+#'   \item retinaface - Face detector (the package default)
 #' }
 #'
 #' \strong{Python version.} TensorFlow publishes wheels for a limited range of
-#' Python versions (currently 3.9 to 3.12). On a machine whose default
+#' Python versions (currently 3.9 to 3.13). On a machine whose default
 #' interpreter is newer than that, pip finds no TensorFlow distribution at all
 #' and the install fails partway through with
 #' \code{No matching distribution found for tensorflow}, after downloading the
@@ -291,7 +291,7 @@ check_python_deps <- function(verbose = TRUE) {
 #'   \item OpenFace (128-d) - Open source
 #'   \item DeepFace (4096-d) - Facebook's model
 #'   \item DeepID (160-d) - Compact model
-#'   \item ArcFace (512-d) - State-of-the-art, recommended
+#'   \item ArcFace (512-d) - Package default
 #'   \item Dlib (128-d) - Lightweight
 #'   \item SFace (128-d) - Lightweight
 #'   \item GhostFaceNet (512-d) - Efficient
@@ -324,9 +324,10 @@ available_models <- function() {
 #' @return Character vector of detector names.
 #'
 #' @details
-#' Available detectors (in rough order of accuracy/speed tradeoff):
+#' Available detectors (not ranked here; accuracy and speed depend on the
+#' images and the installed version):
 #' \itemize{
-#'   \item retinaface - Most accurate, recommended for research
+#'   \item retinaface - Package default
 #'   \item mtcnn - Good accuracy, moderate speed
 #'   \item mediapipe - Fast, good for real-time
 #'   \item opencv - Fastest, less accurate
@@ -359,7 +360,7 @@ available_detectors <- function() {
 # Minimum and maximum Python versions for which TensorFlow publishes wheels.
 # Update these when TensorFlow's supported range changes.
 .tf_python_min <- "3.9"
-.tf_python_max <- "3.12"
+.tf_python_max <- "3.13"
 
 
 # Resolves the Python interpreter reticulate would use and checks it against the

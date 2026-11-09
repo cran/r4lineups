@@ -67,6 +67,9 @@ where:
 Higher EIG values indicate more diagnostic procedures. EIG = 0 means no
 information gain (responses don't distinguish guilty from innocent).
 The maximum EIG is the prior entropy; it is 1 bit only at prior guilt 0.5.
+Without a designated innocent suspect, EIG assumes a fair lineup
+(\code{1 / lineup_size} of target-absent filler choices are treated as
+innocent-suspect identifications; see \code{\link{make_eig_data}}).
 }
 \examples{
 # Compute EIG with binned confidence

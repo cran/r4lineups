@@ -1,7 +1,7 @@
-#' Compute Full ROC Data for Lineup Identification (Smith & Yang, 2020)
+#' Compute Full ROC Data for Lineup Identification (Smith, Yang & Wells, 2020)
 #'
 #' Computes full Receiver Operating Characteristic (ROC) data using ALL response
-#' categories (suspect ID, filler ID, rejection) following Smith & Yang (2020).
+#' categories (suspect ID, filler ID, rejection) following Smith, Yang & Wells (2020).
 #' This method distinguishes between investigator discriminability and eyewitness
 #' discriminability.
 #'
@@ -17,7 +17,9 @@
 #' @param order Character. Method for ordering response categories:
 #'   \itemize{
 #'     \item "diagnosticity": Order by diagnosticity ratio (DR = HR/FAR) (default)
-#'     \item "apriori": Use a-priori ordering (suspect high conf → filler/reject low conf)
+#'     \item "apriori": The a priori order of Smith, Yang and Wells (2020):
+#'       suspect IDs from high to low confidence, then rejections and filler IDs
+#'       alternately from low to high confidence (rejection first at each level)
 #'   }
 #' @param lineup_size Integer. Number of people in the lineup (default = 6)
 #' @param epsilon Numeric. Small value to add when FAR = 0 to avoid infinite DR (default = 0.001)
@@ -33,7 +35,7 @@
 #'   }
 #'
 #' @details
-#' This function implements the "full ROC" method described in Smith & Yang (2020).
+#' This function implements the "full ROC" method described in Smith, Yang & Wells (2020).
 #' Unlike traditional partial ROC curves that only use suspect identifications,
 #' this method uses ALL eyewitness responses:
 #' \itemize{
@@ -46,6 +48,12 @@
 #' These are ordered by their diagnosticity ratio (HR/FAR) or by a-priori ordering,
 #' then cumulative hit and false alarm rates are computed to form the full ROC curve.
 #'
+#' Without a designated innocent suspect, target-absent filler IDs are split
+#' into an estimated innocent-suspect share (1 / lineup size) and the remainder.
+#' This assumes the innocent suspect is chosen at the average filler rate, which
+#' holds for a fair lineup; with a biased lineup the estimated false-alarm rates
+#' are wrong, and a designated innocent suspect should be used when available.
+#'
 #' The full ROC provides a threshold-free measure of investigator discriminability—
 #' the ability to distinguish guilty from innocent suspects using ALL available
 #' eyewitness evidence.
@@ -57,7 +65,7 @@
 #' above 0.5, with the bias growing with the number of decision-by-confidence
 #' cells and shrinking with sample size. For inference or comparisons across
 #' conditions, prefer \code{order = "apriori"} (the theoretically fixed
-#' ordering suggested by Smith & Yang, 2020) or compare against a permutation
+#' ordering used by Smith, Yang & Wells, 2020, and Yang & Smith, 2023) or compare against a permutation
 #' baseline.
 #'
 #' @examples
@@ -211,25 +219,18 @@ make_fullroc_data <- function(data,
       order(diagnosticity_table$diagnosticity_ratio, decreasing = TRUE),
     ]
   } else {
-    # A-priori ordering: suspect (high→low conf) → filler (low→high conf) → reject (low→high conf)
-    diagnosticity_table$decision_order <- factor(
-      diagnosticity_table$decision,
-      levels = c("suspect", "filler", "reject")
-    )
-
-    # Confidence rank within a decision. Use the bin INDEX (1 = lowest bin), not
-    # as.numeric() of the label: with conf_bins the labels are "conf_1", "conf_2", ...
-    # which as.numeric() turns into NA, silently breaking the ordering.
+    # A-priori ordering (Smith, Yang & Wells, 2020, p. 604; Yang & Smith, 2023):
+    # suspect IDs from high to low confidence, then rejections and filler IDs
+    # alternately from low to high confidence, with the rejection first at each
+    # confidence level. Use the bin INDEX (1 = lowest bin), not as.numeric() of
+    # the label: with conf_bins the labels are "conf_1", "conf_2", ...
     conf_rank <- as.integer(factor(diagnosticity_table$conf_bin, levels = conf_levels))
-
-    # For suspect: high confidence first
-    # For filler and reject: low confidence first (more diagnostic of innocence when rare)
+    is_suspect <- diagnosticity_table$decision == "suspect"
     diagnosticity_table <- diagnosticity_table[
       order(
-        diagnosticity_table$decision_order,
-        ifelse(diagnosticity_table$decision == "suspect",
-               -conf_rank,   # High conf first for suspect
-               conf_rank)    # Low conf first for filler/reject
+        !is_suspect,                                   # suspect IDs first
+        ifelse(is_suspect, -conf_rank, conf_rank),     # then by confidence
+        diagnosticity_table$decision == "filler"       # rejection before filler
       ),
     ]
   }
@@ -280,10 +281,10 @@ make_fullroc_data <- function(data,
 }
 
 
-#' Compute and Plot Full ROC Curve (Smith & Yang, 2020)
+#' Compute and Plot Full ROC Curve (Smith, Yang & Wells, 2020)
 #'
 #' Main function to compute and plot a full ROC curve using all eyewitness responses
-#' (suspect ID, filler ID, rejection) following Smith & Yang (2020).
+#' (suspect ID, filler ID, rejection) following Smith, Yang & Wells (2020).
 #'
 #' @param data A dataframe with columns: target_present, identification, confidence
 #' @param conf_bins Numeric vector for confidence bin boundaries (default = NULL)
@@ -382,14 +383,14 @@ make_fullroc <- function(data,
 #' Plot Full ROC Curve
 #'
 #' Creates a ggplot2 visualization of full ROC data from lineup identification
-#' experiments using the Smith & Yang (2020) method.
+#' experiments using the Smith, Yang & Wells (2020) method.
 #'
 #' @param fullroc_obj Either the list returned by \code{make_fullroc_data()} or
 #'   the \code{lineup_fullroc} object returned by \code{make_fullroc()}. The two
 #'   record the ordering method in different places, and both are accepted.
 #' @param show_auc Logical. Whether to display AUC value on plot (default = TRUE)
 #' @param point_labels Logical. Whether to label points (default = FALSE, can be crowded)
-#' @param title Character. Plot title (default = "Full ROC Curve (Smith & Yang, 2020)")
+#' @param title Character. Plot title (default = "Full ROC Curve (Smith, Yang & Wells, 2020)")
 #'
 #' @return A ggplot2 object. Being an ordinary ggplot, it can be modified with
 #'   the usual \code{+} syntax, e.g. \code{p + ggplot2::theme_minimal()}.
@@ -404,7 +405,7 @@ make_fullroc <- function(data,
 plot_fullroc <- function(fullroc_obj,
                          show_auc = TRUE,
                          point_labels = FALSE,
-                         title = "Full ROC Curve (Smith & Yang, 2020)") {
+                         title = "Full ROC Curve (Smith, Yang & Wells, 2020)") {
 
   roc_data <- fullroc_obj$roc_data
   auc <- fullroc_obj$auc
@@ -478,7 +479,7 @@ plot_fullroc <- function(fullroc_obj,
 #' @param ... Additional arguments (ignored)
 #' @export
 print.lineup_fullroc <- function(x, show_diagnosticity = TRUE, ...) {
-  cat("\n=== Full Lineup ROC Analysis (Smith & Yang, 2020) ===\n\n")
+  cat("\n=== Full Lineup ROC Analysis (Smith, Yang & Wells, 2020) ===\n\n")
   cat("Full AUC:", round(x$auc, 3), "\n")
   cat("Target-present trials (N):", x$summary$n_target_present, "\n")
   cat("Target-absent trials (N):", x$summary$n_target_absent, "\n")

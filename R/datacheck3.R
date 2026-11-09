@@ -4,9 +4,15 @@
 #'
 #'@param lineup_tab A table of lineup choices
 #'@param k Nominal size (i.e., total number of members in lineup)
-#'@details This function ensures that a non-selected lineup member is not accidentally
-#'         omitted from the data due to lack of selection by all mock witnesses.
-#'         It functions as a check that the total number of lineup members is accurate.
+#'@details This function checks that the table has no more than \code{k} cells,
+#'         that its counts are finite and non-negative, and that its names (if
+#'         any) are integer positions between 1 and \code{k}. An unnamed table
+#'         must have exactly \code{k} cells. A named table with fewer than
+#'         \code{k} positions, such as \code{table()} of choices in which one
+#'         member was never chosen, is accepted, because the missing member cannot
+#'         be detected from the table, so \code{k} must be supplied correctly by
+#'         the user. \code{lineup_table()} builds a table with a cell for every
+#'         member.
 #'@examples
 #' # Table of choices from 50 mock witnesses to a 6-member lineup
 #' set.seed(1)

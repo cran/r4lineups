@@ -53,8 +53,10 @@
 #'   \item \eqn{d'(GFp) = z(G) - z(Fp)}: guilty suspect versus TP fillers;
 #'   \item \eqn{d'(IFa) = z(I) - z(Fa)}: innocent suspect versus TA fillers,
 #'     which Lee and Penrod treat as TA lineup bias;
-#'   \item \eqn{d'(FaFp) = z(Fa) - z(Fp)}: the greater appeal of TA than TP
-#'     fillers (differential filler siphoning);
+#'   \item \eqn{d'(FaFp) = z(Fa) - z(Fp)}: the difference in filler-choice
+#'     rate between TA and TP lineups (differential filler siphoning). It is
+#'     expected to be positive partly because the culprit draws choices in TP
+#'     lineups, and it assumes that one filler rate is shared by all fillers;
 #'   \item \eqn{d'(RaRp) = z(Ra) - z(Rp)}: discrimination of culprit presence
 #'     from culprit absence (detection).
 #' }
@@ -176,6 +178,10 @@ make_multid <- function(data = NULL,
   n_tp <- sum(raw[c("G", "Fp", "Rp")])
   n_ta <- sum(raw[c("I", "Fa", "Ra")], na.rm = TRUE)
 
+  if (correction == "none") {
+    obs <- unlist(split[c("G", "Fp", "Rp", "I", "Fa", "Ra")])
+    .warn_uncorrected_boundary(obs, rep(c(n_tp, n_ta), each = 3))
+  }
   est <- .multid_compute(split, n_tp, n_ta, lineup_size, filler_rate, correction)
 
   boot_draws <- NULL

@@ -62,12 +62,15 @@ func_size_bayes <- function(lineup_vec, target_pos,
                              alpha = 0.5, S = 10000,
                              credible_mass = 0.95, threshold = NULL) {
   lineup_vec <- typecheck(lineup_vec)
-  if (!is.numeric(target_pos) || length(target_pos) != 1)
-    stop("target_pos must be a single numeric value.", call. = FALSE)
+  if (!is.numeric(target_pos) || length(target_pos) != 1L ||
+      !is.finite(target_pos) || target_pos < 1 || target_pos != floor(target_pos))
+    stop("target_pos must be one positive integer member position.", call. = FALSE)
   alpha_val <- .resolve_alpha_scalar(alpha)
-  if (!is.numeric(S) || S < 1)
+  if (!is.numeric(S) || length(S) != 1L || !is.finite(S) ||
+      S < 1 || S != floor(S))
     stop("S must be a positive integer.", call. = FALSE)
-  if (!is.numeric(credible_mass) || credible_mass <= 0 || credible_mass >= 1)
+  if (!is.numeric(credible_mass) || length(credible_mass) != 1L ||
+      !is.finite(credible_mass) || credible_mass <= 0 || credible_mass >= 1)
     stop("credible_mass must be in (0, 1).", call. = FALSE)
   if (!is.null(threshold) && (!is.numeric(threshold) || length(threshold) != 1))
     stop("threshold must be a single numeric value.", call. = FALSE)

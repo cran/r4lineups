@@ -13,17 +13,19 @@ the target was present}
 \item{lineup_abs}{A numeric vector of lineup choices for a lineup in which
 the target was absent}
 
-\item{k1}{Number of targets in TP lineup}
+\item{k1}{Number of members (nominal size) of the TP lineup}
 
-\item{k2}{Number of targets in TA lineup}
+\item{k2}{Number of members (nominal size) of the TA lineup}
 }
 \description{
 Checks that number of lineup choices contained in a vector is accurate
 }
 \details{
-This function ensures that a non-selected lineup member is not accidentally
-        omitted from the dataframe due to lack of selection by all mock witnesses.
-        It functions as a check that the total number of lineup members is accurate
+This function applies \code{datacheck1()} to each lineup: every choice
+        must be an integer position between 1 and the lineup's \code{k}. It
+        cannot detect a lineup member that no mock witness chose, because such
+        a member does not appear in the choices at all, so \code{k1} and
+        \code{k2} must be supplied correctly by the user.
 }
 \examples{
 # Target-present and target-absent lineups of 6 members each

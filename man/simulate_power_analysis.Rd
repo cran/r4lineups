@@ -7,7 +7,7 @@
 simulate_power_analysis(
   sample_sizes,
   d_prime,
-  d_prime_null = 0,
+  d_prime_2 = 0,
   n_simulations = 1000,
   test_function = NULL,
   alpha = 0.05,
@@ -15,6 +15,7 @@ simulate_power_analysis(
   n_bootstrap = 200,
   seed = NULL,
   verbose = TRUE,
+  d_prime_null = NULL,
   ...
 )
 }
@@ -26,10 +27,14 @@ in the whole simulated experiment.}
 
 \item{d_prime}{Numeric. Discriminability of the condition of interest.}
 
-\item{d_prime_null}{Numeric. Discriminability of the comparison condition.
-Defaults to 0, which asks how often the procedure can be shown to
-discriminate better than chance. Set it to a non-zero value to ask the more
-usual question of how often two working procedures can be told apart.}
+\item{d_prime_2}{Numeric. Generating discriminability of the second
+(comparison) condition. It is not the null hypothesis: the test asks
+whether the two conditions differ. The default, 0, is a condition with no
+memory of the culprit, so it asks how often the procedure can be shown to
+discriminate better than chance. For a comparison of two working
+procedures, set it to a realistic value (for example \code{d_prime = 1.5},
+\code{d_prime_2 = 1.2}). Equal values estimate the test's rejection rate
+under the null.}
 
 \item{n_simulations}{Integer. Number of simulated studies per sample size
 (default = 1000). Power is a proportion estimated from these, so its own
@@ -50,8 +55,14 @@ to a bootstrap comparison of partial AUC via \code{\link{compare_pauc}}.}
 
 \item{verbose}{Logical. Report progress (default = TRUE).}
 
+\item{d_prime_null}{Deprecated name for \code{d_prime_2}.}
+
 \item{...}{Additional arguments passed to simulate_lineup_data(), for example
-\code{conf_levels} or \code{foil_bias}.}
+\code{c_criterion}, \code{conf_levels} or \code{foil_bias}. Set
+\code{c_criterion} to match the rejection rate you expect: the default, 0,
+makes witnesses choose almost always under the MAX rule (see
+\code{\link{simulate_lineup_data}}), and the power then applies to that
+setting.}
 }
 \value{
 A dataframe of class \code{power_analysis} with columns:
@@ -82,9 +93,24 @@ is really there. Estimating it by simulation means specifying the effect,
 generating many studies of that size, applying the analysis you intend to
 use, and counting how often it reaches significance.
 
-That requires a null to test against, which is what \code{d_prime_null}
-supplies. Simulating a single condition and computing a statistic from it is
+That requires a second condition to compare against, which
+\code{d_prime_2} supplies; the null hypothesis is that the two conditions do
+not differ. Simulating a single condition and computing a statistic from it is
 not a power analysis, because no hypothesis is being tested.
+
+Each simulated study samples witnesses for one lineup set (one fixed foil
+structure) and gives every witness the same \eqn{d'} and criterion. The
+power is therefore for generalising over witnesses to these materials.
+Generalising over culprits and lineups as well needs sets sampled as units,
+and with few sets the effective sample size for that question is closer to
+the number of sets (Wells & Windschitl, 1999; Westfall, Kenny, & Judd,
+2014).
+
+Power is estimated from \code{n_simulations} studies, so it has Monte Carlo
+error, and each default test rests on \code{n_bootstrap} resamples. An
+estimated power of 1 (standard error 0) means only that the true power is
+high: by the rule of three, with 30 simulations it is above about
+\eqn{1 - 3/30 = 0.90} with 95\% confidence.
 }
 \examples{
 \donttest{
@@ -92,6 +118,7 @@ not a power analysis, because no hypothesis is being tested.
 power_res <- simulate_power_analysis(
   sample_sizes = c(50, 100),
   d_prime = 1.5,
+  c_criterion = 1.23,
   n_simulations = 8,
   n_bootstrap = 50,
   conf_levels = 5,
@@ -100,6 +127,16 @@ power_res <- simulate_power_analysis(
 print(power_res)
 }
 
+}
+\references{
+Wells, G. L., & Windschitl, P. D. (1999). Stimulus sampling and social
+psychological experimentation. \emph{Personality and Social Psychology
+Bulletin, 25}, 1115--1125.
+
+Westfall, J., Kenny, D. A., & Judd, C. M. (2014). Statistical power and
+optimal design in experiments in which samples of participants respond to
+samples of stimuli. \emph{Journal of Experimental Psychology: General,
+143}, 2020--2045.
 }
 \seealso{
 \code{\link{compare_pauc}}, \code{\link{simulate_lineup_data}}

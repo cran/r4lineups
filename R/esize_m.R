@@ -73,9 +73,8 @@ esize_m <- function (lineup_tab, k, both =FALSE){
 
   #Output
   if (both) {
-    cat("Effective size (Malpass, 1981) = ", esize_ma_a,"\n")
-    cat("Effective size (Malpass, 1981,","\n",
-        "            adj Tredoux, 1998) = ", esize_ma, "\n")
+    cat("Effective size (Malpass, 1981; null foils excluded) = ", esize_ma_a, "\n")
+    cat("Effective size (Tredoux, 1998, Eq. 5; nominal size kept) = ", esize_ma, "\n")
   }
   unname(esize_ma)
 }

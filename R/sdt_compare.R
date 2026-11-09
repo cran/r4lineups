@@ -1,8 +1,15 @@
 #' Bayesian Comparison of SDT Sensitivity (d') Between Two Conditions
 #'
 #' Computes a Bayesian posterior distribution for the difference
-#' \eqn{\Delta d' = d'_A - d'_B} using independent Jeffreys Beta posteriors
-#' for the hit and false-alarm rates in each condition.
+#' \eqn{\Delta d' = d'_A - d'_B} using independent Beta posteriors (Jeffreys
+#' prior by default) for the hit and false-alarm rates in each condition.
+#'
+#' For lineup data, a hit is a correct identification of the culprit in a
+#' target-present lineup and a false alarm is an identification of the designated
+#' innocent suspect in a target-absent lineup; filler identifications and
+#' rejections are misses and correct rejections. The d' is then a yes/no
+#' analogue, an approximation that ignores which lineup member was chosen (see
+#' \code{vignette("sdt_summary_comparisons")}).
 #'
 #' @param hits_A,misses_A,fas_A,crs_A Integer counts for condition A.
 #' @param hits_B,misses_B,fas_B,crs_B Integer counts for condition B.
@@ -53,7 +60,9 @@
 #'   \code{\link{diag_ratio_T_bayes}}
 #'
 #' @examples
-#' # Simultaneous vs. sequential lineup comparison
+#' # Simultaneous vs. sequential lineup comparison. The counts are illustrative,
+#' # and d' from collapsed counts is a yes/no analogue, an approximation for
+#' # lineups (hits and false alarms defined as in the description).
 #' res <- sdt_compare(
 #'   hits_A = 45, misses_A = 55, fas_A = 12, crs_A = 88,
 #'   hits_B = 38, misses_B = 62, fas_B = 10, crs_B = 90,
@@ -137,8 +146,15 @@ sdt_compare <- function(hits_A, misses_A, fas_A, crs_A,
 print.sdt_compare <- function(x, digits = 3, ...) {
   pct <- round(x$credible_mass * 100)
   cat(sprintf("Bayesian SDT Comparison: %s vs %s\n", x$label_A, x$label_B))
-  cat(sprintf("  Prior: Jeffreys Beta(%.2f, %.2f) on HR and FAR\n",
-              x$prior_alpha, x$prior_alpha))
+  prior_name <- if (isTRUE(all.equal(x$prior_alpha, 0.5))) {
+    "Jeffreys "
+  } else if (isTRUE(all.equal(x$prior_alpha, 1))) {
+    "uniform "
+  } else {
+    ""
+  }
+  cat(sprintf("  Prior: %sBeta(%.2f, %.2f) on HR and FAR\n",
+              prior_name, x$prior_alpha, x$prior_alpha))
   cat(sprintf("  Posterior mean d': %s = %.3f, %s = %.3f\n",
               x$label_A, x$dprime_A_mean, x$label_B, x$dprime_B_mean))
   cat(sprintf("  Delta d' (%s - %s):\n", x$label_A, x$label_B))

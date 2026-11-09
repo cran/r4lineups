@@ -17,14 +17,17 @@ df <- data.frame(
 )
 df$is_old <- rbinom(nrow(df), 1, 0.5)
 
-# True d' = 1.2, with both participants and items varying in difficulty
+# Average d' = 1.2. Participants and items differ in their tendency to say
+# "old" (shifts, which enter on old and new trials alike), and participants
+# also differ in their own d' (slope deviations, which enter on old trials only)
 subj_shift <- rnorm(n_subj,  0, 0.4)
 item_shift <- rnorm(n_items, 0, 0.4)
+subj_slope <- rnorm(n_subj,  0, 0.5)
 
 df$said_old <- rbinom(
   nrow(df), 1,
-  stats::pnorm(1.2 * df$is_old + subj_shift[df$subject_id] +
-                 item_shift[df$item_id])
+  stats::pnorm((1.2 + subj_slope[df$subject_id]) * df$is_old +
+                 subj_shift[df$subject_id] + item_shift[df$item_id])
 )
 
 ## ----glm_fit------------------------------------------------------------------
@@ -39,7 +42,7 @@ glmm_fit <- fit_sdt_glmm(df,
                          subject_id   = "subject_id",
                          item_id      = "item_id",
                          link         = "probit",
-                         random_slope = FALSE)
+                         random_slope = TRUE)
 extract_sdt_metrics(glmm_fit)
 
 ## ----crossed_effects----------------------------------------------------------
@@ -54,7 +57,8 @@ structures <- list(
                                              subject_id = "subject_id",
                                              item_id = "item_id",
                                              link = "probit",
-                                             random_slope = FALSE)
+                                             random_slope = FALSE),
+  "GLMM: subject slope and item" = glmm_fit
 )
 
 comparison <- do.call(rbind, lapply(names(structures), function(nm) {
@@ -66,34 +70,41 @@ comparison <- do.call(rbind, lapply(names(structures), function(nm) {
     `Random effects` = nm,
     `d'`             = round(co[term, "Estimate"], 3),
     `SE`             = round(co[term, "Std. Error"], 4),
+    `z`              = round(co[term, "z value"], 1),
     check.names = FALSE
   )
 }))
 
 knitr::kable(
   comparison, row.names = FALSE,
-  caption = "Estimated d' and its standard error under three random-effect structures. Simulated data, 40 participants by 60 items, true d' = 1.2."
+  caption = "Estimated d', its standard error and z under four random-effect structures. Simulated data, 40 participants by 60 items, average d' = 1.2."
 )
 
 ## ----attenuation--------------------------------------------------------------
-vc <- as.data.frame(lme4::VarCorr(structures[["GLMM: subject and item"]]))
-total_var <- sum(vc$vcov)
+fit_re <- structures[["GLMM: subject slope and item"]]
+vc     <- lme4::VarCorr(fit_re)
+v_subj <- vc[[".subject_id"]]
+v_item <- vc[[".item_id"]][1, 1]
+v_x    <- function(x) v_subj[1, 1] + 2 * x * v_subj[1, 2] +
+  x^2 * v_subj[2, 2] + v_item
 
-cond <- lme4::fixef(structures[["GLMM: subject and item"]])[[".is_old_c"]]
+b    <- lme4::fixef(fit_re)
+cond <- b[[".is_old_c"]]
+pred <- (b[["(Intercept)"]] + 0.5 * cond) / sqrt(1 + v_x(0.5)) -
+  (b[["(Intercept)"]] - 0.5 * cond) / sqrt(1 + v_x(-0.5))
 marg <- stats::coef(structures[["GLM: no clustering"]])[[".is_old_c"]]
 
 knitr::kable(
   data.frame(
-    Quantity = c("Conditional d' (GLMM)",
-                 "Random-effect variance, total",
-                 "Attenuation factor",
-                 "Conditional / attenuation factor",
+    Quantity = c("Conditional d' (GLMM with random slope)",
+                 "Random-effect variance, new items",
+                 "Random-effect variance, old items",
+                 "Predicted marginal d'",
                  "Marginal d' (GLM), observed"),
-    Value = round(c(cond, total_var, sqrt(1 + total_var),
-                    cond / sqrt(1 + total_var), marg), 3)
+    Value = round(c(cond, v_x(-0.5), v_x(0.5), pred, marg), 3)
   ),
   row.names = FALSE,
-  caption = "Marginal and conditional d' are different quantities related by a known factor. Simulated data."
+  caption = "Marginal and conditional d' are different quantities related by a known attenuation. Simulated data."
 )
 
 ## ----covariates---------------------------------------------------------------

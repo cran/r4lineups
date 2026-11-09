@@ -238,6 +238,7 @@ test_that("simulated data works with r4lineups functions", {
 })
 
 test_that("simulate_power_analysis returns the documented structure", {
+  skip_on_cran()
   power_result <- simulate_power_analysis(
     sample_sizes = c(40),
     d_prime = 1.5,
@@ -267,7 +268,7 @@ test_that("power is not trivially 1 when there is no effect to detect", {
   no_effect <- suppressWarnings(simulate_power_analysis(
     sample_sizes = c(40),
     d_prime = 1.0,
-    d_prime_null = 1.0,
+    d_prime_2 = 1.0,
     n_simulations = 12,
     n_bootstrap = 25,
     conf_levels = 5,
@@ -290,13 +291,13 @@ test_that("simulate_power_analysis validates its inputs", {
   )
   expect_error(
     simulate_power_analysis(sample_sizes = c(50), d_prime = 1,
-                            d_prime_null = -1),
+                            d_prime_2 = -1),
     "non-negative"
   )
   # No detectable effect is a user error worth flagging, not a silent result
   expect_warning(
     simulate_power_analysis(sample_sizes = c(30), d_prime = 1,
-                            d_prime_null = 1, n_simulations = 2,
+                            d_prime_2 = 1, n_simulations = 2,
                             n_bootstrap = 20, conf_levels = 5, verbose = FALSE),
     "null rejection rate"
   )

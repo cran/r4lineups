@@ -22,10 +22,13 @@ Creates a ggplot visualization showing the mistaken identification rate
 }
 \details{
 The error rate is computed from target-absent (culprit-absent) lineups as:
-(suspect IDs + filler IDs) / total target-absent trials
+(suspect IDs + filler IDs) / target-absent trials in that confidence bin
 
-Higher confidence should generally be associated with lower error rates
-(better calibration).
+The denominator is the number of target-absent trials within the bin, so the
+value is the share of responses at that confidence that were identifications.
+It is not a calibration measure and need not fall as confidence rises: when
+rejections occur mainly at low confidence, the rate is near 1 in the higher
+bins.
 }
 \examples{
 data(lineup_example)

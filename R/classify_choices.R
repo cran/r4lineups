@@ -6,7 +6,9 @@
 #'
 #' @param data A data frame of lineup trials, one row per witness.
 #' @param member_col Name of the column holding the position of the lineup
-#'   member chosen, with \code{0} (or \code{NA}) denoting a rejection. Defaults
+#'   member chosen, with \code{0} denoting a rejection. \code{NA} is treated as a
+#'   missing response and gives \code{NA} in the outcome column, with a warning;
+#'   recode it to 0 first if it records a rejection. Defaults
 #'   to \code{"lineup_member"}.
 #' @param suspect_col Either the name of a column holding the suspect's position
 #'   for each trial, or a single number giving a suspect position common to all
@@ -102,13 +104,19 @@ classify_lineup_choices <- function(data,
     stop("Column '", member_col, "' must be numeric: the position of the lineup ",
          "member chosen, or 0 for a rejection.", call. = FALSE)
   }
-  # NA and 0 both denote "chose nobody"; normalising here keeps the comparison
-  # against suspect positions free of NA propagation.
+  # 0 denotes a rejection. NA is a missing response, not a rejection: a lost
+  # record and an observed rejection carry different information.
   if (any(!is.na(members) & (!is.finite(members) | members != floor(members)))) {
     stop("Chosen positions must be whole finite member positions or NA.", call. = FALSE)
   }
-  members <- ifelse(is.na(members), 0L, as.integer(members))
-  if (any(members < 0L)) {
+  missing_member <- is.na(members)
+  if (any(missing_member)) {
+    warning(sum(missing_member), " row(s) have a missing chosen position; their ",
+            "outcome is NA. Recode to 0 first if NA records a rejection.",
+            call. = FALSE)
+  }
+  members <- as.integer(members)
+  if (any(members < 0L, na.rm = TRUE)) {
     stop("Column '", member_col, "' contains negative positions.", call. = FALSE)
   }
 
@@ -143,7 +151,7 @@ classify_lineup_choices <- function(data,
       stop("k must be a single integer of at least 2.", call. = FALSE)
     }
     k <- as.integer(k)
-    if (any(members > k)) {
+    if (any(members > k, na.rm = TRUE)) {
       stop("Column '", member_col, "' contains positions greater than k = ", k,
            ".", call. = FALSE)
     }
@@ -158,7 +166,7 @@ classify_lineup_choices <- function(data,
   data[[into]] <- outcome
 
   if (!is.null(k)) {
-    chosen <- members[members > 0L]
+    chosen <- members[!is.na(members) & members > 0L]
     attr(data, "null_foils") <- setdiff(seq_len(k), unique(chosen))
   }
 

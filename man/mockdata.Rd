@@ -7,6 +7,9 @@
 \format{
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 94 rows and 3 columns.
 }
+\source{
+Mock-witness data from a study by Nortje and Tredoux (2012).
+}
 \usage{
 data(mockdata)
 }

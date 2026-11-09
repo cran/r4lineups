@@ -23,7 +23,9 @@ utils::globalVariables(c("z_far", "z_hr", "Criterion"))
 #'
 #' @return An S3 object of class "sdt_roc_fit" containing:
 #'   \itemize{
-#'     \item dprime: Overall discriminability (d')
+#'     \item dprime: Overall discriminability (d'). Under the unequal-variance
+#'       model this is d_a, the standardised separation
+#'       \eqn{\sqrt{2}\,\mathrm{intercept} / \sqrt{1 + \mathrm{slope}^2}}
 #'     \item criteria: Decision criterion for each confidence level (c values)
 #'     \item variance_ratio: Ratio of lure SD to target SD, the z-ROC slope
 #'       (if unequal_variance)
@@ -52,6 +54,8 @@ utils::globalVariables(c("z_far", "z_hr", "Criterion"))
 #'
 #' **Parameter Estimation**:
 #' - d' = average distance between distributions in standard deviation units
+#'   (under the unequal-variance model the reported value is d_a, which uses the
+#'   root mean square of the two standard deviations)
 #' - c = decision criterion (0 = unbiased, positive = conservative, negative = liberal)
 #' - Higher d' = better discriminability
 #'
@@ -333,7 +337,7 @@ fit_sdt_roc <- function(data,
   n_failed <- sum(!valid)
   boot_dprime[!valid] <- NA_real_
   boot_variance_ratio[!valid] <- NA_real_
-  if (n_failed == n_bootstrap) {
+  if (n_bootstrap > 0 && n_failed == n_bootstrap) {
     warning("All ", n_bootstrap, " bootstrap samples failed, so the bootstrap ",
             "intervals are NA",
             if (!is.null(first_error)) paste0(". First error: ", first_error),
@@ -374,7 +378,9 @@ print.sdt_roc_fit <- function(x, ...) {
                        "Equal Variance", "Unequal Variance"), "\n\n")
 
   cat("Parameters:\n")
-  cat("  d' (discriminability):", round(x$dprime, 3), "\n")
+  cat(ifelse(x$model_type == "unequal_variance",
+             "  d_a (discriminability):", "  d' (discriminability):"),
+      round(x$dprime, 3), "\n")
 
   if (!is.null(x$bootstrap_ci)) {
     cat(paste0("    ", 100 * x$bootstrap_ci$conf_level, "% CI: ["), round(x$bootstrap_ci$dprime_ci[1], 3), ",",
@@ -401,26 +407,6 @@ print.sdt_roc_fit <- function(x, ...) {
     Value = round(x$criteria, 3)
   )
   print(crit_df, row.names = FALSE)
-
-  cat("\nInterpretation:\n")
-  if (x$dprime < 0.5) {
-    cat("  - Poor discriminability (d' < 0.5)\n")
-  } else if (x$dprime < 1.0) {
-    cat("  - Weak discriminability (0.5 <= d' < 1.0)\n")
-  } else if (x$dprime < 2.0) {
-    cat("  - Moderate discriminability (1.0 <= d' < 2.0)\n")
-  } else {
-    cat("  - Strong discriminability (d' >= 2.0)\n")
-  }
-
-  mean_c <- mean(x$criteria, na.rm = TRUE)
-  if (abs(mean_c) < 0.2) {
-    cat("  - Approximately unbiased responding (mean c ~= 0)\n")
-  } else if (mean_c > 0) {
-    cat("  - Conservative bias (mean c > 0)\n")
-  } else {
-    cat("  - Liberal bias (mean c < 0)\n")
-  }
 
   invisible(x)
 }

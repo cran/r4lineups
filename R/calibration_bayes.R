@@ -12,6 +12,9 @@
 #'   confidence level as its own bin.
 #' @param choosers_only Logical. If \code{TRUE} (default), only suspect
 #'   identifications are included (standard eyewitness calibration practice).
+#'   If \code{FALSE}, choosers are included: identifications, with
+#'   target-present filler IDs excluded, as with
+#'   \code{make_calibration_data(population = "choosers")}.
 #' @param lineup_size Integer. Number of lineup members (default 6).
 #' @param confidence_scale How the confidence scale is interpreted: "auto" (default),
 #'   "0-1", or "0-100". See \code{\link{make_calibration_data}}.
@@ -88,14 +91,17 @@ calibration_bayes <- function(data,
                                innocent_suspect = "auto") {
   confidence_scale <- match.arg(confidence_scale)
   alpha_val <- .resolve_alpha_scalar(alpha)
-  if (!is.numeric(S) || S < 1)
+  if (!is.numeric(S) || length(S) != 1L || !is.finite(S) ||
+      S < 1 || S != floor(S))
     stop("S must be a positive integer.", call. = FALSE)
-  if (!is.numeric(credible_mass) || credible_mass <= 0 || credible_mass >= 1)
+  if (!is.numeric(credible_mass) || length(credible_mass) != 1L ||
+      !is.finite(credible_mass) || credible_mass <= 0 || credible_mass >= 1)
     stop("credible_mass must be in (0, 1).", call. = FALSE)
 
   freq <- make_calibration_data(data,
                                 confidence_bins = confidence_bins,
-                                choosers_only   = choosers_only,
+                                population = if (choosers_only)
+                                  "suspect_ids" else "choosers",
                                 lineup_size     = lineup_size,
                                 confidence_scale = confidence_scale,
                                 innocent_suspect = innocent_suspect)

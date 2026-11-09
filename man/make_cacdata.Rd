@@ -63,7 +63,11 @@ CAC analysis computes, for each confidence level:
 
 Explicit target-absent suspect IDs are used when present. Otherwise,
 target-absent filler IDs are divided by lineup size to estimate incorrect
-suspect IDs. The two estimators are never added together.
+suspect IDs. The two estimators are never added together. Dividing by lineup
+size assumes the innocent suspect is chosen at the average filler rate, which
+holds for a fair lineup; with a biased lineup the estimated false-ID rate and
+the accuracy are wrong, and a designated innocent suspect should be used when
+one is available.
 
 The count ratio equals the probability of guilt given a suspect ID only
 when the target-present and target-absent samples are the same size, which

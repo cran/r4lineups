@@ -8,7 +8,7 @@ plot_fullroc(
   fullroc_obj,
   show_auc = TRUE,
   point_labels = FALSE,
-  title = "Full ROC Curve (Smith & Yang, 2020)"
+  title = "Full ROC Curve (Smith, Yang & Wells, 2020)"
 )
 }
 \arguments{
@@ -20,7 +20,7 @@ record the ordering method in different places, and both are accepted.}
 
 \item{point_labels}{Logical. Whether to label points (default = FALSE, can be crowded)}
 
-\item{title}{Character. Plot title (default = "Full ROC Curve (Smith & Yang, 2020)")}
+\item{title}{Character. Plot title (default = "Full ROC Curve (Smith, Yang & Wells, 2020)")}
 }
 \value{
 A ggplot2 object. Being an ordinary ggplot, it can be modified with
@@ -28,7 +28,7 @@ A ggplot2 object. Being an ordinary ggplot, it can be modified with
 }
 \description{
 Creates a ggplot2 visualization of full ROC data from lineup identification
-experiments using the Smith & Yang (2020) method.
+experiments using the Smith, Yang & Wells (2020) method.
 }
 \examples{
 data(lineup_example)

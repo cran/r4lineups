@@ -111,10 +111,11 @@ esize_T_bayes <- function(lineup_tab,
     stop("lineup_tab must have at least one observation.", call. = FALSE)
   if (any(counts < 0))
     stop("lineup_tab cannot contain negative counts.", call. = FALSE)
-  if (length(S) != 1 || !is.finite(S) || S < 1)
+  if (!is.numeric(S) || length(S) != 1L || !is.finite(S) || S < 1 || S != floor(S))
     stop("S must be a positive integer.", call. = FALSE)
   S <- as.integer(S)
-  if (length(credible_mass) != 1 || credible_mass <= 0 || credible_mass >= 1)
+  if (!is.numeric(credible_mass) || length(credible_mass) != 1L ||
+      !is.finite(credible_mass) || credible_mass <= 0 || credible_mass >= 1)
     stop("credible_mass must be strictly between 0 and 1.", call. = FALSE)
   if (!is.null(threshold) && (length(threshold) != 1 || !is.finite(threshold)))
     stop("threshold must be a finite scalar.", call. = FALSE)

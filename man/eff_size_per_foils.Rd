@@ -21,8 +21,10 @@ intervals. Defaults to 0.95. May be specified by user (scalar).}
 \value{
 A single integer: the number of lineup members whose bootstrapped
        confidence interval for the proportion choosing them includes the
-       chance value \eqn{1/k}. These are the members that a mock witness
-       chose at a rate not distinguishable from guessing.
+       chance value \eqn{1/k}. A member counted this way has not been shown to
+       depart from the chance rate, which is not the same as being chosen at
+       that rate, and the count rises when there are few witnesses. It is
+       not on the scale of Malpass' continuous effective size.
 }
 \description{
 A package-specific count of members whose choice-proportion intervals include

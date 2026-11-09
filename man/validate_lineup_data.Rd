@@ -59,7 +59,7 @@ types and valid values.
   \item Correct data types
   \item No missing values in required columns
   \item Valid identification values
-  \item Positive confidence values
+  \item Non-negative confidence values
   \item At least some target-present and target-absent trials
 }
 }

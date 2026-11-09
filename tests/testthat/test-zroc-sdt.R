@@ -104,6 +104,7 @@ test_that("fit_sdt_roc equal vs unequal variance", {
 
 
 test_that("fit_sdt_roc with bootstrap", {
+  skip_on_cran()
   test_data <- create_test_sdt_data()
 
   sdt_boot <- fit_sdt_roc(

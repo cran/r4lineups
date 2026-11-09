@@ -26,7 +26,10 @@ calibration_bayes(
 confidence level as its own bin.}
 
 \item{choosers_only}{Logical. If \code{TRUE} (default), only suspect
-identifications are included (standard eyewitness calibration practice).}
+identifications are included (standard eyewitness calibration practice).
+If \code{FALSE}, choosers are included: identifications, with
+target-present filler IDs excluded, as with
+\code{make_calibration_data(population = "choosers")}.}
 
 \item{lineup_size}{Integer. Number of lineup members (default 6).}
 

@@ -20,7 +20,8 @@ Computes the proportion of mock witnesses identifying a particular lineup member
 }
 \examples{
 #Data:
-lineup_vec <- round(runif(100, 1))
+set.seed(1)
+lineup_vec <- sample(1:6, 100, replace = TRUE)
 lineup_tab <- table(lineup_vec)
 
 #Call:

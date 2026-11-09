@@ -17,7 +17,9 @@ classify_lineup_choices(
 \item{data}{A data frame of lineup trials, one row per witness.}
 
 \item{member_col}{Name of the column holding the position of the lineup
-member chosen, with \code{0} (or \code{NA}) denoting a rejection. Defaults
+member chosen, with \code{0} denoting a rejection. \code{NA} is treated as a
+missing response and gives \code{NA} in the outcome column, with a warning;
+recode it to 0 first if it records a rejection. Defaults
 to \code{"lineup_member"}.}
 
 \item{suspect_col}{Either the name of a column holding the suspect's position

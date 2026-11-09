@@ -64,7 +64,9 @@ result <- face_similarity("target.jpg", "foil1.jpg")
 result$similarity  # 0.85 would mean very similar
 
 # Inspect the model's same-identity flag; this is not a fairness judgment.
-result$verified  # TRUE would indicate problematic similarity
+# TRUE means the model judges the two images to show the same identity;
+# inspect them. It is not a finding about lineup fairness.
+result$verified
 }
 
 }

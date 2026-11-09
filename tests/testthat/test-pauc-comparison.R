@@ -17,6 +17,7 @@ create_test_data_pauc <- function(n_tp = 80, n_ta = 80, seed = 123) {
 }
 
 test_that("compare_pauc basic functionality", {
+  skip_on_cran()
   data1 <- create_test_data_pauc(seed = 111)
   data2 <- create_test_data_pauc(seed = 222)
 
@@ -37,6 +38,7 @@ test_that("compare_pauc basic functionality", {
 })
 
 test_that("compare_pauc returns valid statistics", {
+  skip_on_cran()
   data1 <- create_test_data_pauc(seed = 333)
   data2 <- create_test_data_pauc(seed = 444)
 
@@ -123,6 +125,7 @@ test_that("compare_pauc bootstrap results", {
 })
 
 test_that("print.pauc_comparison works", {
+  skip_on_cran()
   data1 <- create_test_data_pauc()
   data2 <- create_test_data_pauc(seed = 666)
 
@@ -138,6 +141,7 @@ test_that("print.pauc_comparison works", {
 })
 
 test_that("summary.pauc_comparison works", {
+  skip_on_cran()
   data1 <- create_test_data_pauc()
   data2 <- create_test_data_pauc(seed = 555)
 
@@ -164,6 +168,7 @@ test_that("compare_pauc validates input data", {
 })
 
 test_that("compare_pauc with different sample sizes", {
+  skip_on_cran()
   data1 <- create_test_data_pauc(n_tp = 60, n_ta = 60)
   data2 <- create_test_data_pauc(n_tp = 100, n_ta = 100, seed = 321)
 
@@ -218,6 +223,7 @@ test_that("compare_pauc seed reproducibility", {
 })
 
 test_that("compare_pauc ROC objects included", {
+  skip_on_cran()
   data1 <- create_test_data_pauc()
   data2 <- create_test_data_pauc(seed = 222)
 

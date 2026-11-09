@@ -7,7 +7,7 @@ calibration_ui <- function(id) {
     sidebar = bslib::sidebar(
       width = 320,
       uiOutput(ns("banner")),
-      checkboxInput(ns("choosers"), "Choosers only (suspect and filler IDs)", value = TRUE),
+      checkboxInput(ns("choosers"), "Suspect identifications only (untick for choosers)", value = TRUE),
       bslib::layout_columns(
         numericInput(ns("n_boot"), "ANRI and DPP bootstrap R", value = 1000, min = 100, step = 100),
         numericInput(ns("seed"), "Seed", value = 2026, step = 1)
@@ -95,7 +95,9 @@ calibration_server <- function(id, data) {
     }
 
     cal <- analysis(function(d) {
-      single <- r4lineups::make_calibration(d$data, d$bins, choosers_only = isTRUE(input$choosers),
+      single <- r4lineups::make_calibration(d$data, d$bins,
+                                            population = if (isTRUE(input$choosers))
+                                              "suspect_ids" else "choosers",
                                             lineup_size = d$lineup_size,
                                             innocent_suspect = d$innocent_suspect, show_plot = FALSE)
       by_group <- if (!is.null(d$groups)) {

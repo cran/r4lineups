@@ -57,10 +57,17 @@ Calculates PPV for each confidence level using all three correction methods
 \details{
 This function provides the full PPV range recommended by Fitzgerald et al. (2023):
 \itemize{
-  \item \strong{Nominal} (upper bound): Assumes perfectly fair lineup
-  \item \strong{Effective}: Accounts for lineup bias via effective size
-  \item \strong{None} (lower bound): Assumes worst-case (all errors are innocent-suspect)
+  \item \strong{Nominal}: The risk if the lineups had been fair; assumes
+    the innocent suspect attracts a 1/k share of mistaken identifications
+  \item \strong{Effective}: Accounts for lineup bias via effective size;
+    assumes the innocent suspect is among the more plausible members
+  \item \strong{None} (lower bound on PPV): Assumes worst-case (all errors are innocent-suspect)
 }
+
+PPV also depends on the prior. With \code{base_rate = NULL} it is a ratio of
+counts, so the implicit prior is the study's own ratio of target-present to
+target-absent lineups (.5 when the numbers are equal); \code{base_rate} sets
+it explicitly.
 
 The range between nominal and none represents the uncertainty in PPV due to
 unknown lineup fairness conditions.

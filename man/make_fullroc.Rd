@@ -2,7 +2,7 @@
 % Please edit documentation in R/fullroc_functions.R
 \name{make_fullroc}
 \alias{make_fullroc}
-\title{Compute and Plot Full ROC Curve (Smith & Yang, 2020)}
+\title{Compute and Plot Full ROC Curve (Smith, Yang & Wells, 2020)}
 \usage{
 make_fullroc(
   data,
@@ -54,7 +54,7 @@ A list containing:
 }
 \description{
 Main function to compute and plot a full ROC curve using all eyewitness responses
-(suspect ID, filler ID, rejection) following Smith & Yang (2020).
+(suspect ID, filler ID, rejection) following Smith, Yang & Wells (2020).
 }
 \details{
 This is the main user-facing function for computing full ROC curves.

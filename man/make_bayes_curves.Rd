@@ -10,7 +10,8 @@ make_bayes_curves(
   confidence_bins = NULL,
   prior_grid = seq(0.01, 0.99, 0.01),
   lineup_size = 6,
-  innocent_suspect = "auto"
+  innocent_suspect = "auto",
+  gain = c("probability", "signed", "entropy")
 )
 }
 \arguments{
@@ -47,6 +48,17 @@ innocent-suspect count is estimated as filler IDs divided by
 \code{"designated"} when any target-absent row is a suspect ID or the data
 have a non-missing \code{suspect_pos} column, and \code{"estimated"}
 otherwise, with a message.}
+
+\item{gain}{Character. How information gain is measured. \code{"probability"}
+(default) is the measure of Wells and Lindsay (1980) and Wells, Yang and
+Smalarz (2015): the absolute difference between posterior and prior,
+|posterior - prior|, on the probability scale. \code{"signed"} is the same
+difference with its sign kept (positive when the response raises the
+probability of guilt, negative when it lowers it), as in Smith, Lindsay
+and Wells (2016). \code{"entropy"} is the
+reduction in binary entropy, H(prior) minus H(posterior), in bits (Starns,
+Cohen & Rotello, 2023); it is the per-response term of expected information
+gain (\code{\link{compute_eig}}).}
 }
 \value{
 A list containing:
@@ -74,15 +86,21 @@ response type x (e.g., high-confidence suspect ID, rejection, etc.), it computes
 \deqn{p(x) = p(guilty) \cdot p(x|guilty) + (1-p(guilty)) \cdot p(x|innocent)}
 \deqn{p(guilty|x) = \frac{p(guilty) \cdot p(x|guilty)}{p(x)}}
 
-\strong{Information gain:}
+\strong{Information gain} (\code{gain = "probability"}; Wells & Lindsay,
+1980; Wells et al., 2015):
+\deqn{IG(x) = |p(guilty|x) - p(guilty)|}
+Wells and Lindsay use the absolute value because the amount of change, not
+its direction, measures the information gained. \code{gain = "signed"}
+returns \eqn{p(guilty|x) - p(guilty)}, positive for responses that
+incriminate the suspect and negative for responses that exonerate; Smith et
+al. (2016) report gain this way.
+
+\strong{Entropy reduction} (\code{gain = "entropy"}, Starns et al., 2023):
 \deqn{IG(x) = H(prior) - H(posterior)}
-
-where H(p) is binary entropy.
-
-The information gain quantifies how much uncertainty is reduced by observing
-response x. It is negative when the response moves belief towards 0.5, as a
-suspect identification does at a low prior; that is a correct update that
-leaves more uncertainty, not misleading evidence.
+where H(p) is binary entropy in bits. It is negative when the response moves
+belief towards 0.5, as a suspect identification does at a low prior; that is
+a correct update that leaves more uncertainty, not misleading evidence. The
+two measures can differ in sign, so state which one is reported.
 }
 \examples{
 data(lineup_example)
@@ -91,7 +109,19 @@ bayes$likelihoods
 
 }
 \references{
+Wells, G. L., & Lindsay, R. C. L. (1980). On estimating the diagnosticity of
+eyewitness nonidentifications. \emph{Psychological Bulletin, 88}(3), 776-784.
+
 Wells, G. L., Yang, Y., & Smalarz, L. (2015). Eyewitness identification:
 Bayesian information gain, base-rate effect-equivalency curves, and reasonable
 suspicion. \emph{Law and Human Behavior, 39}(2), 99-122.
+
+Smith, A. M., Lindsay, R. C. L., & Wells, G. L. (2016). A Bayesian analysis
+on the (dis)utility of iterative-showup procedures: The moderating impact of
+prior probabilities. \emph{Law and Human Behavior, 40}(5), 503-516.
+\doi{10.1037/lhb0000196}
+
+Starns, J. J., Cohen, A. L., & Rotello, C. M. (2023). A complete method for
+assessing the effectiveness of eyewitness identification procedures: Expected
+information gain. \emph{Psychological Review, 130}(3), 677-719.
 }

@@ -70,7 +70,7 @@ ppv_estimated <- make_ppv_range(
 
 knitr::kable(
   data.frame(
-    Correction = c("Nominal size (best case)",
+    Correction = c("Nominal size (fair lineup)",
                    "Effective size",
                    "None (worst case)"),
     `Overall PPV` = round(c(ppv_estimated$ppv_nominal$overall_ppv,

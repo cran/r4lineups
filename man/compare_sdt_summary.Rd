@@ -52,7 +52,11 @@ A list with estimates, standard error, z, and p-value.
 }
 \description{
 Performs a large-sample z-test comparing d' (or criterion or ln beta)
-between two independent conditions using summary counts only.
+between two independent conditions using summary counts only. For lineup
+data, a hit is a correct identification of the culprit in a target-present
+lineup and a false alarm is an identification of the designated innocent
+suspect in a target-absent lineup; the yes/no model is then an approximation
+(see \code{vignette("sdt_summary_comparisons")}).
 }
 \examples{
 cmp <- compare_sdt_summary(hits_a = 70, fas_a = 20, misses_a = 30, cr_a = 80,

@@ -72,7 +72,7 @@ knitr::kable(
              Estimate  = round(unname(model_2ht$parameters), 3),
              SE        = round(unname(model_2ht$se), 3)),
   row.names = FALSE,
-  caption = "2-HT parameter estimates with standard errors, simulated data."
+  caption = "2-HT parameter estimates, simulated data. Standard errors are NA because b is estimated on its boundary."
 )
 
 cat("AIC:", round(model_2ht$aic, 2),

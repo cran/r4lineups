@@ -65,7 +65,7 @@ sim_data <- simulate_lineup_data(
   n_tp        = 200,   # 200 target-present lineups
   n_ta        = 200,   # 200 target-absent lineups
   d_prime     = 1.5,   # moderate discriminability
-  c_criterion = 1.0,   # moderately conservative for a 6-person lineup
+  c_criterion = 1.0,   # somewhat liberal for 6 members (about 35% TA rejections)
   lineup_size = 6,
   conf_levels = 5,
   seed        = 2026
@@ -90,7 +90,7 @@ lineup_table(uneven$lineup_member[uneven$lineup_member > 0],
 # power_result <- simulate_power_analysis(
 #   sample_sizes  = c(25, 50, 100, 200),
 #   d_prime       = 1.0,
-#   d_prime_null  = 0,
+#   d_prime_2     = 0,
 #   n_simulations = 30,   # small, so this vignette builds quickly
 #   n_bootstrap   = 60,   # likewise
 #   conf_levels   = 5,
@@ -207,7 +207,7 @@ sim_rac <- simulate_lineup_data(
   conf_levels = 5, include_response_time = TRUE, seed = 6
 )
 
-# Bins must match the data. These simulated times run from roughly 2.5 to 9.5
+# Bins must match the data. These simulated times run from roughly 1.6 to 11.2
 # seconds, so bins extending to 20 seconds would leave the upper ones empty.
 round(quantile(sim_rac$response_time, c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE))
 

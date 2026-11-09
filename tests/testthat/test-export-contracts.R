@@ -59,6 +59,7 @@ test_that("legacy diagnosticity exports match hand calculations", {
 })
 
 test_that("calibration, ANRI, EIG, PPV, and decision wrappers compose", {
+  skip_on_cran()
   x <- audit_confidence_data()
   bins <- c(0, 60, 80, 100)
 
@@ -94,6 +95,7 @@ test_that("calibration, ANRI, EIG, PPV, and decision wrappers compose", {
 })
 
 test_that("Bayes, utility, and DPP wrapper exports compose", {
+  skip_on_cran()
   x <- audit_confidence_data()
   x_a <- x[x$condition == "A", ]
   x_b <- x[x$condition == "B", ]
@@ -121,6 +123,7 @@ test_that("Bayes, utility, and DPP wrapper exports compose", {
 })
 
 test_that("ROC-family plot helpers and full ROC plot are callable", {
+  skip_on_cran()
   x <- audit_confidence_data()
   x$response_time <- seq_len(nrow(x)) / 10
   roc <- make_rocdata(x)

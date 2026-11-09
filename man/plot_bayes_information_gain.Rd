@@ -16,15 +16,20 @@ If NULL (default), plots all responses.}
 A ggplot2 object
 }
 \description{
-Creates a plot showing how much uncertainty is reduced by different lineup responses.
+Plots the information gain chosen in \code{make_bayes_curves()} for each
+lineup response: by default the absolute change in the probability of guilt,
+or the reduction in entropy when \code{gain = "entropy"}.
 }
 \details{
-Information gain curves show the reduction in uncertainty (measured in bits)
-for each response type across different prior probabilities. A response that
-points to guilt gains most at priors above 0.5 and one that points to
-innocence at priors below 0.5; either can be negative where it moves belief
-towards 0.5. The legend lists responses from the most to the least
-indicative of guilt.
+The vertical axis follows the \code{gain} used in \code{make_bayes_curves()}.
+With \code{gain = "probability"} (Wells & Lindsay, 1980; Wells et al., 2015)
+it is the absolute change |posterior - prior|. With \code{gain = "signed"} it
+is posterior minus prior: positive for responses that point to guilt,
+negative for responses that point to innocence. With \code{gain = "entropy"} it is the reduction in
+uncertainty in bits: a response that points to guilt gains most at priors
+above 0.5 and one that points to innocence at priors below 0.5, and either can
+be negative where it moves belief towards 0.5. The legend lists responses from
+the most to the least indicative of guilt.
 }
 \examples{
 data(lineup_example)

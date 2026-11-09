@@ -146,7 +146,12 @@
 #'   confidence ratings, a scalar generates \code{conf_levels} thresholds from
 #'   \code{c_criterion} through \code{c_criterion + 2}; alternatively, supply
 #'   exactly one strictly increasing threshold per confidence level. Lower
-#'   values are more liberal (default = 0).
+#'   values are more liberal (default = 0). Under the MAX rule the criterion
+#'   applies to the largest of the lineup strengths, so 0 is not neutral: with
+#'   six members it rejects only about 2\% of target-absent lineups. The neutral
+#'   value (50\% target-absent rejections) is
+#'   \code{qnorm(0.5^(1 / lineup_size))}, about 1.23 for six members. Choose
+#'   the criterion to give the rejection rate you expect.
 #' @param lineup_size Integer. Number of lineup members (default = 6)
 #' @param conf_levels Integer. Number of confidence levels to simulate. If NULL,
 #'   returns binary decision only (default = 5)
@@ -245,24 +250,29 @@
 #' 1533-1550.
 #'
 #' @examples
-#' # Basic simulation: strong memory with MAX rule (default)
+#' # Basic simulation: strong memory with MAX rule (default). The criterion
+#' # 1.23 is the neutral value for six members (about half of target-absent
+#' # lineups rejected); the default of 0 would reject almost none.
 #' strong_memory <- simulate_lineup_data(
 #'   n_tp = 200, n_ta = 200,
 #'   d_prime = 2.0,
+#'   c_criterion = 1.23,
 #'   conf_levels = 3,
 #'   seed = 42
 #' )
 #'
-#' # Ensemble decision rule
+#' # Ensemble decision rule (a similar criterion gives about half rejections)
 #' ensemble_data <- simulate_lineup_data(
 #'   n_tp = 200, n_ta = 200,
 #'   d_prime = 1.5,
+#'   c_criterion = 1.23,
 #'   decision_rule = "ensemble",
 #'   conf_levels = 5,
 #'   seed = 42
 #' )
 #'
-#' # Integration decision rule
+#' # Integration decision rule (the sum of six strengths is centred on 0, so
+#' # the default criterion of 0 is already near neutral)
 #' integration_data <- simulate_lineup_data(
 #'   n_tp = 200, n_ta = 200,
 #'   d_prime = 1.5,
@@ -281,6 +291,7 @@
 #' power_results <- simulate_power_analysis(
 #'   sample_sizes = c(50, 100),
 #'   d_prime = 1.5,
+#'   c_criterion = 1.23,
 #'   n_simulations = 5,
 #'   n_bootstrap = 50,
 #'   seed = 1
@@ -588,10 +599,15 @@ print.simulated_lineup_data <- function(x, ...) {
 #'   each of the two simulated conditions: 2n witnesses per condition and 4n
 #'   in the whole simulated experiment.
 #' @param d_prime Numeric. Discriminability of the condition of interest.
-#' @param d_prime_null Numeric. Discriminability of the comparison condition.
-#'   Defaults to 0, which asks how often the procedure can be shown to
-#'   discriminate better than chance. Set it to a non-zero value to ask the more
-#'   usual question of how often two working procedures can be told apart.
+#' @param d_prime_2 Numeric. Generating discriminability of the second
+#'   (comparison) condition. It is not the null hypothesis: the test asks
+#'   whether the two conditions differ. The default, 0, is a condition with no
+#'   memory of the culprit, so it asks how often the procedure can be shown to
+#'   discriminate better than chance. For a comparison of two working
+#'   procedures, set it to a realistic value (for example \code{d_prime = 1.5},
+#'   \code{d_prime_2 = 1.2}). Equal values estimate the test's rejection rate
+#'   under the null.
+#' @param d_prime_null Deprecated name for \code{d_prime_2}.
 #' @param n_simulations Integer. Number of simulated studies per sample size
 #'   (default = 1000). Power is a proportion estimated from these, so its own
 #'   standard error is roughly \code{sqrt(0.25 / n_simulations)}.
@@ -605,7 +621,11 @@ print.simulated_lineup_data <- function(x, ...) {
 #' @param seed Optional integer seed for reproducibility.
 #' @param verbose Logical. Report progress (default = TRUE).
 #' @param ... Additional arguments passed to simulate_lineup_data(), for example
-#'   \code{conf_levels} or \code{foil_bias}.
+#'   \code{c_criterion}, \code{conf_levels} or \code{foil_bias}. Set
+#'   \code{c_criterion} to match the rejection rate you expect: the default, 0,
+#'   makes witnesses choose almost always under the MAX rule (see
+#'   \code{\link{simulate_lineup_data}}), and the power then applies to that
+#'   setting.
 #'
 #' @details
 #' Power is the probability that a study of a given size detects an effect that
@@ -613,9 +633,34 @@ print.simulated_lineup_data <- function(x, ...) {
 #' generating many studies of that size, applying the analysis you intend to
 #' use, and counting how often it reaches significance.
 #'
-#' That requires a null to test against, which is what \code{d_prime_null}
-#' supplies. Simulating a single condition and computing a statistic from it is
+#' That requires a second condition to compare against, which
+#' \code{d_prime_2} supplies; the null hypothesis is that the two conditions do
+#' not differ. Simulating a single condition and computing a statistic from it is
 #' not a power analysis, because no hypothesis is being tested.
+#'
+#' Each simulated study samples witnesses for one lineup set (one fixed foil
+#' structure) and gives every witness the same \eqn{d'} and criterion. The
+#' power is therefore for generalising over witnesses to these materials.
+#' Generalising over culprits and lineups as well needs sets sampled as units,
+#' and with few sets the effective sample size for that question is closer to
+#' the number of sets (Wells & Windschitl, 1999; Westfall, Kenny, & Judd,
+#' 2014).
+#'
+#' Power is estimated from \code{n_simulations} studies, so it has Monte Carlo
+#' error, and each default test rests on \code{n_bootstrap} resamples. An
+#' estimated power of 1 (standard error 0) means only that the true power is
+#' high: by the rule of three, with 30 simulations it is above about
+#' \eqn{1 - 3/30 = 0.90} with 95\% confidence.
+#'
+#' @references
+#' Wells, G. L., & Windschitl, P. D. (1999). Stimulus sampling and social
+#' psychological experimentation. \emph{Personality and Social Psychology
+#' Bulletin, 25}, 1115--1125.
+#'
+#' Westfall, J., Kenny, D. A., & Judd, C. M. (2014). Statistical power and
+#' optimal design in experiments in which samples of participants respond to
+#' samples of stimuli. \emph{Journal of Experimental Psychology: General,
+#' 143}, 2020--2045.
 #'
 #' @return A dataframe of class \code{power_analysis} with columns:
 #'   \itemize{
@@ -642,6 +687,7 @@ print.simulated_lineup_data <- function(x, ...) {
 #' power_res <- simulate_power_analysis(
 #'   sample_sizes = c(50, 100),
 #'   d_prime = 1.5,
+#'   c_criterion = 1.23,
 #'   n_simulations = 8,
 #'   n_bootstrap = 50,
 #'   conf_levels = 5,
@@ -653,7 +699,7 @@ print.simulated_lineup_data <- function(x, ...) {
 #' @export
 simulate_power_analysis <- function(sample_sizes,
                                      d_prime,
-                                     d_prime_null = 0,
+                                     d_prime_2 = 0,
                                      n_simulations = 1000,
                                      test_function = NULL,
                                      alpha = 0.05,
@@ -661,7 +707,14 @@ simulate_power_analysis <- function(sample_sizes,
                                      n_bootstrap = 200,
                                      seed = NULL,
                                      verbose = TRUE,
+                                     d_prime_null = NULL,
                                      ...) {
+
+  if (!is.null(d_prime_null)) {
+    warning("d_prime_null is deprecated; use d_prime_2. It is the second ",
+            "condition's generating value, not a null hypothesis.", call. = FALSE)
+    d_prime_2 <- d_prime_null
+  }
 
   if (!is.numeric(sample_sizes) || length(sample_sizes) < 1L ||
       anyNA(sample_sizes) || any(sample_sizes < 2)) {
@@ -671,16 +724,16 @@ simulate_power_analysis <- function(sample_sizes,
   if (!is.numeric(alpha) || length(alpha) != 1L || alpha <= 0 || alpha >= 1) {
     stop("alpha must be strictly between 0 and 1.", call. = FALSE)
   }
-  if (!is.numeric(d_prime_null) || length(d_prime_null) != 1L ||
-      !is.finite(d_prime_null) || d_prime_null < 0) {
-    stop("d_prime_null must be a finite non-negative scalar.", call. = FALSE)
+  if (!is.numeric(d_prime_2) || length(d_prime_2) != 1L ||
+      !is.finite(d_prime_2) || d_prime_2 < 0) {
+    stop("d_prime_2 must be a finite non-negative scalar.", call. = FALSE)
   }
   if (!is.numeric(n_simulations) || length(n_simulations) != 1L ||
       !is.finite(n_simulations) || n_simulations < 1 ||
       n_simulations != floor(n_simulations)) {
     stop("n_simulations must be a positive integer.", call. = FALSE)
   }
-  if (d_prime_null == d_prime) {
+  if (d_prime_2 == d_prime) {
     warning("The generating d_prime values are equal; this evaluates the test's null rejection rate, which need not equal alpha in small or sparse samples.", call. = FALSE)
   }
 
@@ -720,7 +773,7 @@ simulate_power_analysis <- function(sample_sizes,
         lineup_size = lineup_size, ...
       ))
       data_null <- as.data.frame(simulate_lineup_data(
-        n_tp = n, n_ta = n, d_prime = d_prime_null,
+        n_tp = n, n_ta = n, d_prime = d_prime_2,
         lineup_size = lineup_size, ...
       ))
 
@@ -767,7 +820,7 @@ simulate_power_analysis <- function(sample_sizes,
   rownames(result_df) <- NULL
   attr(result_df, "alpha") <- alpha
   attr(result_df, "d_prime") <- d_prime
-  attr(result_df, "d_prime_null") <- d_prime_null
+  attr(result_df, "d_prime_2") <- d_prime_2
   attr(result_df, "n_simulations") <- n_simulations
   class(result_df) <- c("power_analysis", "data.frame")
   result_df
@@ -792,7 +845,8 @@ plot.power_analysis <- function(x, ...) {
   }
 
   d_prime <- attr(x, "d_prime")
-  d_null  <- attr(x, "d_prime_null")
+  d_null  <- attr(x, "d_prime_2")
+  if (is.null(d_null)) d_null <- attr(x, "d_prime_null")
   n_sims  <- attr(x, "n_simulations")
 
   subtitle <- if (!is.null(d_prime)) {

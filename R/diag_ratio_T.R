@@ -9,8 +9,8 @@
 #'                   the target was absent
 #'@param pos_pres A scalar, representing target position in TP lineup. Must be declared by user
 #'@param pos_abs A scalar, representing target position in TA lineup. Must be declared by user
-#'@param k1 Number of targets in TP lineup. Must be specified by user (scalar).
-#'@param k2 Number of targets in TA lineup. Must be specified by user (scalar).
+#'@param k1 Number of members (nominal size) of the TP lineup. Must be specified by user (scalar).
+#'@param k2 Number of members (nominal size) of the TA lineup. Must be specified by user (scalar).
 #'@details The corrected estimator is:
 #'         \deqn{DR_T =
 #'         \frac{(n_{TP,s} + 0.5)/(N_{TP} + 0.5)}

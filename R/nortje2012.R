@@ -11,4 +11,5 @@
 #'             \item: Target position for lineup 2 is 6
 #'             \item: Target position for lineup 3 is 2
 #'             }
+#'@source Mock-witness data from a study by Nortje and Tredoux (2012).
 "nortje2012"

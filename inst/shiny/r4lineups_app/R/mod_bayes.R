@@ -40,7 +40,7 @@ bayes_ui <- function(id) {
       conditionalPanel(
         sprintf("input['%s'] == 'calibration'", ns("analysis")),
         uiOutput(ns("banner")),
-        checkboxInput(ns("choosers"), "Choosers only", value = TRUE),
+        checkboxInput(ns("choosers"), "Suspect identifications only (untick for choosers)", value = TRUE),
         selectInput(ns("cal_metric"), "Plot", choices = c("C", "OU", "NRI"))
       ),
       conditionalPanel(

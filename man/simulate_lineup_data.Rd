@@ -31,7 +31,12 @@ The first value is always the identification/rejection threshold. With
 confidence ratings, a scalar generates \code{conf_levels} thresholds from
 \code{c_criterion} through \code{c_criterion + 2}; alternatively, supply
 exactly one strictly increasing threshold per confidence level. Lower
-values are more liberal (default = 0).}
+values are more liberal (default = 0). Under the MAX rule the criterion
+applies to the largest of the lineup strengths, so 0 is not neutral: with
+six members it rejects only about 2\% of target-absent lineups. The neutral
+value (50\% target-absent rejections) is
+\code{qnorm(0.5^(1 / lineup_size))}, about 1.23 for six members. Choose
+the criterion to give the rejection rate you expect.}
 
 \item{lineup_size}{Integer. Number of lineup members (default = 6)}
 
@@ -134,24 +139,29 @@ effective-size correction in \code{\link{make_ppv_range}}) can therefore use
 }
 
 \examples{
-# Basic simulation: strong memory with MAX rule (default)
+# Basic simulation: strong memory with MAX rule (default). The criterion
+# 1.23 is the neutral value for six members (about half of target-absent
+# lineups rejected); the default of 0 would reject almost none.
 strong_memory <- simulate_lineup_data(
   n_tp = 200, n_ta = 200,
   d_prime = 2.0,
+  c_criterion = 1.23,
   conf_levels = 3,
   seed = 42
 )
 
-# Ensemble decision rule
+# Ensemble decision rule (a similar criterion gives about half rejections)
 ensemble_data <- simulate_lineup_data(
   n_tp = 200, n_ta = 200,
   d_prime = 1.5,
+  c_criterion = 1.23,
   decision_rule = "ensemble",
   conf_levels = 5,
   seed = 42
 )
 
-# Integration decision rule
+# Integration decision rule (the sum of six strengths is centred on 0, so
+# the default criterion of 0 is already near neutral)
 integration_data <- simulate_lineup_data(
   n_tp = 200, n_ta = 200,
   d_prime = 1.5,
@@ -170,6 +180,7 @@ roc_ensemble <- make_roc(ensemble_data, lineup_size = 6)
 power_results <- simulate_power_analysis(
   sample_sizes = c(50, 100),
   d_prime = 1.5,
+  c_criterion = 1.23,
   n_simulations = 5,
   n_bootstrap = 50,
   seed = 1

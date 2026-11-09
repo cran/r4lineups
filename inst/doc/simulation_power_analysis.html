@@ -13,7 +13,7 @@
 <meta name="author" content="Colin G. Tredoux" />
 <meta name="author" content="Tamsyn M. Naylor" />
 
-<meta name="date" content="2026-11-02" />
+<meta name="date" content="2026-11-09" />
 
 <title>Data Simulation and Power Analysis for Lineup Studies</title>
 
@@ -344,7 +344,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 Lineup Studies</h1>
 <h4 class="author">Colin G. Tredoux</h4>
 <h4 class="author">Tamsyn M. Naylor</h4>
-<h4 class="date">2026-11-02</h4>
+<h4 class="date">2026-11-09</h4>
 
 
 
@@ -457,10 +457,8 @@ reasonable guard against the assumption doing damage.</p>
 al. (2018). The <code>&quot;max&quot;</code>, <code>&quot;best_rest&quot;</code> and
 <code>&quot;ensemble&quot;</code> implementations were written with reference to
 the Python package <strong>pyWitness</strong> (Mickes et al., 2024), and
-adapted into R here; the parameter recovery in
-<code>fit_winter_2ht()</code> is checked against it. See
-<code>vignette(&quot;lineup_memory_models&quot;)</code> for the pyWitness bridge
-itself.</p>
+adapted into R here. See <code>vignette(&quot;lineup_memory_models&quot;)</code>
+for the pyWitness bridge itself.</p>
 </div>
 <div id="the-criterion-in-plainer-terms" class="section level3">
 <h3>The criterion, in plainer terms</h3>
@@ -469,10 +467,11 @@ before the witness will identify anyone. Raise it and witnesses reject
 more often; lower it and they choose more often.</p>
 <p>It is important to make a point of clarification here. In textbook
 SDT, a criterion of 0 is “neutral”. <strong>That is not true
-here</strong>, because the criterion applies to the <em>maximum</em> of
-several members’ strengths, not to a single item. The maximum of six
-draws from Normal(0, 1) averages about 1.27, so a criterion of 0 is
-passed by nearly every lineup:</p>
+here</strong>, because under the default <code>&quot;max&quot;</code> rule (the
+only rule this section treats) the criterion applies to the
+<em>maximum</em> of several members’ strengths, not to a single item.
+The maximum of six draws from Normal(0, 1) averages about 1.27, so a
+criterion of 0 is passed by nearly every lineup:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>criteria <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="fl">1.27</span>, <span class="fl">1.5</span>, <span class="fl">2.0</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>rejection_rates <span class="ot">&lt;-</span> <span class="fu">vapply</span>(criteria, <span class="cf">function</span>(cc) {</span>
@@ -580,7 +579,7 @@ the median of the maximum of k standard normal draws.</caption>
 </tr>
 </tbody>
 </table>
-<p>The same formula gives any other target rejection rate <span class="math inline">\(r\)</span>: <span class="math inline">\(\Phi^{-1}(r^{1/k})\)</span>. It assumes a fair
+<p>The same formula gives any other target-absent rejection rate <span class="math inline">\(r\)</span>: <span class="math inline">\(\Phi^{-1}(r^{1/k})\)</span>. It assumes a fair
 lineup with <code>foil_bias</code> at its default, so treat it as a
 starting point when foils are unequal.</p>
 <p>A practical approach is to choose the criterion by the rejection rate
@@ -595,7 +594,7 @@ drawing on.</p>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">n_tp        =</span> <span class="dv">200</span>,   <span class="co"># 200 target-present lineups</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">n_ta        =</span> <span class="dv">200</span>,   <span class="co"># 200 target-absent lineups</span></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">d_prime     =</span> <span class="fl">1.5</span>,   <span class="co"># moderate discriminability</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">c_criterion =</span> <span class="fl">1.0</span>,   <span class="co"># moderately conservative for a 6-person lineup</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">c_criterion =</span> <span class="fl">1.0</span>,   <span class="co"># somewhat liberal for 6 members (about 35% TA rejections)</span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">lineup_size =</span> <span class="dv">6</span>,</span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">conf_levels =</span> <span class="dv">5</span>,</span>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">seed        =</span> <span class="dv">2026</span></span>
@@ -665,12 +664,15 @@ the effect, generate many studies of that size, run the analysis you
 intend to use, and count how often it reaches significance.</p>
 <p>That last step needs a <strong>hypothesis test</strong>, which is why
 <code>simulate_power_analysis()</code> requires two conditions.
-<code>d_prime</code> is the condition of interest and
-<code>d_prime_null</code> is what it is being compared against. The
-default <code>d_prime_null = 0</code> asks how often a study of this
-size could show that the procedure discriminates better than chance;
-setting it to a non-zero value asks the more usual question of how often
-two working procedures could be told apart.</p>
+<code>d_prime</code> is the generating value for the condition of
+interest and <code>d_prime_2</code> the generating value for the
+condition it is compared with; the null hypothesis is that the two do
+not differ. The default <code>d_prime_2 = 0</code> is a condition with
+no memory of the culprit, so it asks how often a study of this size
+could show that the procedure discriminates better than chance.
+Comparing two working procedures, for example <code>d_prime = 1.5</code>
+against <code>d_prime_2 = 1.2</code>, is the more usual planning
+question and needs far more witnesses.</p>
 <p>Each simulated study is tested with <code>compare_pauc()</code>, a
 bootstrap comparison of partial area under the ROC curve, and power is
 the proportion of studies whose p-value falls below
@@ -685,11 +687,19 @@ simulates n target-present <strong>and</strong> n target-absent
 witnesses in each of the two conditions being compared, so 2n witnesses
 per condition and 4n in all; the <code>n_total</code> column gives the
 total.</p>
+<p>The stored analysis below uses the default
+<code>c_criterion = 0</code>. As shown in the criterion section, that
+setting makes witnesses choose almost always (about 1.8% of
+target-absent lineups are rejected with six members), so the power
+figures are for witnesses who rarely reject. A real power analysis
+should pass <code>c_criterion</code> through <code>...</code> and set it
+to match the rejection rate you expect, for example 1.23 for about half
+of target-absent lineups rejected with six members.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Stored with the vignette; set R4LINEUPS_PRECOMPUTE=true to recompute.</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>power_result <span class="ot">&lt;-</span> <span class="fu">simulate_power_analysis</span>(</span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">sample_sizes  =</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">200</span>),</span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">d_prime       =</span> <span class="fl">1.0</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">d_prime_null  =</span> <span class="dv">0</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">d_prime_2     =</span> <span class="dv">0</span>,</span>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">n_simulations =</span> <span class="dv">30</span>,   <span class="co"># small, so this vignette builds quickly</span></span>
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">n_bootstrap   =</span> <span class="dv">60</span>,   <span class="co"># likewise</span></span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">conf_levels   =</span> <span class="dv">5</span>,</span>
@@ -764,6 +774,23 @@ itself uncertain (see the standard errors). And <code>mean_effect</code>
 across sample sizes, which is a check: sample size does not change the
 size of an effect, only how precisely it is measured, and
 <code>sd_effect</code> duly shrinks.</p>
+<p>A power of 1.000 with a Monte Carlo standard error of 0.000 is not a
+claim of certainty. It means that all 30 simulated studies were
+significant, so the true power is high but not exactly 1; by the rule of
+three it is above about 1 − 3/30 = 0.90 with 95% confidence. Each
+p-value also rests on only 60 bootstrap resamples, so it is resolved no
+more finely than about 1/60, and the Monte Carlo standard error reflects
+the number of studies, not the noise within each test. Thirty
+simulations and 60 resamples support a rough sense of the sample size
+needed, not a precise one.</p>
+<p>The simulation draws every witness for a single lineup set, with one
+foil structure and one d′ for all witnesses. The power is therefore for
+generalising over witnesses to these materials. Generalising over
+culprits and lineups as well requires lineup sets sampled as units, and
+when a study uses only a few sets, the effective sample size for that
+question is closer to the number of sets than to the number of witnesses
+(Wells &amp; Windschitl, 1999; Westfall, Kenny, &amp; Judd, 2014). Treat
+the sample sizes here as a floor for such a study.</p>
 </div>
 <div id="plotting-and-adjusting-the-plot" class="section level3">
 <h3>Plotting, and adjusting the plot</h3>
@@ -868,11 +895,21 @@ the generating model is a different model, and the exercise says nothing
 about bias, interval coverage or the process interpretation. Parameter
 recovery in the strict sense would simulate from the 2-HT equations
 themselves and check that the known parameters come back.</p>
-<p>The model fits without difficulty on data of this kind. If a fit does
-fail, resist the temptation to wrap it in <code>tryCatch()</code> and
-report “did not converge”, because that will also swallow genuine errors
-such as a mis-specified column name, and you will spend a long time
-looking for a convergence problem that is not there.</p>
+<p>All six fits end on the parameter boundary, with <code>b</code>
+estimated at 0 (the chunk suppresses six warnings, each reporting that
+the 2-HT estimate is on a boundary and that regular Hessian standard
+errors are unavailable). In these simulated lineups the foils are
+equally plausible and the suspect has no advantage, so a <code>b</code>
+of 0 is what a fair lineup should give; but it means that
+<code>dP</code> is estimated conditional on <code>b</code> = 0 and that
+no standard errors are available for the table. <code>dA</code> is small
+and nearly flat across d′ (0.007 to 0.202, and lower at d′ = 3.0 than at
+2.5), so it is not a sensitive index of memory strength here. If a fit
+fails outright, resist the temptation to wrap it in
+<code>tryCatch()</code> and report “did not converge”, because that will
+also swallow genuine errors such as a mis-specified column name, and you
+will spend a long time looking for a convergence problem that is not
+there.</p>
 </div>
 <div id="comparing-experimental-designs" class="section level2">
 <h2>Comparing Experimental Designs</h2>
@@ -953,15 +990,18 @@ lineups per size, d’ = 1.5).</caption>
 </tr>
 </tbody>
 </table>
-<p>The false identification rate falls as the lineup grows, which is the
-protective effect a larger lineup is meant to provide: an innocent
-suspect is one of more alternatives, so mistaken choices are spread more
-thinly. The correct identification rate is far more stable, since it
-depends on the culprit standing out rather than on how many foils
-surround them. This is the trade-off that motivates the differing lineup
-sizes used in practice — six is common in North American research, while
-police forces in the United Kingdom typically use nine foils plus the
-suspect, and some jurisdictions use twelve members or more.</p>
+<p>Both rates fall as the lineup grows at a size-matched criterion. The
+false identification rate falls because an innocent suspect is one of
+more alternatives, so mistaken choices are spread more thinly; its trend
+is noisy, with differences between adjacent sizes of about the size of
+their Monte Carlo error. The correct identification rate falls too, by
+about 23 percentage points between sizes 4 and 12, because under the MAX
+rule the culprit competes with more foils for the largest strength. This
+is the trade-off behind the differing lineup sizes used in practice: six
+is common in North American research, police forces in the United
+Kingdom typically use a nine-person video array (the suspect and at
+least eight other people; PACE Code D, Annex A), and some jurisdictions
+use twelve members or more.</p>
 <p>Note that this simulation assumes every foil is equally plausible.
 Adding <code>foil_bias</code> would show the protection eroding, because
 a lineup of twelve in which eight are never chosen offers the protection
@@ -1056,7 +1096,7 @@ substantial noise added.</p>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  <span class="at">conf_levels =</span> <span class="dv">5</span>, <span class="at">include_response_time =</span> <span class="cn">TRUE</span>, <span class="at">seed =</span> <span class="dv">6</span></span>
 <span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>)</span>
 <span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co"># Bins must match the data. These simulated times run from roughly 2.5 to 9.5</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co"># Bins must match the data. These simulated times run from roughly 1.6 to 11.2</span></span>
 <span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co"># seconds, so bins extending to 20 seconds would leave the upper ones empty.</span></span>
 <span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">quantile</span>(sim_rac<span class="sc">$</span>response_time, <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="dv">1</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co">#&gt;    0%   25%   50%   75%  100% </span></span>
@@ -1104,7 +1144,7 @@ identifications and rejections.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>fullroc_result <span class="ot">&lt;-</span> <span class="fu">make_fullroc</span>(sim_roc, <span class="at">lineup_size =</span> <span class="dv">6</span>, <span class="at">show_plot =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">print</span>(fullroc_result)</span>
 <span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co">#&gt; === Full Lineup ROC Analysis (Smith &amp; Yang, 2020) ===</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co">#&gt; === Full Lineup ROC Analysis (Smith, Yang &amp; Wells, 2020) ===</span></span>
 <span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt; Full AUC: 0.83 </span></span>
 <span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#&gt; Target-present trials (N): 300 </span></span>
@@ -1163,9 +1203,9 @@ smaller effect: a study powered for d′ = 1.0 will comfortably detect d′
 Choose it by the rejection rate it produces, as described earlier, and
 remember the neutral point scales with lineup size.</p>
 <p><strong>Lineup size.</strong> Six is the most common in North
-American research; UK practice uses nine foils with the suspect, and
-some jurisdictions use twelve or more. Use whatever matches the
-procedure you are studying.</p>
+American research; UK practice uses the suspect and at least eight other
+people (PACE Code D, Annex A), and some jurisdictions use twelve or
+more. Use whatever matches the procedure you are studying.</p>
 <p><strong>Number of simulations.</strong> The Monte Carlo standard
 error of an estimated power is at most
 <code>sqrt(0.25 / n_simulations)</code>, which is about 0.05 at 100
@@ -1205,6 +1245,13 @@ at all.</li>
 <p>Mickes, L., Seale-Carlisle, T. M., Chen, X., &amp; Boogert, S.
 (2024). pyWitness 1.0: A python eyewitness identification analysis
 toolkit. <em>Behavior Research Methods, 56</em>, 1533-1550.</p>
+<p>Wells, G. L., &amp; Windschitl, P. D. (1999). Stimulus sampling and
+social psychological experimentation. <em>Personality and Social
+Psychology Bulletin, 25</em>(9), 1115-1125.</p>
+<p>Westfall, J., Kenny, D. A., &amp; Judd, C. M. (2014). Statistical
+power and optimal design in experiments in which samples of participants
+respond to samples of stimuli. <em>Journal of Experimental Psychology:
+General, 143</em>(5), 2020-2045.</p>
 <p>Wixted, J. T., &amp; Mickes, L. (2012). The field of eyewitness
 memory should abandon probative value and embrace receiver operating
 characteristic analysis. <em>Perspectives on Psychological Science,

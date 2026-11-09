@@ -5,6 +5,9 @@
 #'
 #' @param lineup_tab A table of lineup choices.
 #' @param alpha Confidence level as a decimal (e.g., 0.95 for a 95-percent CI).
+#'   Despite its name this is the confidence level, not the error rate; prefer
+#'   \code{conf_level}.
+#' @param conf_level Confidence level as a decimal. Overrides \code{alpha}.
 #' @details
 #'   The variance of the diversity index I is estimated via Tredoux's (1998)
 #'   closed-form expression:
@@ -53,7 +56,8 @@
 #'@importFrom stats qnorm
 #'@export
 
-esize_T_ci_n <- function(lineup_tab, alpha){
+esize_T_ci_n <- function(lineup_tab, alpha = 0.95, conf_level = NULL){
+    if (!is.null(conf_level)) alpha <- conf_level
     datacheck3(lineup_tab, length(lineup_tab))
     if (!is.numeric(alpha) || length(alpha) != 1L || !is.finite(alpha) ||
         alpha <= 0 || alpha >= 1) {

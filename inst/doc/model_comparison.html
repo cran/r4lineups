@@ -13,7 +13,7 @@
 <meta name="author" content="Colin G. Tredoux" />
 <meta name="author" content="Tamsyn M. Naylor" />
 
-<meta name="date" content="2026-11-02" />
+<meta name="date" content="2026-11-09" />
 
 <title>Comparing Models for Eyewitness Identification Data</title>
 
@@ -344,7 +344,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 Identification Data</h1>
 <h4 class="author">Colin G. Tredoux</h4>
 <h4 class="author">Tamsyn M. Naylor</h4>
-<h4 class="date">2026-11-02</h4>
+<h4 class="date">2026-11-09</h4>
 
 
 
@@ -366,8 +366,8 @@ to fit and compare:</p>
 Processing Tree model</li>
 <li><strong>EIG</strong> (Starns et al., 2023): Expected Information
 Gain</li>
-<li><strong>Full ROC</strong> (Smith &amp; Yang, 2020): Receiver
-Operating Characteristic</li>
+<li><strong>Full ROC</strong> (Smith et al., 2020): Receiver Operating
+Characteristic</li>
 </ol>
 <p>The <code>compare_models()</code> function provides a unified
 interface for fitting all models and generating comparison tables and
@@ -415,7 +415,8 @@ guilty/innocent)</li>
 resolves guilt completely. That is 1 bit only when the prior probability
 of guilt is .5; at a prior of .1 it is about .47 bits. Compare EIG
 values only at the same prior.</li>
-<li>Higher EIG = more diagnostic procedure</li>
+<li>Higher EIG = more diagnostic procedure, when the procedures are
+compared at the same prior and with the same binning of responses</li>
 </ul>
 <p><strong>Use when:</strong></p>
 <ul>
@@ -558,9 +559,9 @@ depends on the number of rejections.</p>
 <span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023) Expected Information Gain    0.1869</span></span>
 <span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)    Information Efficiency   18.7000</span></span>
 <span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)             Prior Entropy    1.0000</span></span>
-<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)                  Full AUC    0.7471</span></span>
-<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)          Operating Points   11.0000</span></span>
-<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)              Max Hit Rate    1.0000</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith et al., 2020)                  Full AUC    0.7471</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith et al., 2020)          Operating Points   11.0000</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith et al., 2020)              Max Hit Rate    1.0000</span></span>
 <span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt;               Interpretation</span></span>
 <span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt;            Model fit quality</span></span>
 <span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt;              Lower is better</span></span>
@@ -613,8 +614,8 @@ depends on the number of rejections.</p>
 <span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
 <span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; Interpretation Guidance:</span></span>
 <span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt;   - 2-HT: AIC/BIC are comparable only to other likelihood models fit to the same outcomes</span></span>
-<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt;   - EIG: Higher values = more informative procedure</span></span>
-<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt;   - Full ROC: Higher AUC = better investigator discriminability</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt;   - EIG: Higher values = more informative procedure, at the same prior and binning</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt;   - Full ROC: Higher AUC = better investigator discriminability (default ordering is optimistic; use the a-priori order to compare)</span></span>
 <span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; Each model provides different information; consider reporting more than one.</span></span></code></pre></div>
 </div>
@@ -637,11 +638,11 @@ depends on the number of rejections.</p>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>             <span class="at">Estimate  =</span> <span class="fu">round</span>(<span class="fu">unname</span>(model_2ht<span class="sc">$</span>parameters), <span class="dv">3</span>),</span>
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>             <span class="at">SE        =</span> <span class="fu">round</span>(<span class="fu">unname</span>(model_2ht<span class="sc">$</span>se), <span class="dv">3</span>)),</span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;2-HT parameter estimates with standard errors, simulated data.&quot;</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;2-HT parameter estimates, simulated data. Standard errors are NA because b is estimated on its boundary.&quot;</span></span>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>)</span></code></pre></div>
 <table>
-<caption>2-HT parameter estimates with standard errors, simulated
-data.</caption>
+<caption>2-HT parameter estimates, simulated data. Standard errors are
+NA because b is estimated on its boundary.</caption>
 <thead>
 <tr class="header">
 <th align="left">Parameter</th>
@@ -685,6 +686,11 @@ absence</li>
 <li><strong>b</strong>: Bias toward suspect</li>
 <li><strong>g</strong>: Tendency to guess vs. reject</li>
 </ul>
+<p>In these data <code>b</code> is estimated at zero, the lower boundary
+of its range, so the likelihood has no regular curvature there and the
+standard errors are not available (<code>NA</code>). No interval exists
+for any parameter from this fit; use <code>boot_winter_2ht()</code> if
+intervals are needed.</p>
 </div>
 <div id="eig-results" class="section level3">
 <h3>EIG Results</h3>
@@ -751,7 +757,9 @@ guilt or innocence</li>
 <p><strong>Interpreting Full ROC:</strong></p>
 <ul>
 <li>AUC = 0.747: Investigator’s ability to discriminate</li>
-<li>Values closer to 1.0 indicate better discriminability</li>
+<li>Values closer to 1.0 indicate better discriminability, but the
+default diagnosticity ordering inflates AUC, so compare procedures only
+with the a-priori order</li>
 <li>All witness responses contribute to overall discriminability</li>
 </ul>
 </div>
@@ -790,9 +798,13 @@ a “best model.”</p>
 <p>The 2-HT fit reports AIC/BIC, but these values are comparative rather
 than absolute. They can only be compared with alternative likelihood
 models fitted to the same observations and outcome representation; they
-cannot be compared with EIG or AUC. A single-condition 2-HT fit is
-saturated: it has zero residual degrees of freedom, so it reproduces the
-observed counts exactly and its absolute fit cannot be tested.</p>
+cannot be compared with EIG or AUC. A single-condition 2-HT fit is just
+identified: it has as many free parameters as independent cells, so it
+reproduces the observed counts exactly unless an estimate sits on a
+boundary, and its absolute fit cannot be tested. Here <code>b</code> is
+on its boundary at zero, and the target-absent suspect count is 35.8
+expected against 33 observed (filler 179.2 against 182, a residual of
+2.83), because the data call for a negative <code>b</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;2-HT Model Fit:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; 2-HT Model Fit:</span></span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;  AIC:&quot;</span>, <span class="fu">round</span>(comparison<span class="sc">$</span>fitted_models<span class="sc">$</span><span class="st">`</span><span class="at">2ht</span><span class="st">`</span><span class="sc">$</span>aic, <span class="dv">2</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
@@ -878,9 +890,9 @@ observed counts exactly and its absolute fit cannot be tested.</p>
 <span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023) Expected Information Gain  0.1693</span></span>
 <span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)    Information Efficiency 16.9000</span></span>
 <span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)             Prior Entropy  1.0000</span></span>
-<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)                  Full AUC  0.7274</span></span>
-<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)          Operating Points  3.0000</span></span>
-<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)              Max Hit Rate  1.0000</span></span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith et al., 2020)                  Full AUC  0.7274</span></span>
+<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith et al., 2020)          Operating Points  3.0000</span></span>
+<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith et al., 2020)              Max Hit Rate  1.0000</span></span>
 <span id="cb12-27"><a href="#cb12-27" tabindex="-1"></a><span class="co">#&gt;               Interpretation</span></span>
 <span id="cb12-28"><a href="#cb12-28" tabindex="-1"></a><span class="co">#&gt;      Higher is better (bits)</span></span>
 <span id="cb12-29"><a href="#cb12-29" tabindex="-1"></a><span class="co">#&gt;          Percentage (0-100%)</span></span>
@@ -943,9 +955,9 @@ observed counts exactly and its absolute fit cannot be tested.</p>
 <span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023) Expected Information Gain    0.2264</span></span>
 <span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)    Information Efficiency   22.6000</span></span>
 <span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="co">#&gt;      EIG (Starns et al., 2023)             Prior Entropy    1.0000</span></span>
-<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)                  Full AUC    0.7858</span></span>
-<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)          Operating Points   11.0000</span></span>
-<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith &amp; Yang, 2020)              Max Hit Rate    1.0000</span></span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith et al., 2020)                  Full AUC    0.7858</span></span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith et al., 2020)          Operating Points   11.0000</span></span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a><span class="co">#&gt;  Full ROC (Smith et al., 2020)              Max Hit Rate    1.0000</span></span>
 <span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a><span class="co">#&gt;               Interpretation</span></span>
 <span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt;            Model fit quality</span></span>
 <span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a><span class="co">#&gt;              Lower is better</span></span>
@@ -1128,12 +1140,18 @@ target-absent lineups).</caption>
 </tbody>
 </table>
 <p><code>b</code> is the probability that a witness who detects nothing
-picks the suspect because the suspect stands out. An interval clearly
-above zero is a reason to inspect the lineup; how large a <code>b</code>
-is acceptable is a policy judgement that the model cannot make. Note
-that the interval is a Wald interval clipped to [0, 1];
-<code>boot_winter_2ht()</code> gives bootstrap intervals that respect
-the boundary.</p>
+picks the suspect because the suspect stands out. Here the estimate is
+zero, on the boundary, and the interval is <code>NA</code> because the
+Wald standard error is unavailable there. The point estimate still says
+something: the data show no sign of extra choosing of the suspect (the
+suspect was chosen slightly less often than the model expects, which the
+model cannot represent with a negative <code>b</code>), although without
+an interval this is not evidence that the lineup is fair. When an
+estimate is interior, an interval clearly above zero is a reason to
+inspect the lineup; how large a <code>b</code> is acceptable is a policy
+judgement that the model cannot make. The Wald interval is clipped to
+[0, 1]; <code>boot_winter_2ht()</code> gives bootstrap intervals, which
+are the better choice near the boundary.</p>
 </div>
 <div id="example-3-comparing-detection-vs.-guessing" class="section level3">
 <h3>Example 3: Comparing Detection vs. Guessing</h3>
@@ -1171,13 +1189,18 @@ data.</caption>
 </tr>
 </tbody>
 </table>
-<p>Detection and guessing are separately identified here, which is the
-point of the model: an identification rate on its own cannot tell you
-whether witnesses recognised the culprit or simply picked someone
-plausible. Note that <code>dP</code> and <code>g</code> are
-probabilities of different events and are not in competition — a
-procedure can have both high detection and a high tendency to choose
-when detection fails.</p>
+<p>These data were simulated from a signal detection model, not from the
+2-HT model, and the four parameters are just identified: they are a
+re-expression of the response proportions with no test of the process
+interpretation, and <code>dA</code> and <code>b</code> are at or near
+their boundaries here. The table therefore does not show that detection
+and guessing have been separated. What the 2-HT model offers in
+principle is a way to ask whether witnesses recognised the culprit or
+picked someone plausible, and that reading needs data generated by, or
+independently shown to follow, the model. <code>dP</code> and
+<code>g</code> are probabilities of different events and are not in
+competition; a procedure can have both high detection and a high
+tendency to choose when detection fails.</p>
 </div>
 </div>
 <div id="formatted-comparison-tables" class="section level2">
@@ -1196,9 +1219,9 @@ when detection fails.</p>
 <span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a><span class="co">#&gt; 11     EIG (Starns et al., 2023) Expected Information Gain    0.1869</span></span>
 <span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a><span class="co">#&gt; 12     EIG (Starns et al., 2023)    Information Efficiency   18.7000</span></span>
 <span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="co">#&gt; 13     EIG (Starns et al., 2023)             Prior Entropy    1.0000</span></span>
-<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a><span class="co">#&gt; 14 Full ROC (Smith &amp; Yang, 2020)                  Full AUC    0.7471</span></span>
-<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="co">#&gt; 15 Full ROC (Smith &amp; Yang, 2020)          Operating Points   11.0000</span></span>
-<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a><span class="co">#&gt; 16 Full ROC (Smith &amp; Yang, 2020)              Max Hit Rate    1.0000</span></span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a><span class="co">#&gt; 14 Full ROC (Smith et al., 2020)                  Full AUC    0.7471</span></span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="co">#&gt; 15 Full ROC (Smith et al., 2020)          Operating Points   11.0000</span></span>
+<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a><span class="co">#&gt; 16 Full ROC (Smith et al., 2020)              Max Hit Rate    1.0000</span></span>
 <span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="co">#&gt;                 Interpretation</span></span>
 <span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a><span class="co">#&gt; 1            Model fit quality</span></span>
 <span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a><span class="co">#&gt; 2              Lower is better</span></span>
@@ -1284,19 +1307,19 @@ when detection fails.</p>
 <td align="left">Maximum possible IG</td>
 </tr>
 <tr class="odd">
-<td align="left">Full ROC (Smith &amp; Yang, 2020)</td>
+<td align="left">Full ROC (Smith et al., 2020)</td>
 <td align="left">Full AUC</td>
 <td align="right">0.7471</td>
 <td align="left">Higher is better (0-1)</td>
 </tr>
 <tr class="even">
-<td align="left">Full ROC (Smith &amp; Yang, 2020)</td>
+<td align="left">Full ROC (Smith et al., 2020)</td>
 <td align="left">Operating Points</td>
 <td align="right">11.0000</td>
 <td align="left">Number of decision criteria</td>
 </tr>
 <tr class="odd">
-<td align="left">Full ROC (Smith &amp; Yang, 2020)</td>
+<td align="left">Full ROC (Smith et al., 2020)</td>
 <td align="left">Max Hit Rate</td>
 <td align="right">1.0000</td>
 <td align="left">Cumulative (0-1)</td>
@@ -1455,10 +1478,11 @@ models:</p>
 <span id="cb25-43"><a href="#cb25-43" tabindex="-1"></a><span class="co">#&gt;   Residual obs-vs-expected discrepancy = 0.2688 (~= 0 confirms convergence).</span></span></code></pre></div>
 <p>The summary’s identification note is the part to read. With one
 target-present and one target-absent condition the 2-HT model has zero
-residual degrees of freedom, so it reproduces the counts exactly and
-there is no goodness-of-fit test to read. Convergence, identifiability
-(enough rejections to estimate <code>dA</code>) and fit are separate
-questions. Fit can be tested only with several conditions and parameters
+residual degrees of freedom, so it reproduces the counts exactly unless
+an estimate is on a boundary, as <code>b</code> is here, and there is no
+goodness-of-fit test to read. Convergence, identifiability (enough
+rejections to estimate <code>dA</code>) and fit are separate questions.
+Fit can be tested only with several conditions and parameters
 constrained across them, as in Winter et al. (2022).</p>
 </div>
 </div>
@@ -1488,9 +1512,10 @@ quantity, and cannot be ranked against each other directly.</p>
 <td>2-HT</td>
 <td>Latent probabilities of detection, bias and guessing</td>
 <td>Four probabilities in [0, 1]</td>
-<td>Standard errors from the observed information matrix; bootstrap
-intervals via <code>boot_winter_2ht()</code>. No fit test for a single
-condition (zero residual df)</td>
+<td>Standard errors from the observed information matrix, unavailable
+when an estimate is on a boundary; bootstrap intervals via
+<code>boot_winter_2ht()</code>. No fit test for a single condition (zero
+residual df)</td>
 </tr>
 <tr class="even">
 <td>EIG</td>
@@ -1503,7 +1528,8 @@ response proportions; adding this is planned</td>
 <tr class="odd">
 <td>Full ROC</td>
 <td>Investigator discriminability</td>
-<td>AUC in [0, 1], .5 = no discrimination</td>
+<td>AUC in [0, 1], .5 = chance ranking under the chosen category
+order</td>
 <td>None in this package; see the note on ordering bias below</td>
 </tr>
 </tbody>
@@ -1516,15 +1542,17 @@ are as given in the introduction, and the parameters are estimated by
 maximum likelihood over the six observed cell counts (three responses by
 two lineup types). The target-present and target-absent totals are
 fixed, so the data have 2 × (3 − 1) = 4 degrees of freedom, the same as
-the number of parameters: a single-condition fit is saturated, with zero
-residual degrees of freedom (Winter et al., 2022, Figure 1). The
-standard errors measure how sharply the data pin each parameter down. At
-the best-fitting values, the log-likelihood falls away steeply in some
-directions and gently in others; that curvature, the <em>Hessian</em>
-matrix of second derivatives, is computed numerically, and its inverse
-gives the sampling variances of the estimates. A flat likelihood (little
-curvature) means a large standard error. Winter et al. (2022) describe
-the model and its estimation in full.</p>
+the number of parameters: a single-condition fit is just identified,
+with zero residual degrees of freedom (Winter et al., 2022, Figure 1).
+The standard errors measure how sharply the data pin each parameter
+down. At the best-fitting values, the log-likelihood falls away steeply
+in some directions and gently in others; that curvature, the
+<em>Hessian</em> matrix of second derivatives, is computed numerically,
+and its inverse gives the sampling variances of the estimates. A flat
+likelihood (little curvature) means a large standard error, and an
+estimate on a boundary has no regular curvature, so its standard error
+is not available. Winter et al. (2022) describe the model and its
+estimation in full.</p>
 <p><strong>Identifiability.</strong> The detect-absence parameter
 <code>dA</code> is identified almost entirely by rejections. If very few
 witnesses reject, the likelihood is close to flat in <code>dA</code> and
@@ -1547,7 +1575,10 @@ standard error here.</p>
 The default ordering by sample diagnosticity ratio is
 <strong>optimistically biased</strong>, because the ordering is
 estimated from the same data used to compute the area; on data with no
-signal at all it returns AUC near 0.65 at 100 lineups per arm.
+signal at all it returns AUC of about .6 in this vignette’s setup (five
+confidence levels, 100 lineups per arm; the mean over 40 simulated
+datasets with <code>d_prime = 0</code> was .60, range .55 to .66), and
+the bias grows with the number of categories.
 <code>compare_models()</code> uses the default ordering, so treat the
 AUC it reports as an upper bound rather than an estimate, and refit with
 <code>order = &quot;apriori&quot;</code> for anything inferential.</p>

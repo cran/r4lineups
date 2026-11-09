@@ -209,7 +209,10 @@ plot(func_post)
 
 `diag_ratio_T_bayes()` models target-present and target-absent suspect-selection
 rates with independent beta-binomial posteriors and returns the posterior of the
-diagnosticity ratio.
+diagnosticity ratio. The example pairs the first two mock-witness lineups in
+`nortje2012` (suspect positions 3 and 6) as if they were a target-present and a
+target-absent lineup, only to show the computation; they are not such a pair, so
+the result is not a finding about diagnosticity.
 
 ```{r}
 tp_vec <- nortje2012$lineup_1
@@ -220,7 +223,7 @@ diag_post <- diag_ratio_T_bayes(
   lineup_pres = tp_vec,
   lineup_abs = ta_vec,
   pos_pres = 3,
-  pos_abs = 3,
+  pos_abs = 6,
   k1 = max(tp_vec, na.rm = TRUE),
   k2 = max(ta_vec, na.rm = TRUE),
   alpha = 0.5,

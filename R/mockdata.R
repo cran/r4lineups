@@ -24,4 +24,5 @@
 #'              \item Nominal size is 9
 #'              }
 #'
+#'@source Mock-witness data from a study by Nortje and Tredoux (2012).
 "mockdata"

@@ -54,8 +54,9 @@
 
 func_size_report <- function(lineup_vec, target_pos, k, R = 1000){
   lineup_vec <- typecheck(lineup_vec)
-  datacheck1(lineup_vec, k)
-  if (!is.numeric(R) || length(R) != 1L || R < 1 || R != as.integer(R)) {
+  # Validate the target against the declared lineup, including unchosen members.
+  lineup_prop_vec(lineup_vec, target_pos, k)
+  if (!is.numeric(R) || length(R) != 1L || !is.finite(R) || R < 1 || R != as.integer(R)) {
     stop("R must be a positive integer.", call. = FALSE)
   }
   estimate <- suppressWarnings(func_size(lineup_vec, target_pos))

@@ -13,7 +13,7 @@
 <meta name="author" content="Colin G. Tredoux" />
 <meta name="author" content="Tamsyn M. Naylor" />
 
-<meta name="date" content="2026-11-02" />
+<meta name="date" content="2026-11-09" />
 
 <title>Face Similarity Analysis</title>
 
@@ -345,7 +345,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 lineups</h3>
 <h4 class="author">Colin G. Tredoux</h4>
 <h4 class="author">Tamsyn M. Naylor</h4>
-<h4 class="date">2026-11-02</h4>
+<h4 class="date">2026-11-09</h4>
 
 
 
@@ -466,9 +466,9 @@ reticulate package. This requires a one-time setup.</p>
 order below.</p>
 <p><strong>TensorFlow, which DeepFace depends on, does not publish
 wheels for every Python version.</strong> At the time of writing it
-supports Python 3.9 to 3.12. If your system Python is newer — 3.13 or
-3.14, which is increasingly common — the install will proceed a long way
-and then fail with
+supports Python 3.9 to 3.13. If your system Python is newer — 3.14 or
+later, which is increasingly common — the install will proceed a long
+way and then fail with
 <code>No matching distribution found for tensorflow</code>.
 <code>install_r4lineups_python()</code> checks the interpreter first and
 stops before downloading anything, rather than letting that happen.</p>
@@ -523,7 +523,7 @@ prerequisite for anything else.</li>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">face_similarity</span>(</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">img1_path =</span> <span class="st">&quot;path/to/target.jpg&quot;</span>,</span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">img2_path =</span> <span class="st">&quot;path/to/foil1.jpg&quot;</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;ArcFace&quot;</span>,     <span class="co"># State-of-the-art face recognition model</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">&quot;ArcFace&quot;</span>,     <span class="co"># Face recognition model (the package default)</span></span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">&quot;cosine&quot;</span>      <span class="co"># Similarity metric</span></span>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>)</span>
 <span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
@@ -657,14 +657,11 @@ distinguish from the suspect, as discussed above.</li>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># List all models</span></span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">available_models</span>()</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co"># Models ordered by identity-recognition accuracy on standard benchmarks.</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co"># That is accuracy at telling people apart, not agreement with human</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co"># similarity judgements or with mock-witness choices.</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co"># 1. ArcFace</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co"># 2. Facenet512</span></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co"># 3. Facenet</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co"># 4. VGG-Face</span></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co"># 5. OpenFace (fastest, least accurate)</span></span></code></pre></div>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co"># The models differ in architecture, embedding size and speed. Published</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co"># benchmarks measure accuracy at telling people apart, not agreement with human</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co"># similarity judgements or with mock-witness choices, and the ranking depends</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co"># on the benchmark and the installed version, so the package does not rank them.</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co"># ArcFace is the default.</span></span></code></pre></div>
 </div>
 <div id="distance-metrics" class="section level3">
 <h3>Distance Metrics</h3>

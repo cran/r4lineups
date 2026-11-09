@@ -165,6 +165,15 @@ cal_result <- make_calibration(
 print(cal_result)
 ```
 
+The confidence values in `lineup_example` (20 to 100) are ordinal categories that
+carry probability labels by stipulation, not probabilities the witnesses
+stated, so O/U depends on those labels. Relabelling the same nine categories as
+90 to 100 changes O/U from -0.229 to +0.124, with the same accuracy in every
+bin. Accuracy here is also the proportion of suspect identifications that are
+guilty-suspect identifications, which depends on the 50:50 mix of target-present
+and target-absent lineups in the data. The figures below illustrate the output;
+they do not describe witness behaviour.
+
 The output provides three key statistics:
 
 - **C statistic**: Overall calibration quality (0 = perfect, higher = worse)
@@ -186,9 +195,10 @@ cal_result$plot
 
 Accuracy rises steadily across the confidence bins, from about 76% in the lowest
 to about 96% in the highest, so confidence here is genuinely informative. The
-points sit *above* the diagonal, however, which means these witnesses are
-**under**confident: they are more accurate than their stated confidence implies.
-That is the direction the O/U statistic reports.
+points sit *above* the diagonal, however, so with the 20 to 100 labels the
+confidence categories are **under**confident: accuracy exceeds the label. That
+is the direction the O/U statistic reports, and it follows from the labels
+chosen, as noted above.
 
 The plot is an ordinary **ggplot2** object, so it can be modified and saved in
 the usual way. `ggsave()` picks its output format from the file extension alone,
@@ -252,7 +262,7 @@ cal_by_cond <- make_calibration_by_condition(
 
 knitr::kable(
   cal_by_cond$condition_summary, digits = 3,
-  caption = "Calibration statistics by procedure, simulated data (choosers only)."
+  caption = "Calibration statistics by procedure, simulated data (suspect identifications)."
 )
 ```
 
@@ -363,35 +373,49 @@ q''(p) = \frac{-2L(L - 1)}{[1 + (L - 1)p]^3}.
 The curvature has one sign throughout: the curve is concave (bowed above the
 diagonal) when \(L > 1\), convex (bowed below it) when \(L < 1\), and the
 diagonal itself when \(L = 1\). It is not S-shaped. What the display shows is
-that the same response moves belief most, in absolute terms, at middling priors,
-and very little when the prior is already near 0 or near 1.
+that the same response moves belief very little when the prior is already near
+0 or near 1. The absolute change \(|q(p) - p|\) peaks at the prior
+\(1/(1 + \sqrt{L})\): about .17 for a response with \(L = 25\), such as the
+highest-confidence suspect identification, and about .64 for a rejection with
+\(L = 0.33\). Only responses with \(L\) near 1 peak near .5.
 
 ### Information Gain
 
-Information gain quantifies uncertainty reduction, measured in bits: the
-entropy of the prior minus the entropy of the posterior. Where the posterior
-curve says *where belief ends up*, information gain says *how much uncertainty
-was removed*:
+Wells and Lindsay (1980) and Wells, Yang and Smalarz (2015) measure the
+information gained from a response as the absolute change in the probability of
+guilt, |posterior − prior|: what counts is how far the response moves belief,
+not its direction. This is the default (`gain = "probability"`), and for a
+response with likelihood ratio \(L\) it is largest at the prior
+\(1/(1 + \sqrt{L})\), at lower priors for stronger incriminating responses.
+`gain = "signed"` keeps the direction, positive for
+responses that point to guilt and negative for responses that point to
+innocence:
 
 ```{r bayes-information-gain}
 plot_bayes_information_gain(bayes_result)
 ```
 
-Interpretation:
+A second measure, used by Starns, Cohen and Rotello (2023) in expected
+information gain, is the reduction in uncertainty in bits: the entropy of the
+prior minus the entropy of the posterior (`gain = "entropy"`):
 
-- **Positive values**: the response moves belief towards certainty (towards 0
-  or 1), so uncertainty falls.
-- **Negative values**: the response moves belief towards 50/50, so uncertainty
-  rises. That is not a sign of misleading evidence: a suspect identification
-  given a low prior raises the probability of guilt towards .5, which is the
-  correct update and also the most uncertain state.
-- **Where each curve peaks** depends on the direction of the evidence. Responses
-  that point to guilt (suspect identifications) gain most at priors above .5,
-  where they push belief towards 1; responses that point to innocence
-  (rejections, filler identifications) gain most at priors below .5.
+```{r bayes-information-gain-entropy}
+bayes_entropy <- make_bayes_curves(
+  lineup_example,
+  response_categories = "simple",
+  prior_grid = seq(0.01, 0.99, 0.01),
+  gain = "entropy"
+)
+plot_bayes_information_gain(bayes_entropy)
+```
 
-The curves bend sharply because binary entropy changes fastest near 0 and 1.
-That shape is a property of the measure, not of these data or of any smoothing.
+The two measures answer different questions and can differ in sign. A suspect
+identification given a low prior raises the probability of guilt towards .5:
+its probability gain is positive, but its entropy reduction is negative because
+.5 is the most uncertain state. That is a correct update, not misleading
+evidence. Responses that point to guilt reduce entropy most at priors above .5,
+and responses that point to innocence reduce it most at priors below .5. State
+which measure you report.
 
 ### Confidence-Based Bayesian Analysis
 
@@ -507,14 +531,19 @@ utility_matrix <- c(
 )
 ```
 
-The relative magnitudes carry the argument. Here a wrongful identification is
-set at four times the cost of a missed one (`-2.0` against `-0.5`), and twice the
-absolute value of a correct identification's benefit. That is a moral and legal
-judgement, not a statistical one, and it is the natural place for disagreement.
-Someone who set `fp = -10` would be expressing Blackstone's ratio; the analysis
-below would then recommend a considerably stricter confidence threshold. Because
-the choice is this important, report the sensitivity of the
-conclusion to it, which is what the base-rate section does for the other key
+Only two differences between these values affect which criterion is chosen,
+and any difference between procedures: `tp - fn`, the gain from acting on a
+guilty suspect rather than missing him or her (1.5 here), and `tn - fp`, the
+loss from acting on an innocent suspect rather than declining (2.5 here). The
+trade-off is the ratio of those differences, 2.5 to 1.5 or about 1.67; the raw
+ratio of `-2.0` to `-0.5` plays no part, and adding the same constant to `tp`
+and `fn`, or to `tn` and `fp`, leaves the optimum unchanged. That ratio is a
+moral and legal judgement, not a statistical one, and it is the natural place
+for disagreement. Blackstone's ratio, that it is better for ten guilty people to
+escape than for one innocent person to suffer, would make `tn - fp` ten times
+`tp - fn`, which in this matrix needs `fp = -14.5`; the optimum then moves
+from a criterion of 30 to 100, the strictest one. Because the choice is this
+important, report the sensitivity of the conclusion to it, which is what the base-rate section does for the other key
 assumption.
 
 ### Compute Utility Curves
@@ -544,14 +573,17 @@ Reading it from right to left: a very strict threshold acts on almost nothing,
 so little is gained and little is risked. Relaxing the threshold admits
 identifications that are mostly correct, and utility climbs. Past the optimum,
 each further relaxation admits more wrongful identifications than correct ones,
-and because those carry four times the weight, utility falls away again. The
-maximum is the criterion at which the marginal identification is exactly worth
-acting on.
+which are weighted by `tn - fp` against `tp - fn` (2.5 against 1.5), and utility
+falls away again. The maximum is the criterion at which the marginal
+identification is exactly worth acting on.
 
-This is the shape Lampinen et al. (2019) describe. Note that the curve is
-usually rather flat near its peak, which is reassuring for practice: thresholds
-somewhat either side of the optimum lose very little, so the recommendation does
-not depend on locating the maximum precisely.
+This is the shape Lampinen et al. (2019) describe. The optimum reported is the
+in-sample maximum over the observed criteria, with no interval, so it is
+optimistic as an estimate of the best rule for new lineups. Here the curve is
+nearly flat at the top (0.284 at 40, 0.288 at 30 and 0.288 at 20), which means
+the data do not support a firm choice among those three criteria. Thresholds
+close to the optimum lose very little, but a flat curve is also a reason not
+to read the exact criterion that wins as more than a sample quantity.
 
 ### Compare Procedures
 
@@ -586,13 +618,15 @@ knitr::kable(
                        utility_rule(util_proc_b$max_utility)),
     check.names = FALSE
   ),
-  caption = "Expected utility at the optimal confidence criterion, simulated data (200 target-present and 200 target-absent lineups per procedure)."
+  caption = "Expected utility at the optimal confidence criterion, simulated data (400 target-present and 400 target-absent lineups per procedure)."
 )
 ```
 
-The procedure with the stronger evidence supports both a higher expected utility
-and a stricter criterion: it can afford to wait for high-confidence
-identifications because it gets more of them.
+The procedure with the stronger evidence has the higher maximum expected utility
+in this simulation. The optimal criteria differ between the procedures, but the
+curves are nearly flat at the top (procedure A: 0.367 at 40 and 0.366 at 30;
+procedure B: 0.181 at 40 and 0.185 at 30), so that difference is incidental and
+should not be read as a property of the procedures.
 
 ### Sensitivity to Base Rate
 
@@ -645,11 +679,14 @@ replacement for partial area under the ROC curve, but it is contested. Lineup RO
 full range: the observed false-alarm rate only extends as far as witnesses'
 willingness to choose takes it, and that endpoint differs between procedures.
 pAUC handles this by integrating over a restricted region, but the choice of
-region is then itself a problem. Take the region from the procedure with the
-shorter curve and information from the other is discarded; take a common region
-and the comparison is made somewhere neither procedure was actually operating.
-Smith et al. argue that pAUC consequently fails to track which procedure has
-greater diagnostic utility, and that DPP does.
+region is then itself a problem. Smith et al. judge it inappropriate to use a
+different region for each procedure, because the procedure whose curve covers
+more of the false-alarm axis gains an advantage in pAUC, and equally
+inappropriate to use one common region. A common region lies within the shorter
+curve, so it leaves out the longer curve's points at higher false identification
+rates, which may include the criterion with the highest utility. They argue that
+pAUC consequently fails to track which procedure has greater diagnostic
+utility, and that DPP does.
 
 DPP takes a different approach. Rather than integrating over a region, it is
 computed at every operating point of the ROC, that is, at every cumulative
@@ -666,8 +703,11 @@ performance. When culprits are present in half of all lineups and the two
 errors are equally costly, DPP($c$) is one minus the expected utility at that
 threshold, so the average DPP measures the average utility of the procedure
 across the confidence levels witnesses actually use. Because every procedure
-is evaluated at its own operating points, curves of different lengths remain
-comparable.
+is evaluated at its own operating points, curves of different lengths can be
+compared without choosing a region. The average is an unweighted mean over those
+points, so it depends on their number and spacing: use it to compare procedures
+rated on the same confidence scale in the same study, not to compare values from
+studies that used different scales.
 
 This is an active disagreement rather than settled ground, and the pAUC vignette
 takes up the other side of it.
@@ -749,7 +789,8 @@ Use DPP when:
 
 - You have confidence-based ROC data
 - ROC curves are truncated (witnesses may not use full scale)
-- You want a single performance metric comparable across studies
+- You want a single performance metric for procedures rated on the same
+  confidence scale in the same study
 - You need to compare procedures with different confidence distributions
 
 ## 5. ANRI: Adjusted Normalized Resolution Index
@@ -784,11 +825,9 @@ anri_result <- compute_anri(
 print(anri_result)
 ```
 
-ANRI is always ≤ NRI because it removes positive bias. The bias correction is larger when:
-
-- Sample size N is small
-- Number of bins J is large
-- The ratio J/N is high
+ANRI is always ≤ NRI because it removes positive bias. The bias of NRI is about
+(J − 1)/N, so the correction is larger when the sample size N is small, the
+number of bins J is large, or, in short, when the ratio J/N is high.
 
 ### Bootstrap Confidence Intervals
 
@@ -829,9 +868,9 @@ it is ANRI and its interval that should be reported and compared.
 ### Compare Groups
 
 The comparison uses the two simulated procedures, which differ in the strength
-of the evidence they generate. Because they were simulated with genuinely
-different parameters, any difference found here reflects that design rather than
-chance group assignment.
+of the evidence they generate. The two procedures differ in d' by construction,
+but that does not make the ANRI difference between these samples real: the
+interval below is what shows whether the data can separate them.
 
 ```{r anri-comparison}
 anri_comparison <- compare_anri(
@@ -846,6 +885,12 @@ print(anri_comparison)
 
 plot_anri_comparison(anri_comparison)
 ```
+
+The ANRI difference is `r round(anri_comparison$difference, 3)` with a 95%
+interval of [`r round(anri_comparison$ci_lower, 3)`,
+`r round(anri_comparison$ci_upper, 3)`], which includes 0, so with these samples
+and 100 resamples the ANRI difference between the procedures cannot be
+distinguished from zero. Use 2000 or more resamples for anything you report.
 
 The comparison provides:
 
@@ -939,9 +984,13 @@ ou_dir <- if (cal$OU < 0) "underconfident" else "overconfident"
 > size 6 (`r sum(lineup_example$target_present)` target-present,
 > `r sum(!lineup_example$target_present)` target-absent).
 >
-> Witnesses were well calibrated overall (C = `r round(cal$C, 3)`), but
-> systematically **`r ou_dir`** (O/U = `r round(cal$OU, 3)`): accuracy in the
-> lowest confidence band was substantially higher than stated confidence implied.
+> Under the stipulated labels, calibration was poor (C = `r round(cal$C, 3)`),
+> mainly because witnesses were
+> **`r ou_dir`** (O/U = `r round(cal$OU, 3)`): accuracy in the lowest
+> confidence band was substantially higher than its label implied. The confidence
+> values are ordinal categories given probability labels by stipulation, so C and
+> the direction of O/U depend on the labels and are not findings about witness
+> behaviour.
 > Average DPP was `r round(dpp$dpp, 3)` (0 = perfect, 1 = chance), and the
 > operating point of maximum utility was confidence of
 > `r dpp$best_point$confidence` or above (DPP = `r round(dpp$best_point$dpp, 3)`).
@@ -954,11 +1003,13 @@ ou_dir <- if (cal$OU < 0) "underconfident" else "overconfident"
 > u(correct suspect ID) = `r utility_matrix[["tp"]]`,
 > u(missed guilty suspect) = `r utility_matrix[["fn"]]`,
 > u(innocent suspect ID) = `r utility_matrix[["fp"]]`,
-> u(correct rejection) = `r utility_matrix[["tn"]]`; that is, a wrongful
-> identification was weighted four times as heavily as a missed one. Under those
-> assumptions the rule "`r tolower(utility_rule(util$max_utility))`" maximised
-> expected utility
-> (EU = `r round(util$max_utility$expected_utility, 3)`).
+> u(correct rejection) = `r utility_matrix[["tn"]]`; only the differences between
+> these affect the optimum, and they put the cost of acting on an innocent
+> suspect at 2.5 against 1.5 for the gain from acting on a guilty one (a ratio
+> of about 1.67). In this sample the rule
+> "`r tolower(utility_rule(util$max_utility))`" maximised expected utility
+> (EU = `r round(util$max_utility$expected_utility, 3)`); this is an in-sample
+> optimum with no interval, and the curve was nearly flat from 40 to 20.
 >
 > Bayesian analysis showed that high-confidence suspect identifications were the
 > most informative response, with a likelihood ratio of
@@ -982,6 +1033,10 @@ Lampinen, J. M., Smith, A. M., & Wells, G. L. (2019). Four utilities in eyewitne
 Mickes, L. (2015). Receiver operating characteristic analysis and confidence-accuracy characteristic analysis in investigations of system variables and estimator variables that affect eyewitness memory. *Journal of Applied Research in Memory and Cognition, 4*(2), 93-102.
 
 Smith, A. M., Lampinen, J. M., Wells, G. L., Smalarz, L., & Mackovichova, S. (2019). Deviation from perfect performance measures the diagnostic utility of eyewitness lineups but partial area under the ROC curve does not. *Journal of Applied Research in Memory and Cognition, 8*(1), 50-59. https://doi.org/10.1016/j.jarmac.2018.09.003
+
+Starns, J. J., Cohen, A. L., & Rotello, C. M. (2023). A complete method for assessing the effectiveness of eyewitness identification procedures: Expected information gain. *Psychological Review, 130*(3), 677-719. https://doi.org/10.1037/rev0000332
+
+Wells, G. L., & Lindsay, R. C. L. (1980). On estimating the diagnosticity of eyewitness nonidentifications. *Psychological Bulletin, 88*(3), 776–784. https://doi.org/10.1037/0033-2909.88.3.776
 
 Wells, G. L., Yang, Y., & Smalarz, L. (2015). Eyewitness identification: Bayesian information gain, base-rate effect-equivalency curves, and reasonable suspicion. *Law and Human Behavior, 39*(2), 99-122.
 

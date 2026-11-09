@@ -12,10 +12,10 @@
     grepl(substr(.pywitness_audited_revision, 1L, 9L), version, fixed = TRUE)
 }
 
-#' Install the Audited pyWitness Engine
+#' Install the Pinned pyWitness Engine
 #'
 #' Explicitly creates or reuses an isolated Python virtual environment and
-#' installs the audited pyWitness Git revision used by
+#' installs the pinned pyWitness Git revision used by
 #' \code{\link{fit_lineup_models}}. This function is never called when the
 #' package is loaded or checked.
 #'
@@ -91,7 +91,7 @@ install_pywitness <- function(envname = .pywitness_default_env,
     pip_options = pip_options,
     ignore_installed = isTRUE(force)
   )
-  message("Installed the audited pyWitness revision in '", envname, "'.")
+  message("Installed the pinned pyWitness revision in '", envname, "'.")
   invisible(envname)
 }
 
@@ -105,7 +105,8 @@ install_pywitness <- function(envname = .pywitness_default_env,
 #'   Python, and import pyWitness. The default performs no initialization.
 #' @param verbose Logical. Print a concise status report.
 #' @return A one-row tibble with environment and engine status, including
-#'   whether the imported version encodes the audited revision when
+#'   whether the imported version encodes the pinned revision (fields
+#'   \code{audited_revision} and \code{audited_revision_matches}) when
 #'   \code{initialize = TRUE}.
 #'
 #' @examples
@@ -170,9 +171,9 @@ check_pywitness_deps <- function(envname = .pywitness_default_env,
     cat("pyWitness available:", installed, "\n")
     if (!is.na(version)) cat("pyWitness version:", version, "\n")
     if (!is.na(revision_matches)) {
-      cat("Audited revision matches:", revision_matches, "\n")
+      cat("Pinned revision matches:", revision_matches, "\n")
     }
-    cat("Audited revision:", .pywitness_audited_revision, "\n")
+    cat("Pinned revision:", .pywitness_audited_revision, "\n")
     if (!initialize && !python_configured) {
       cat("No Python process was initialized. Use initialize = TRUE to import ",
           "the isolated engine.\n", sep = "")
@@ -686,6 +687,9 @@ check_pywitness_deps <- function(envname = .pywitness_default_env,
 #' @examples
 #' \dontrun{
 #' install_pywitness()
+#' # lineup_example was generated with unequal filler means, so the equal-filler
+#' # (IID) models fit it only approximately; this call illustrates syntax and
+#' # the fit is not a valid test of the models.
 #' fits <- fit_lineup_models(
 #'   lineup_example,
 #'   confidence_bins = c(0, 60, 80, 100)
@@ -754,7 +758,7 @@ fit_lineup_models <- function(
   if (!.pywitness_revision_matches(engine_version)) {
     stop(
       "The installed pyWitness version ('", engine_version,
-      "') does not match audited revision ", .pywitness_audited_revision,
+      "') does not match the pinned revision ", .pywitness_audited_revision,
       ". Run install_pywitness(force = TRUE).",
       call. = FALSE
     )
@@ -868,7 +872,7 @@ fit_lineup_models <- function(
     information_criteria = list(
       available = FALSE,
       reason = paste(
-        "The audited engine minimizes Pearson chi-squared rather than",
+        "The pyWitness fits minimize Pearson chi-squared rather than",
         "maximizing likelihood; AIC and BIC are therefore not reported."
       )
     )

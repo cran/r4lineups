@@ -406,7 +406,7 @@ plot.winter_2ht_boot <- function(x, ...) {
       ggplot2::aes(xintercept = original),
       color = "red",
       linetype = "dashed",
-      size = 1
+      linewidth = 1
     ) +
     ggplot2::geom_vline(
       data = param_info,

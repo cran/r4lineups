@@ -25,11 +25,15 @@ create_example_lineup_data(
 \item{seed}{Integer. Random seed for reproducibility (default = NULL)}
 }
 \value{
-A lineup_data object with realistic example data
+A lineup_data object with simulated example data
 }
 \description{
-Generate example lineup identification data in standardized format.
-Useful for testing, demonstrations, and learning r4lineups functions.
+Generate simulated lineup identification data in standardized format.
+Useful for testing, demonstrations, and learning r4lineups functions. The
+data are simulated, and confidence is generated independently of accuracy, so
+confidence-based analyses (ROC, CAC, calibration) of these data show no
+relationship between confidence and accuracy and are not typical of
+eyewitness data.
 }
 \examples{
 # Basic example data

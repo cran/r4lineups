@@ -134,12 +134,14 @@ plot_ppv_range <- function(ppv_range_obj,
 #' @return A ggplot2 object
 #'
 #' @details
-#' Effective size < nominal size indicates lineup bias, where some members are
+#' Effective size < nominal size suggests lineup bias, where some members are
 #' implausible and rarely chosen. This can vary by confidence level if witnesses
 #' at different confidence levels have different lineup viewing strategies.
 #'
 #' A horizontal line at the nominal lineup size provides a reference. Values
-#' below this line indicate bias; values at or above indicate fair lineups.
+#' below this line suggest bias. Values at or above it do not establish a fair
+#' lineup, because the plug-in estimate from sparse bins is biased (see the
+#' small-sample bias section of \code{\link{esize_T}}).
 #'
 #' @examples
 #' data(lineup_example)
@@ -234,10 +236,13 @@ plot_effective_size_conf <- function(ppv_range_obj,
 #'
 #' @details
 #' The error rate is computed from target-absent (culprit-absent) lineups as:
-#' (suspect IDs + filler IDs) / total target-absent trials
+#' (suspect IDs + filler IDs) / target-absent trials in that confidence bin
 #'
-#' Higher confidence should generally be associated with lower error rates
-#' (better calibration).
+#' The denominator is the number of target-absent trials within the bin, so the
+#' value is the share of responses at that confidence that were identifications.
+#' It is not a calibration measure and need not fall as confidence rises: when
+#' rejections occur mainly at low confidence, the rate is near 1 in the higher
+#' bins.
 #'
 #' @examples
 #' data(lineup_example)

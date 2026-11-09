@@ -79,12 +79,15 @@ diag_ratio_T_bayes <- function(lineup_pres, lineup_abs, pos_pres, pos_abs,
                                 credible_mass = 0.95, threshold = NULL) {
   lineup_pres <- typecheck(lineup_pres)
   lineup_abs  <- typecheck(lineup_abs)
-  datacheck2(lineup_pres, lineup_abs, k1, k2)
+  lineup_prop_vec(lineup_pres, pos_pres, k1)
+  lineup_prop_vec(lineup_abs, pos_abs, k2)
 
   alpha_val <- .resolve_alpha_scalar(alpha)
-  if (!is.numeric(S) || S < 1)
+  if (!is.numeric(S) || length(S) != 1L || !is.finite(S) ||
+      S < 1 || S != floor(S))
     stop("S must be a positive integer.", call. = FALSE)
-  if (!is.numeric(credible_mass) || credible_mass <= 0 || credible_mass >= 1)
+  if (!is.numeric(credible_mass) || length(credible_mass) != 1L ||
+      !is.finite(credible_mass) || credible_mass <= 0 || credible_mass >= 1)
     stop("credible_mass must be in (0, 1).", call. = FALSE)
   if (!is.null(threshold) && (!is.numeric(threshold) || length(threshold) != 1))
     stop("threshold must be a single numeric value.", call. = FALSE)

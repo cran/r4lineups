@@ -1,4 +1,4 @@
-# Tests for Full ROC analysis (Smith & Yang, 2020)
+# Tests for Full ROC analysis (Smith et al., 2020)
 
 make_sim_data <- function(n = 200, seed = 123,
                           tp_probs = c(0.6, 0.2, 0.2),
@@ -97,4 +97,21 @@ test_that("full ROC splits TA filler IDs when no innocent suspect is designated"
   expect_equal(tab$n_false_alarms[tab$decision == "filler"], 1.5)
   expect_equal(sum(tab$false_alarm_rate), 1)
   expect_equal(result$innocent_suspect_method, "estimated_from_fillers")
+})
+
+test_that("apriori order follows Smith, Yang & Wells (2020)", {
+  # Every decision at every confidence level, so all nine cells are kept.
+  grid <- expand.grid(identification = c("suspect", "filler", "reject"),
+                      confidence = c(30, 70, 90), stringsAsFactors = FALSE)
+  dat <- rbind(cbind(target_present = TRUE, grid),
+               cbind(target_present = FALSE, grid))
+  dat$suspect_pos <- 1
+  result <- make_fullroc_data(dat, conf_bins = c(0, 50, 80, 100),
+                              order = "apriori", innocent_suspect = "designated")
+  tab <- result$diagnosticity_table
+  rank <- as.integer(factor(tab$conf_bin, levels = unique(sort(tab$conf_bin))))
+  got <- paste(tab$decision, rank)
+  expect_equal(got, c("suspect 3", "suspect 2", "suspect 1",
+                      "reject 1", "filler 1", "reject 2", "filler 2",
+                      "reject 3", "filler 3"))
 })

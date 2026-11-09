@@ -81,6 +81,7 @@ homog_diag <- function(lineup_pres_list, lineup_abs_list, pos_list, k,
   par2 <- ln_diag_ratio(linedf, correction = FALSE)
   par3 <- d_weights(linedf)
   par4 <- t(cbind(par1, par2, par3))
+  .check_diag_pooling(par1$var, par2$lnd)
   par5 <- chi_diag(par4)
   df <- nrow(linedf) - 1L
   par6 <- pchisq(par5, df = df, lower.tail = FALSE)
@@ -166,4 +167,20 @@ print_pooling_note <- function(heterogeneous, conf.level = 0.95) {
   }
   cat("\n")
   cat(strwrap(msg, width = 76), sep = "\n")
+}
+
+
+# The inverse-variance pooling and Q test need finite log ratios and finite,
+# positive variances in every pair. A pair in which every witness (or none)
+# chooses the suspect breaks this, and the wrapper previously went on to report
+# homogeneity from non-finite results.
+.check_diag_pooling <- function(v, lnd) {
+  bad <- which(!is.finite(v) | v <= 0 | !is.finite(lnd))
+  if (length(bad) > 0) {
+    stop("Pair(s) ", paste(bad, collapse = ", "), " have a zero or ",
+         "non-finite log-ratio variance or log ratio (a suspect count of 0, ",
+         "or every witness choosing the suspect). Inverse-variance pooling and ",
+         "the homogeneity test are undefined for these pairs.", call. = FALSE)
+  }
+  invisible(TRUE)
 }

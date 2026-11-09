@@ -10,7 +10,9 @@
 #' @return Numeric. Estimated innocent-suspect identification rate.
 #'
 #' @details
-#' This represents the "best case" estimate assuming perfect lineup fairness.
+#' This shows the risk to an innocent suspect if the lineup had been fair
+#' (Fitzgerald et al., 2023), the "best case" if the suspect is no more likely
+#' than a filler to be chosen.
 #' The formula is: innocent_id_rate = error_rate / lineup_size
 #'
 #' @references
@@ -434,10 +436,17 @@ ppv_by_confidence <- function(data,
 #' @details
 #' This function provides the full PPV range recommended by Fitzgerald et al. (2023):
 #' \itemize{
-#'   \item \strong{Nominal} (upper bound): Assumes perfectly fair lineup
-#'   \item \strong{Effective}: Accounts for lineup bias via effective size
-#'   \item \strong{None} (lower bound): Assumes worst-case (all errors are innocent-suspect)
+#'   \item \strong{Nominal}: The risk if the lineups had been fair; assumes
+#'     the innocent suspect attracts a 1/k share of mistaken identifications
+#'   \item \strong{Effective}: Accounts for lineup bias via effective size;
+#'     assumes the innocent suspect is among the more plausible members
+#'   \item \strong{None} (lower bound on PPV): Assumes worst-case (all errors are innocent-suspect)
 #' }
+#'
+#' PPV also depends on the prior. With \code{base_rate = NULL} it is a ratio of
+#' counts, so the implicit prior is the study's own ratio of target-present to
+#' target-absent lineups (.5 when the numbers are equal); \code{base_rate} sets
+#' it explicitly.
 #'
 #' The range between nominal and none represents the uncertainty in PPV due to
 #' unknown lineup fairness conditions.

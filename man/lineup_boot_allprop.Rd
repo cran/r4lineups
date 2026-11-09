@@ -9,7 +9,7 @@ lineup_boot_allprop(lineup_vec, k, conf = 0.95, R = 1000)
 \arguments{
 \item{lineup_vec}{A numeric vector of lineup choices}
 
-\item{k}{Number of targets in lineup. Must be specified by user (scalar).}
+\item{k}{Number of members (nominal size) of the lineup. Must be specified by user (scalar).}
 
 \item{conf}{Confidence level for the intervals, e.g. 0.95 for 95 percent
 intervals. Defaults to 0.95. May be specified by user (scalar).}

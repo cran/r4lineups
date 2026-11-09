@@ -41,6 +41,11 @@ This visualization helps understand:
   \item Which foils are closest to the target in embedding space
   \item Overall structure of similarity in a lineup
 }
+Only \code{method = "pca"} is a linear projection of the embeddings, and it
+still loses most of the distance in the full embedding space. Distances in
+UMAP and t-SNE plots are not interpretable, and with a lineup of six faces
+the layout from either is close to arbitrary. Use \code{method = "pca"} for
+a lineup, and read exact distances from \code{\link{lineup_similarity}}.
 }
 \examples{
 \dontrun{
@@ -49,7 +54,8 @@ all_faces <- c("target.jpg", paste0("foil", 1:5, ".jpg"))
 embs <- batch_embeddings(all_faces)
 
 # Plot with target highlighted
-plot_embedding_space(embs, labels = c("Target", paste0("F", 1:5)), highlight = 1)
+plot_embedding_space(embs, method = "pca",
+                     labels = c("Target", paste0("F", 1:5)), highlight = 1)
 }
 
 }

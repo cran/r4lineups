@@ -70,7 +70,11 @@ how rejection confidence was coded.
 
 With a designated innocent suspect, target-absent \code{"suspect"}
 responses are used directly. Without one, filler IDs are divided by lineup
-size. The two estimators are never added together. See
+size. The two estimators are never added together. Dividing filler IDs by
+lineup size assumes the innocent suspect is chosen at the average filler
+rate, which holds for a fair lineup; with a biased lineup the estimated
+false-ID rate, and so the ROC and pAUC, are wrong, and a designated innocent
+suspect should be used when one is available. See
 \code{innocent_suspect} for how the design is determined.
 }
 \examples{

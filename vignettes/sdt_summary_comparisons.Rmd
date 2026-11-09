@@ -73,6 +73,14 @@ forced-choice identification task, with a single set of latent memory parameters
 driving both. Estimating d′ from collapsed 2 × 2 counts ignores that structure,
 and in particular it discards which lineup member was chosen.
 
+For lineup data the cells must be defined accordingly: a hit is a correct
+identification of the culprit in a target-present lineup, and a false alarm is
+an identification of the designated innocent suspect in a target-absent lineup.
+Filler identifications and rejections count as misses (target-present) and
+correct rejections (target-absent). Without a designated innocent suspect, the
+false-alarm cell is undefined unless filler identifications are divided by the
+lineup size.
+
 That does not make the summary-level comparison useless — it is often the only
 thing available, and it is what published tables report — but the d′ it yields
 is a yes/no analogue and should be labelled as such rather than presented as the
@@ -147,7 +155,10 @@ compare_sdt_summary(hits_a, fas_a, misses_a, cr_a,
 
 # Notes
 
-- Extreme rates (0 or 1) are corrected by default (loglinear).
+- All rates are adjusted by default, by the loglinear rule \((x + 0.5)/(n + 1)\),
+  not only extreme ones, so d′ differs slightly from
+  \(z(H/N_s) - z(F/N_n)\). The `hit_rate` and `fa_rate` fields of the returned
+  object are the adjusted rates.
 - If only **published d′ or β** are available, you need a reported **SE/variance**
   to compare conditions. Without counts or SEs, z-tests are not identifiable.
 
@@ -225,8 +236,9 @@ cat("Bootstrap replicates used:", fit_free$boot_n_used,
 ```
 
 Unlike the exactly-identified summary estimators, this model has residual
-degrees of freedom, so it **can** be found to fit badly — which is informative
-in itself.
+degrees of freedom, so it **can** be found to fit badly. Here the free model is
+rejected at the .05 level (p = .037), so the comparisons below are conditional on
+a model that is not well supported by these counts.
 
 ## Comparing conditions
 
@@ -245,8 +257,9 @@ compare_max_sdt(fit_free, fit_equal_d)
 ```
 
 Constraining d' to be equal costs 0.42 in chi-square for one degree of freedom,
-which is nothing: these two conditions do not differ detectably in
-discriminability. `constrain_c = TRUE` tests the criterion in the same way.
+which is a small change: these two conditions show no detectable difference in
+discriminability, although the intervals for d' are wide (about 1.6 to 2.2 and
+1.8 to 2.4), so the data do not establish that the two are equal. `constrain_c = TRUE` tests the criterion in the same way.
 
 ## Which to use
 
@@ -311,7 +324,7 @@ A hit rate of exactly 1 or a false-alarm rate of exactly 0 gives an infinite
 |---|---|---|
 | `"loglinear"` (default) | \((x + 0.5)/(n + 1)\) | To every case, extreme or not |
 | `"half"` | \(0.5/n\) or \((n - 0.5)/n\) | Only when the count is 0 or \(n\) |
-| `"none"` | \(x/n\) | Never (rates are clamped away from 0 and 1 to keep \(z\) finite) |
+| `"none"` | \(x/n\) | Never; a rate of 0 or 1 gives an infinite \(z\) and d′, with a warning (clamping is used only inside the Miller variance sum) |
 
 The default applies unconditionally rather than only to offending cells, which is
 the form that behaves better in simulation. The choice is recorded in the

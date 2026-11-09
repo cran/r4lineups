@@ -23,7 +23,10 @@ plus one or more condition variables}
 
 \item{confidence_bins}{Numeric vector of bin edges (optional)}
 
-\item{choosers_only}{Logical. Whether to analyze only suspect IDs (default = TRUE)}
+\item{choosers_only}{Logical. If \code{TRUE} (default), suspect
+identifications are analysed. If \code{FALSE}, choosers are analysed:
+identifications, with target-present filler IDs excluded, as with
+\code{make_calibration_data(population = "choosers")}.}
 
 \item{lineup_size}{Integer. Number of people in lineup (default = 6)}
 

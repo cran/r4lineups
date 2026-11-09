@@ -47,7 +47,7 @@ roc_ui <- function(id) {
         "Full ROC",
         bslib::layout_columns(
           col_widths = c(6, 6),
-          plot_card(ns, "fullroc_plot", "Full ROC (Smith & Yang, 2020)"),
+          plot_card(ns, "fullroc_plot", "Full ROC (Smith et al., 2020)"),
           table_card(ns, "fullroc_table", "Full ROC categories")
         )
       )

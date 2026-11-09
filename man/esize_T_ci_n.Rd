@@ -4,12 +4,16 @@
 \alias{esize_T_ci_n}
 \title{Effective Size with Confidence Intervals from Normal Theory (Tredoux, 1998)}
 \usage{
-esize_T_ci_n(lineup_tab, alpha)
+esize_T_ci_n(lineup_tab, alpha = 0.95, conf_level = NULL)
 }
 \arguments{
 \item{lineup_tab}{A table of lineup choices.}
 
-\item{alpha}{Confidence level as a decimal (e.g., 0.95 for a 95-percent CI).}
+\item{alpha}{Confidence level as a decimal (e.g., 0.95 for a 95-percent CI).
+Despite its name this is the confidence level, not the error rate; prefer
+\code{conf_level}.}
+
+\item{conf_level}{Confidence level as a decimal. Overrides \code{alpha}.}
 }
 \description{
 Computes effective size E' (Tredoux, 1998) together with a confidence interval

@@ -10,8 +10,10 @@
 #'@param R Number of bootstrap replications. Defaults to 1000.
 #'@return A single integer: the number of lineup members whose bootstrapped
 #'        confidence interval for the proportion choosing them includes the
-#'        chance value \eqn{1/k}. These are the members that a mock witness
-#'        chose at a rate not distinguishable from guessing.
+#'        chance value \eqn{1/k}. A member counted this way has not been shown to
+#'        depart from the chance rate, which is not the same as being chosen at
+#'        that rate, and the count rises when there are few witnesses. It is
+#'        not on the scale of Malpass' continuous effective size.
 #'@details Because the result is a count of members rather than a continuous
 #'         quantity, it changes only in whole steps as \code{conf} varies, and
 #'         it is flat across ranges of \code{conf} in which no member's interval
@@ -40,7 +42,10 @@
 
 eff_size_per_foils <- function(lineup_vec, target_pos, k, conf = 0.95, R = 1000){
   lineup_vec <- typecheck(lineup_vec)
-  if (!setequal(as.integer(target_pos), seq_len(k))) {
+  datacheck1(lineup_vec, k)
+  if (!is.numeric(target_pos) || length(target_pos) != k ||
+      any(!is.finite(target_pos)) || any(target_pos != floor(target_pos)) ||
+      anyDuplicated(target_pos) || !setequal(target_pos, seq_len(k))) {
     stop("target_pos must contain each lineup member position exactly once.", call. = FALSE)
   }
   ci <- lineup_boot_allprop(lineup_vec, k, conf = conf, R = R)

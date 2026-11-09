@@ -64,6 +64,7 @@ rare_suspect <- function() {
 }
 
 test_that("bootstraps resolve the design once on the full data", {
+  skip_on_cran()
   d <- rare_suspect()
   expect_no_message(
     compare_pauc(d, d, n_bootstrap = 50, seed = 1, max_false_id_rate = 0.1),

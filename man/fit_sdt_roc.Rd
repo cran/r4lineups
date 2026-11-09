@@ -45,7 +45,9 @@ otherwise, with a message.}
 \value{
 An S3 object of class "sdt_roc_fit" containing:
   \itemize{
-    \item dprime: Overall discriminability (d')
+    \item dprime: Overall discriminability (d'). Under the unequal-variance
+      model this is d_a, the standardised separation
+      \eqn{\sqrt{2}\,\mathrm{intercept} / \sqrt{1 + \mathrm{slope}^2}}
     \item criteria: Decision criterion for each confidence level (c values)
     \item variance_ratio: Ratio of lure SD to target SD, the z-ROC slope
       (if unequal_variance)
@@ -79,6 +81,8 @@ Under unequal-variance SDT:
 
 **Parameter Estimation**:
 - d' = average distance between distributions in standard deviation units
+  (under the unequal-variance model the reported value is d_a, which uses the
+  root mean square of the two standard deviations)
 - c = decision criterion (0 = unbiased, positive = conservative, negative = liberal)
 - Higher d' = better discriminability
 

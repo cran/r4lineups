@@ -33,7 +33,7 @@ Eyewitness identification data can be analyzed using multiple theoretical framew
 
 1. **2-HT Model** (Winter et al., 2022): Multinomial Processing Tree model
 2. **EIG** (Starns et al., 2023): Expected Information Gain
-3. **Full ROC** (Smith & Yang, 2020): Receiver Operating Characteristic
+3. **Full ROC** (Smith et al., 2020): Receiver Operating Characteristic
 
 The `compare_models()` function provides a unified interface for fitting all models and generating comparison tables and visualizations.
 
@@ -77,7 +77,8 @@ where x = response category (e.g., "suspect_high_confidence")
 - The maximum is the prior entropy, reached when every response resolves guilt
   completely. That is 1 bit only when the prior probability of guilt is .5; at a
   prior of .1 it is about .47 bits. Compare EIG values only at the same prior.
-- Higher EIG = more diagnostic procedure
+- Higher EIG = more diagnostic procedure, when the procedures are compared at
+  the same prior and with the same binning of responses
 
 **Use when:**
 
@@ -202,7 +203,7 @@ knitr::kable(
              Estimate  = round(unname(model_2ht$parameters), 3),
              SE        = round(unname(model_2ht$se), 3)),
   row.names = FALSE,
-  caption = "2-HT parameter estimates with standard errors, simulated data."
+  caption = "2-HT parameter estimates, simulated data. Standard errors are NA because b is estimated on its boundary."
 )
 
 cat("AIC:", round(model_2ht$aic, 2),
@@ -216,6 +217,11 @@ cat("AIC:", round(model_2ht$aic, 2),
 - **dA**: Probability of detecting the culprit's absence
 - **b**: Bias toward suspect
 - **g**: Tendency to guess vs. reject
+
+In these data `b` is estimated at zero, the lower boundary of its range, so the
+likelihood has no regular curvature there and the standard errors are not
+available (`NA`). No interval exists for any parameter from this fit; use
+`boot_winter_2ht()` if intervals are needed.
 
 ### EIG Results
 
@@ -259,7 +265,9 @@ print(head(model_fullroc$diagnosticity_table[, c("evidence_label",
 **Interpreting Full ROC:**
 
 - AUC = `r round(model_fullroc$auc, 3)`: Investigator's ability to discriminate
-- Values closer to 1.0 indicate better discriminability
+- Values closer to 1.0 indicate better discriminability, but the default
+  diagnosticity ordering inflates AUC, so compare procedures only with the
+  a-priori order
 - All witness responses contribute to overall discriminability
 
 ## Method-Choice Guidance
@@ -295,9 +303,12 @@ common model-selection scale and the wrapper does not declare a “best model.�
 The 2-HT fit reports AIC/BIC, but these values are comparative rather than
 absolute. They can only be compared with alternative likelihood models fitted
 to the same observations and outcome representation; they cannot be compared
-with EIG or AUC. A single-condition 2-HT fit is saturated: it has zero residual
-degrees of freedom, so it reproduces the observed counts exactly and its
-absolute fit cannot be tested.
+with EIG or AUC. A single-condition 2-HT fit is just identified: it has as many
+free parameters as independent cells, so it reproduces the observed counts
+exactly unless an estimate sits on a boundary, and its absolute fit cannot be
+tested. Here `b` is on its boundary at zero, and the target-absent suspect count
+is 35.8 expected against 33 observed (filler 179.2 against 182, a residual of
+2.83), because the data call for a negative `b`.
 
 ```{r model_selection}
 cat("2-HT Model Fit:\n")
@@ -465,10 +476,16 @@ knitr::kable(
 ```
 
 `b` is the probability that a witness who detects nothing picks the suspect
-because the suspect stands out. An interval clearly above zero is a reason to
-inspect the lineup; how large a `b` is acceptable is a policy judgement that the
-model cannot make. Note that the interval is a Wald interval clipped to [0, 1];
-`boot_winter_2ht()` gives bootstrap intervals that respect the boundary.
+because the suspect stands out. Here the estimate is zero, on the boundary, and
+the interval is `NA` because the Wald standard error is unavailable there. The
+point estimate still says something: the data show no sign of extra choosing of
+the suspect (the suspect was chosen slightly less often than the model expects,
+which the model cannot represent with a negative `b`), although without an
+interval this is not evidence that the lineup is fair. When an estimate is
+interior, an interval clearly above zero is a reason to inspect the lineup; how
+large a `b` is acceptable is a policy judgement that the model cannot make. The
+Wald interval is clipped to [0, 1]; `boot_winter_2ht()` gives bootstrap
+intervals, which are the better choice near the boundary.
 
 
 ### Example 3: Comparing Detection vs. Guessing
@@ -486,12 +503,16 @@ knitr::kable(
 )
 ```
 
-Detection and guessing are separately identified here, which is the point of the
-model: an identification rate on its own cannot tell you whether witnesses
-recognised the culprit or simply picked someone plausible. Note that `dP` and
-`g` are probabilities of different events and are not in competition — a
-procedure can have both high detection and a high tendency to choose when
-detection fails.
+These data were simulated from a signal detection model, not from the 2-HT model,
+and the four parameters are just identified: they are a re-expression of the
+response proportions with no test of the process interpretation, and `dA` and
+`b` are at or near their boundaries here. The table therefore does not show
+that detection and guessing have been separated. What the 2-HT model offers in
+principle is a way to ask whether witnesses recognised the culprit or picked
+someone plausible, and that reading needs data generated by, or independently
+shown to follow, the model. `dP` and `g` are probabilities of different events
+and are not in competition; a procedure can have both high detection and a high
+tendency to choose when detection fails.
 
 
 ## Formatted Comparison Tables
@@ -611,8 +632,8 @@ summary(comparison$fitted_models$`2ht`)
 
 The summary's identification note is the part to read. With one target-present
 and one target-absent condition the 2-HT model has zero residual degrees of
-freedom, so it reproduces the counts exactly and there is no goodness-of-fit
-test to read. Convergence, identifiability (enough rejections to estimate `dA`)
+freedom, so it reproduces the counts exactly unless an estimate is on a
+boundary, as `b` is here, and there is no goodness-of-fit test to read. Convergence, identifiability (enough rejections to estimate `dA`)
 and fit are separate questions. Fit can be tested only with several conditions
 and parameters constrained across them, as in Winter et al. (2022).
 
@@ -626,9 +647,9 @@ ranked against each other directly.
 
 | Model | Estimand | Scale | Inference available |
 |---|---|---|---|
-| 2-HT | Latent probabilities of detection, bias and guessing | Four probabilities in [0, 1] | Standard errors from the observed information matrix; bootstrap intervals via `boot_winter_2ht()`. No fit test for a single condition (zero residual df) |
+| 2-HT | Latent probabilities of detection, bias and guessing | Four probabilities in [0, 1] | Standard errors from the observed information matrix, unavailable when an estimate is on a boundary; bootstrap intervals via `boot_winter_2ht()`. No fit test for a single condition (zero residual df) |
 | EIG | Expected reduction in uncertainty about guilt | Bits, 0 to the prior entropy | None in this package. Tuttle, Starns and Cohen (2025) give 95% credible intervals for EIG from a Bayesian multinomial model of the response proportions; adding this is planned |
-| Full ROC | Investigator discriminability | AUC in [0, 1], .5 = no discrimination | None in this package; see the note on ordering bias below |
+| Full ROC | Investigator discriminability | AUC in [0, 1], .5 = chance ranking under the chosen category order | None in this package; see the note on ordering bias below |
 
 ### 2-HT estimation
 
@@ -637,13 +658,14 @@ in the introduction, and the parameters are estimated by maximum likelihood over
 the six observed cell counts (three responses by two lineup types). The
 target-present and target-absent totals are fixed, so the data have
 2 × (3 − 1) = 4 degrees of freedom, the same as the number of parameters: a
-single-condition fit is saturated, with zero residual degrees of freedom
+single-condition fit is just identified, with zero residual degrees of freedom
 (Winter et al., 2022, Figure 1). The standard errors measure how sharply the
 data pin each parameter down. At the best-fitting values, the log-likelihood
 falls away steeply in some directions and gently in others; that curvature,
 the *Hessian* matrix of second derivatives, is computed numerically, and its
 inverse gives the sampling variances of the estimates. A flat likelihood (little
-curvature) means a large standard error. Winter et al. (2022) describe the
+curvature) means a large standard error, and an estimate on a boundary has no
+regular curvature, so its standard error is not available. Winter et al. (2022) describe the
 model and its estimation in full.
 
 **Identifiability.** The detect-absence parameter `dA` is identified almost
@@ -664,7 +686,9 @@ categories estimated from the data, it inherits the binning issue discussed in
 Computed as described in `vignette("fullroc_analysis")`. The default ordering by
 sample diagnosticity ratio is **optimistically biased**, because the ordering is
 estimated from the same data used to compute the area; on data with no signal at
-all it returns AUC near 0.65 at 100 lineups per arm. `compare_models()` uses the
+all it returns AUC of about .6 in this vignette's setup (five confidence levels,
+100 lineups per arm; the mean over 40 simulated datasets with `d_prime = 0` was
+.60, range .55 to .66), and the bias grows with the number of categories. `compare_models()` uses the
 default ordering, so treat the AUC it reports as an upper bound rather than an
 estimate, and refit with `order = "apriori"` for anything inferential.
 

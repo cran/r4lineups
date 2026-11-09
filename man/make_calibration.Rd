@@ -12,6 +12,8 @@ make_calibration(
   show_plot = TRUE,
   confidence_scale = c("auto", "0-1", "0-100"),
   innocent_suspect = "auto",
+  population = NULL,
+  tp_fillers = c("exclude", "error"),
   ...
 )
 }
@@ -20,7 +22,10 @@ make_calibration(
 
 \item{confidence_bins}{Numeric vector of bin edges (optional)}
 
-\item{choosers_only}{Logical. Whether to analyze only suspect IDs (default = TRUE)}
+\item{choosers_only}{Logical. If \code{TRUE} (default), suspect
+identifications are analysed; \code{FALSE} (deprecated) means
+\code{population = "choosers"}. Ignored when \code{population} is
+supplied.}
 
 \item{lineup_size}{Integer. Number of people in lineup (default = 6)}
 
@@ -39,6 +44,20 @@ innocent-suspect count is estimated as filler IDs divided by
 \code{"designated"} when any target-absent row is a suspect ID or the data
 have a non-missing \code{suspect_pos} column, and \code{"estimated"}
 otherwise, with a message.}
+
+\item{population}{Which responses are calibrated: \code{"suspect_ids"}
+(suspect identifications, as in CAC analysis; correct when target-present),
+\code{"choosers"} (witnesses who identify someone; only target-present
+suspect IDs are correct; see \code{tp_fillers}), or \code{"nonchoosers"}
+(rejections; correct when target-absent). If NULL (default), it is set from
+\code{choosers_only}.}
+
+\item{tp_fillers}{For \code{population = "choosers"} only: how filler
+identifications in target-present lineups are treated. \code{"exclude"}
+(default) leaves them out, as Brewer and Wells (2006) did, because a filler
+is known in advance not to be the culprit. \code{"error"} keeps them as
+incorrect identifications; Brewer and Wells note that overconfidence is
+then more marked.}
 
 \item{...}{Additional arguments passed to make_calibration_gg()}
 }

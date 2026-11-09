@@ -17,10 +17,10 @@ get_embedding(
 \item{img_path}{Path to the image file containing a face.}
 
 \item{model}{Character. The face recognition model to use.
-Default is "ArcFace" (recommended). See \code{\link{available_models}}.}
+Default is "ArcFace". See \code{\link{available_models}}.}
 
 \item{detector}{Character. Face detection backend.
-Default is "retinaface" (most accurate). See \code{\link{available_detectors}}.}
+Default is "retinaface". See \code{\link{available_detectors}}.}
 
 \item{align}{Logical. Whether to align the face before embedding.
 Default is TRUE (recommended).}

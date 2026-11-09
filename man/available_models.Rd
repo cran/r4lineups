@@ -22,7 +22,7 @@ Available models with their embedding dimensions:
   \item OpenFace (128-d) - Open source
   \item DeepFace (4096-d) - Facebook's model
   \item DeepID (160-d) - Compact model
-  \item ArcFace (512-d) - State-of-the-art, recommended
+  \item ArcFace (512-d) - Package default
   \item Dlib (128-d) - Lightweight
   \item SFace (128-d) - Lightweight
   \item GhostFaceNet (512-d) - Efficient

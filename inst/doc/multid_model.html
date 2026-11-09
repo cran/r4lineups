@@ -13,7 +13,7 @@
 <meta name="author" content="Colin G. Tredoux" />
 <meta name="author" content="Tamsyn M. Naylor" />
 
-<meta name="date" content="2026-11-02" />
+<meta name="date" content="2026-11-09" />
 
 <title>Multi-d’: Lee and Penrod’s Signal Detection Framework for Lineups</title>
 
@@ -344,7 +344,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 Framework for Lineups</h1>
 <h4 class="author">Colin G. Tredoux</h4>
 <h4 class="author">Tamsyn M. Naylor</h4>
-<h4 class="date">2026-11-02</h4>
+<h4 class="date">2026-11-09</h4>
 
 
 
@@ -406,7 +406,7 @@ z-transformed rates.</p>
 <tr class="even">
 <td>d’(FaFp)</td>
 <td>z(Fa) − z(Fp)</td>
-<td>Greater appeal of TA than TP fillers</td>
+<td>Difference in filler-choice rate between TA and TP lineups</td>
 </tr>
 <tr class="odd">
 <td>d’(RaRp)</td>
@@ -420,6 +420,10 @@ z-transformed rates.</p>
 </tr>
 </tbody>
 </table>
+<p>The TP–TA filler difference d’(FaFp) is expected to be positive
+partly because the culprit draws choices in TP lineups, and the index
+assumes that one filler rate is shared by all fillers; it is not a
+property of the fillers alone.</p>
 <p>The three filler indices combine to give d’(GI):</p>
 <p><span class="math display">\[d&#39;(GI) = d&#39;(GFp) - d&#39;(IFa) -
 d&#39;(FaFp).\]</span></p>
@@ -622,10 +626,12 @@ the responses of real witnesses to TP and TA lineups. They can describe
 or compare lineups after an experiment, but, unlike mock-witness
 measures such as <code>esize_T()</code> or <code>func_size()</code>,
 they cannot be used to vet a lineup before it is shown to a witness.
-Lee, Mansour and Penrod (2024) found that only resultant measures,
-including the Multi-d’ bias indices, reliably predicted eyewitness
-performance across 40 lineup sets, while mock-witness measures,
-perceptual ratings and face-recognition algorithms did not.</p>
+Lee, Mansour and Penrod (2024) found that resultant measures, including
+d’(IFa), predicted eyewitness performance best, which they note is
+expected because those measures are computed from the same witnesses’
+responses; among mock-witness measures, the lineup-bias indices
+predicted suspect identification rates but the lineup-size indices did
+not.</p>
 <p>Each index is an equal-variance d’ computed from a single pair of
 rates. Lee and Penrod present the model as a descriptive framework, a
 “series of thought experiments”, and do not claim that the indices

@@ -123,6 +123,7 @@ testthat::test_that("homog_diag_boot carries the same diagnosis as homog_diag", 
 })
 
 testthat::test_that("homog_diag_boot conf.level drives the percentile interval", {
+  testthat::skip_on_cran()
   narrow <- utils::capture.output(
     a <- homog_diag_boot(het_pres, het_abs, pos_list = c(1, 1, 1),
                          k = c(6, 6, 6), R = 200, seed = 1, conf.level = 0.80)

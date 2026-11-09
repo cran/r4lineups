@@ -42,7 +42,7 @@
 #'   \item Correct data types
 #'   \item No missing values in required columns
 #'   \item Valid identification values
-#'   \item Positive confidence values
+#'   \item Non-negative confidence values
 #'   \item At least some target-present and target-absent trials
 #' }
 #'
@@ -518,8 +518,12 @@ print.lineup_data <- function(x, ...) {
 
 #' Create Example Lineup Data
 #'
-#' Generate example lineup identification data in standardized format.
-#' Useful for testing, demonstrations, and learning r4lineups functions.
+#' Generate simulated lineup identification data in standardized format.
+#' Useful for testing, demonstrations, and learning r4lineups functions. The
+#' data are simulated, and confidence is generated independently of accuracy, so
+#' confidence-based analyses (ROC, CAC, calibration) of these data show no
+#' relationship between confidence and accuracy and are not typical of
+#' eyewitness data.
 #'
 #' @param n_trials Integer. Number of trials to generate (default = 100)
 #' @param prop_target_present Numeric. Proportion of target-present lineups
@@ -528,7 +532,7 @@ print.lineup_data <- function(x, ...) {
 #' @param include_response_time Logical. Include response times (default = FALSE)
 #' @param seed Integer. Random seed for reproducibility (default = NULL)
 #'
-#' @return A lineup_data object with realistic example data
+#' @return A lineup_data object with simulated example data
 #'
 #' @examples
 #' # Basic example data

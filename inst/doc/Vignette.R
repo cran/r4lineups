@@ -200,11 +200,11 @@ TP_lineup <- nortje2012$lineup_1
 TA_lineup <- nortje2012$lineup_3
 
 # Compute diagnosticity ratio
-diag_ratio_W(TP_lineup, TA_lineup, pos_pres = 3, pos_abs = 7, k1 = 8, k2 = 8)
-diag_ratio_T(TP_lineup, TA_lineup, pos_pres = 3, pos_abs = 7, k1 = 8, k2 = 8)
+diag_ratio_W(TP_lineup, TA_lineup, pos_pres = 3, pos_abs = 2, k1 = 8, k2 = 8)
+diag_ratio_T(TP_lineup, TA_lineup, pos_pres = 3, pos_abs = 2, k1 = 8, k2 = 8)
 
 ## -----------------------------------------------------------------------------
-var_diag_ratio(TP_lineup, TA_lineup, 3, 7, 8, 8)
+var_diag_ratio(TP_lineup, TA_lineup, 3, 2, 8, 8)
 
 ## -----------------------------------------------------------------------------
 # Target present data:
@@ -294,7 +294,7 @@ roc_result
 ## ----fig.width = 6, fig.height = 5, warning=FALSE-----------------------------
 plot(roc1) +
   ggplot2::theme_minimal(base_size = 12) +
-  ggplot2::labs(title = "Partial ROC, Nortje & Tredoux mock-witness data")
+  ggplot2::labs(title = "Partial ROC, simulated lineup_example data")
 
 ## ----fig.width = 6, fig.height = 5, warning=FALSE-----------------------------
 full_roc1 <- make_fullroc(lineup_example, lineup_size = 6, show_plot = FALSE)

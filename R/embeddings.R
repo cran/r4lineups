@@ -5,9 +5,9 @@
 #'
 #' @param img_path Path to the image file containing a face.
 #' @param model Character. The face recognition model to use.
-#'   Default is "ArcFace" (recommended). See \code{\link{available_models}}.
+#'   Default is "ArcFace". See \code{\link{available_models}}.
 #' @param detector Character. Face detection backend.
-#'   Default is "retinaface" (most accurate). See \code{\link{available_detectors}}.
+#'   Default is "retinaface". See \code{\link{available_detectors}}.
 #' @param align Logical. Whether to align the face before embedding.
 #'   Default is TRUE (recommended).
 #' @param enforce_detection Logical. If TRUE, raises an error if no face

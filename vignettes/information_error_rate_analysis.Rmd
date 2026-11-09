@@ -138,16 +138,26 @@ observed errors, and the estimate depends on an assumption about lineup size
 (Fitzgerald, Tredoux & Juncu, 2023):
 
 - **Nominal size.** Errors are spread evenly over all \(k\) members, so
-  \(1/k\) of them fall on the innocent suspect. The most optimistic assumption,
-  and it requires the lineup to be perfectly fair.
+  \(1/k\) of them fall on the innocent suspect. This shows the risk to an
+  innocent suspect if the lineup had been fair (Fitzgerald et al., 2023), and
+  it requires the lineup to be perfectly fair.
 - **Effective size.** Errors are spread over the members that actually attract
   choices, estimated from the data. Fewer functioning alternatives means more
-  errors land on the suspect.
+  errors land on the suspect. The correction assumes that the innocent suspect
+  is one of the more plausible members of the lineup.
 - **No correction.** Every mistaken identification is treated as an
   innocent-suspect identification. The worst case, and a genuine lower bound.
 
 Reporting all three gives a *range* rather than a single figure resting on an
-assumption that cannot be checked.
+assumption that cannot be checked. Only the uncorrected figure rests on no
+assumption about the suspect; the other two are conditional on where the
+innocent suspect falls among the members.
+
+The PPVs in this vignette also rest on a prior. With `base_rate = NULL`, the
+default, PPV is a ratio of counts, so the implicit prior is the study's own
+ratio of target-present to target-absent lineups. `lineup_example` has equal
+numbers of each, so every PPV below assumes a prior of .5. Supply the
+base rate that applies to the case at hand through the `base_rate` argument.
 
 ### When the three coincide, and why
 
@@ -206,7 +216,7 @@ ppv_estimated <- make_ppv_range(
 
 knitr::kable(
   data.frame(
-    Correction = c("Nominal size (best case)",
+    Correction = c("Nominal size (fair lineup)",
                    "Effective size",
                    "None (worst case)"),
     `Overall PPV` = round(c(ppv_estimated$ppv_nominal$overall_ppv,
@@ -240,6 +250,13 @@ knitr::kable(
 )
 ```
 
+The error rate in this table is the proportion of target-absent responses in
+the bin that are identifications. Rejections fall into few of these confidence
+bins, so most bins contain only identifications and show 1.000. The estimated
+number of innocent-suspect identifications, and so the PPV, does not depend on
+that denominator, because the error rate is multiplied back by the same number
+of target-absent responses.
+
 ### Plots
 
 ```{r plot_ppv_range}
@@ -259,9 +276,11 @@ plot_effective_size_conf(ppv_estimated)
   identification of this kind correct — and makes visible how much the answer
   depends on an untestable assumption about lineup size.
 
-The two are complementary: EIG is base-rate-dependent through `prior_guilt` and
-covers all responses; PPV concerns identifications only, and is the quantity
-with direct forensic meaning.
+The two are complementary: EIG covers all responses and depends on the prior
+through `prior_guilt`; PPV concerns identifications only, and is the quantity
+with direct forensic meaning. PPV depends on the prior as well, through the
+study's ratio of target-present to target-absent lineups or the `base_rate`
+argument, so a court needs the base rate for the case at hand.
 
 ## Technical Details
 
@@ -271,7 +290,10 @@ Computed over response categories formed by crossing decision with confidence
 bin. For each category the posterior comes from Bayes' theorem using the
 observed likelihoods \(P(x \mid G)\) and \(P(x \mid \neg G)\), estimated as
 response proportions within the target-present and target-absent arms
-respectively. Entropies are in bits (base-2 logarithms). The prior is set by
+respectively. When no innocent suspect is designated, `make_eig_data()` first
+moves \(1/k\) of the target-absent filler identifications into the matching
+suspect category, so EIG then assumes a fair lineup in the same way as the
+nominal-size correction. Entropies are in bits (base-2 logarithms). The prior is set by
 `prior_guilt`, defaulting to 0.5, at which the prior entropy is exactly 1 bit.
 
 EIG inherits the binning issue discussed in
@@ -298,8 +320,10 @@ as hits / (hits + estimated innocent-suspect identifications).
 ### Assumptions
 
 1. Target-present and target-absent lineups are independent samples.
-2. The nominal-size correction assumes a perfectly fair lineup. It is a bound,
-   not an estimate.
+2. The nominal-size correction assumes a perfectly fair lineup. It shows the
+   risk to an innocent suspect if the lineup had been fair, not an estimate of
+   the actual risk. The effective-size correction assumes that the innocent
+   suspect is one of the more plausible members of the lineup.
 3. Effective size is estimated per confidence bin, so bins with few observations
    give unstable corrections — check the counts before relying on a bin.
 4. Effective size is itself a plug-in estimate with small-sample bias; see the

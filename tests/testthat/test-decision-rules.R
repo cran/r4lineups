@@ -317,6 +317,7 @@ test_that("decision rules work with response times", {
 
 
 test_that("decision rules produce sensible hit rates", {
+  skip_on_cran()
   # With high d', should get high hit rates
   # With low d', should get lower hit rates
 
@@ -348,6 +349,7 @@ test_that("decision rules produce sensible hit rates", {
 
 
 test_that("decision rules produce sensible ROC curves", {
+  skip_on_cran()
   # Each decision rule should produce valid ROC curves
 
   for (rule in c("max", "best_rest", "ensemble", "integration")) {
@@ -426,6 +428,7 @@ test_that("reproducibility with seed", {
 
 
 test_that("decision rules work with different d' values", {
+  skip_on_cran()
   d_primes <- c(0.5, 1.0, 1.5, 2.0, 3.0)
 
   for (dp in d_primes) {

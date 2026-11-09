@@ -29,8 +29,9 @@
 
 func_size <- function(lineup_vec, target_pos){
   lineup_vec <- typecheck(lineup_vec)
-  if (!is.numeric(target_pos) || length(target_pos) != 1L || is.na(target_pos)) {
-    stop("target_pos must identify exactly one lineup member.", call. = FALSE)
+  if (!is.numeric(target_pos) || length(target_pos) != 1L ||
+      !is.finite(target_pos) || target_pos < 1 || target_pos != floor(target_pos)) {
+    stop("target_pos must identify one positive integer lineup member.", call. = FALSE)
   }
   selected <- sum(lineup_vec == target_pos)
   if (selected == 0L) {

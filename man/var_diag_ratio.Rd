@@ -17,9 +17,9 @@ the target was absent}
 
 \item{pos_abs}{A scalar, representing target position in TA lineup. Must be declared by user}
 
-\item{k1}{Number of targets in TP lineup. Must be specified by user (scalar).}
+\item{k1}{Number of members (nominal size) of the TP lineup. Must be specified by user (scalar).}
 
-\item{k2}{Number of targets in TA lineup. Must be specified by user (scalar).}
+\item{k2}{Number of members (nominal size) of the TA lineup. Must be specified by user (scalar).}
 }
 \description{
 Computes the large-sample variance of the log diagnosticity ratio for a lineup pair.

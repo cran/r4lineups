@@ -109,9 +109,11 @@ The full ROC reaches 1.0 because once foil identifications and rejections are
 admitted as evidence, every witness eventually contributes, and the cumulative
 rates must reach 1 in both arms.
 
-**The two areas are not comparable.** A pAUC of 0.06 and an AUC of 0.78 are not
+**The two areas are not comparable.** A pAUC of 0.05 and an AUC of 0.78 are not
 in competition; they are computed over different ranges from different subsets of
-the data. Never report one as though it were the other.
+the data. The AUC of 0.78 uses the default diagnosticity order, which is
+optimistic (see below); the a-priori order gives 0.73 for the same data. Never
+report one as though it were the other.
 
 ## The key idea: two signal detection tasks
 
@@ -186,15 +188,19 @@ more than it might appear.
 
 ### A-priori ordering
 
-`order = "apriori"` fixes the order in advance on theoretical grounds:
-
-1. Suspect identifications, from high confidence down to low
-2. Filler identifications, from low confidence up to high
-3. Rejections, from low confidence up to high
+`order = "apriori"` fixes the order in advance on theoretical grounds, following
+Smith, Yang and Wells (2020, p. 604) and Yang and Smith (2023). Suspect
+identifications come first, from high confidence down to low. Rejections and
+filler identifications follow, alternately and from low confidence up to high,
+with the rejection first at each level. For three confidence levels the order is
+high, medium and low-confidence suspect IDs; low-confidence rejections and filler
+IDs; medium-confidence rejections and filler IDs; and high-confidence rejections
+and filler IDs.
 
 The reasoning is that a confident suspect identification is the strongest
-evidence of guilt, while a confident rejection or a confident filler
-identification is the strongest evidence of innocence.
+evidence of guilt, that any decision made with low confidence carries less
+information than one made with high confidence, and that a confident rejection
+or a confident filler identification is the strongest evidence of innocence.
 
 ### Diagnosticity ordering
 
@@ -326,7 +332,12 @@ knitr::kable(
 
 The AUC has a direct probabilistic reading: it is the probability that a
 randomly chosen guilty suspect receives stronger evidence than a randomly chosen
-innocent one. 0.5 is chance.
+innocent one, where "stronger" is defined by the order of the response categories.
+0.5 is chance-level ranking under that order. It does not show that the responses
+carry no information: if filler IDs were more frequent in target-present lineups,
+the a priori order would place an informative category on the wrong side of the
+rejections, and the AUC could be .5 although another order gives a much larger
+value.
 
 Descriptive labels — "0.7 is moderate", "0.8 is good" — circulate widely, but
 they should be resisted here for two reasons. The bias demonstrated above means
@@ -391,9 +402,10 @@ ggplot(curves, aes(x = cumulative_false_alarm_rate, y = cumulative_hit_rate,
   theme(legend.position = "bottom")
 ```
 
-Here the stronger condition dominates: its curve is above the weaker one
-throughout, so no assumption about base rates or costs could reverse the
-conclusion.
+Here the stronger condition's sample curve is above the weaker one throughout,
+so these two estimated curves do not cross under the a-priori order. They are
+estimates without intervals, so this describes the samples and is not a claim
+about the populations.
 
 **When curves cross**, there is no procedure-level winner, and the choice
 depends on where you intend to operate. That requires a base rate and a cost
@@ -429,9 +441,11 @@ $$AUC = \sum_{i=2}^{n} \bigl(CFAR_i - CFAR_{i-1}\bigr)\cdot\frac{CHR_i + CHR_{i-
 ### Edge cases
 
 - $FAR_i = 0$: the ratio is undefined, so a small constant (`epsilon`, default
-  0.001) is substituted. The affected category sorts to the top under
-  diagnosticity ordering, which is one route by which that ordering becomes
-  optimistic.
+  0.001) is substituted, so the ratio is the hit rate divided by `epsilon`. A
+  category with no target-absent responses therefore sorts by its hit rate: it
+  ranks high when its hit rate is large, but one hit in 700 lineups gives a
+  ratio of 1.43, in the middle of the table. This is one route by which
+  diagnosticity ordering becomes optimistic.
 - $HR_i = FAR_i = 0$: the category is empty and is removed.
 - Empty bins after `conf_bins` are applied are removed.
 
@@ -456,8 +470,8 @@ fixed.
 
 ## Summary
 
-1. Partial ROC uses one of six possible witness outcomes on each side; full ROC
-   uses all of them, which is why it spans the entire range.
+1. Partial ROC uses one of three possible witness outcomes on each side (suspect
+   ID, filler ID, rejection); full ROC uses all of them, which is why it spans the entire range.
 2. pAUC and full AUC are not comparable numbers.
 3. Full ROC measures **investigator** discriminability, not eyewitness memory.
 4. `order = "diagnosticity"` is optimistically biased — around +0.15 at 100
@@ -476,6 +490,8 @@ National Research Council. (2014). *Identifying the culprit: Assessing eyewitnes
 Smith, A. M., Yang, Y., & Wells, G. L. (2020). Distinguishing between investigator discriminability and eyewitness discriminability: A method for creating full receiver operating characteristic curves of lineup identification performance. *Perspectives on Psychological Science, 15*(3), 589-607. https://doi.org/10.1177/1745691620902426
 
 Wells, G. L., Yang, Y., & Smalarz, L. (2015). Eyewitness identification: Bayesian information gain, base-rate effect equivalency curves, and reasonable suspicion. *Law and Human Behavior, 39*(1), 99-122.
+
+Yang, Y., & Smith, A. M. (2023). fullROC: An R package for generating and analyzing eyewitness-lineup ROC curves. *Behavior Research Methods, 55*, 1259-1274. https://doi.org/10.3758/s13428-022-01807-6
 
 :::
 

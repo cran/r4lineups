@@ -147,10 +147,12 @@ plot_2ht_parameters(fit)
 plot_2ht_fit(fit)
 ```
 
-The second plot is the one to check before interpreting anything: it compares
-observed response proportions against those the fitted model predicts. Visible
-discrepancies mean the model is not describing the data, and the parameters
-should not be read as though it were.
+The second plot compares observed response proportions against those the fitted
+model predicts. A single-condition fit is saturated (see the technical details),
+so for an interior estimate the two agree by construction and the plot cannot
+show misfit; a close match is not evidence that the model holds. The plot can
+show a discrepancy only when an estimate sits on a parameter boundary, and then
+the parameters should not be read as though the model described the data.
 
 ## 3. Bootstrap confidence intervals
 
@@ -174,10 +176,11 @@ The percentile intervals stay inside the parameter space, and
 plot_2ht_parameters(boot_fit)
 ```
 
-All four parameters are probabilities bounded in [0, 1]. At a boundary —
-`b` here — regular Hessian standard errors are unavailable. Percentile intervals
-respect the parameter space, but this alone does not establish nominal coverage
-at a boundary.
+All four parameters are probabilities bounded in [0, 1]. Here `b` is close to
+the boundary: its estimate is about 0.009 and its percentile interval starts at
+0. At a boundary estimate regular Hessian standard errors are unavailable, and
+percentile intervals respect the parameter space but do not by themselves
+establish nominal coverage.
 
 For larger datasets, increase `nboot` to 1000 or more for stable intervals.
 
@@ -190,8 +193,8 @@ proportion of mock witnesses choosing the suspect — are computed from
 **mock-witness data**: people who never saw the culprit, choosing from a
 description. They ask whether the suspect stands out.
 
-The 2-HT model answers the same question **from the witness data themselves**,
-with no mock-witness study required. Look again at where `b` sits in the tree: it
+The 2-HT model addresses the same question **from the witness data themselves**,
+with no mock-witness study required, if the model holds. Look again at where `b` sits in the tree: it
 is the probability of choosing the suspect *given that no detection occurred and
 before any guessing*. A witness in that state has no memorial basis for choosing
 the suspect, so if they do, it is because the lineup pointed them there.
@@ -199,7 +202,11 @@ the suspect, so if they do, it is because the lineup pointed them there.
 In a perfectly fair lineup, `b = 0`: a non-detecting witness who chooses lands on
 the suspect with probability \(1/L\), purely by chance, and that is already
 captured by the `g/L` term. **Any `b` above zero is a measure of unfairness**,
-on a probability scale, with a confidence interval.
+on a probability scale, with a confidence interval. This reading depends on the
+tree's assumptions: all-or-none detection, guessing spread equally (1/L) over
+the members, and no memory-based preference for the suspect among witnesses who
+did not detect. A suspect who merely resembles the culprit, for example, would
+also raise `b`.
 
 ### Does it work?
 
@@ -258,12 +265,16 @@ Weakening all the foils uniformly — the first two rows — makes `b` rise and 
 fall together, which is the expected behaviour.
 
 **But `b` and E′ are not the same measure, and the last two rows show it.** With
-uneven foils, E′ collapses to 2.00 and then 1.06, because a single dominant foil
-absorbs most of the choices and the lineup has almost no functioning
-alternatives. `b` stays at zero throughout — correctly, because in those lineups
-the suspect is chosen *below* chance and is, if anything, protected by the
-arrangement. `b` measures whether the **suspect** stands out; E′ measures how
-many **alternatives** are functioning. Report both.
+uneven foils, E′ collapses to 2.00 and then 1.06, because one or two dominant
+foils absorb most of the choices and the lineup has almost no functioning
+alternatives. `b` stays at zero throughout, but that is a boundary estimate
+(`b` cannot be negative), not a correct finding of a fair lineup. In those
+lineups the suspect is chosen *below* chance, which `b` cannot register, and
+the model's equal 1/L guessing share does not describe choices spread unevenly
+over the members, so it does not reproduce the data (`fit_winter_2ht()` flags
+the boundary, and `plot_2ht_fit()` shows the discrepancy). `b` measures
+whether the **suspect** stands out, if the equal-guessing assumption holds; E′
+measures how many **alternatives** are functioning. Report both.
 
 The practical value of `b` is that it is available **when mock-witness data are
 not**: a lineup already administered to real witnesses can be assessed for
@@ -280,7 +291,10 @@ why, partly books this as detection.
 So an unfair lineup does not merely inflate false identifications; it inflates
 the apparent memory performance of the procedure that produced them.
 **Report `b` alongside `dP`, never `dP` alone.** A high `dP` from a lineup with a
-high `b` is not evidence of a good procedure.
+high `b` is not evidence of a good procedure. A low `b` does not make `dP`
+trustworthy either: the last two rows have the same generating d′ as the first
+two and `b` of 0, yet `dP` is 0.213 and 0.067 against 0.453 for the fair lineup,
+because uneven foils distort `dP` even when `b` is 0.
 
 ## Technical Details
 

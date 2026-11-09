@@ -2,7 +2,7 @@
 #'
 #'Computes bootstrapped confidence intervals for lineup proportion
 #'@param lineup_vec A numeric vector of lineup choices
-#'@param k Number of targets in lineup. Must be specified by user (scalar).
+#'@param k Number of members (nominal size) of the lineup. Must be specified by user (scalar).
 #'@param conf Confidence level for the intervals, e.g. 0.95 for 95 percent
 #'            intervals. Defaults to 0.95. May be specified by user (scalar).
 #'@param R Number of bootstrap replications. Defaults to 1000.

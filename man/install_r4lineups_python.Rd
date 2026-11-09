@@ -42,11 +42,11 @@ This function installs:
   \item numpy - Numerical computing
   \item tf-keras - TensorFlow/Keras backend
   \item mediapipe - For 478-point face mesh (optional but recommended)
-  \item retinaface - Best face detector
+  \item retinaface - Face detector (the package default)
 }
 
 \strong{Python version.} TensorFlow publishes wheels for a limited range of
-Python versions (currently 3.9 to 3.12). On a machine whose default
+Python versions (currently 3.9 to 3.13). On a machine whose default
 interpreter is newer than that, pip finds no TensorFlow distribution at all
 and the install fails partway through with
 \code{No matching distribution found for tensorflow}, after downloading the

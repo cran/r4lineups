@@ -53,7 +53,7 @@ effsize_compare <- function(linedf, R = 1000){
     if (!is.data.frame(linedf) || ncol(linedf) != 2L || nrow(linedf) < 2L) {
       stop("linedf must be a two-column data frame with at least two rows.", call. = FALSE)
     }
-    if (!is.numeric(R) || length(R) != 1L || R < 2 || R != as.integer(R)) {
+    if (!is.numeric(R) || length(R) != 1L || !is.finite(R) || R < 2 || R != as.integer(R)) {
       stop("R must be an integer of at least 2.", call. = FALSE)
     }
     cat ("\n")
@@ -74,8 +74,25 @@ effsize_compare <- function(linedf, R = 1000){
                                              seq_len(nrow(long) - 1L)), numeric(1))
       (length(ix) - 1L) * (mean(loo) - loo)
     }))
-    temp2 <- suppressWarnings(boot.ci(temp1, type = c("norm","bca","perc"),
-                                    L = influences))
+    constant_boot <- all(temp1$t[, 1L] == temp1$t[1L, 1L])
+    if (constant_boot) {
+      warning("Bootstrap differences are constant; normal and percentile intervals ",
+              "are degenerate and the BCa interval is unavailable.", call. = FALSE)
+      constant_value <- temp1$t[1L, 1L]
+      normal_center <- 2 * temp1$t0 - constant_value
+      temp2 <- list(normal = c(NA_real_, normal_center, normal_center),
+                    percent = c(rep(NA_real_, 3L), constant_value, constant_value))
+    } else {
+      temp2 <- tryCatch(
+        suppressWarnings(boot.ci(temp1, type = c("norm", "bca", "perc"),
+                                 L = influences)),
+        error = function(e) {
+          warning("BCa interval unavailable: ", conditionMessage(e),
+                  ". Returning normal and percentile intervals.", call. = FALSE)
+          suppressWarnings(boot.ci(temp1, type = c("norm", "perc")))
+        }
+      )
+    }
     estimates <- c(esize_T(table(linedf[[1]])), esize_T(table(linedf[[2]])))
     normal <- if (!is.null(temp2$normal)) temp2$normal[2:3] else c(NA_real_, NA_real_)
     percentile <- if (!is.null(temp2$percent)) temp2$percent[4:5] else c(NA_real_, NA_real_)

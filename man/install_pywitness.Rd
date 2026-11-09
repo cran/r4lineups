@@ -2,7 +2,7 @@
 % Please edit documentation in R/lineup_models_pywitness.R
 \name{install_pywitness}
 \alias{install_pywitness}
-\title{Install the Audited pyWitness Engine}
+\title{Install the Pinned pyWitness Engine}
 \usage{
 install_pywitness(
   envname = .pywitness_default_env,
@@ -26,7 +26,7 @@ Invisibly returns the environment name.
 }
 \description{
 Explicitly creates or reuses an isolated Python virtual environment and
-installs the audited pyWitness Git revision used by
+installs the pinned pyWitness Git revision used by
 \code{\link{fit_lineup_models}}. This function is never called when the
 package is loaded or checked.
 }

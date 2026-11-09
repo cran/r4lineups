@@ -54,6 +54,11 @@ entropy <- function(p, base = 2) {
 #' the frequency of each response category separately for target-present
 #' (guilty) and target-absent (innocent) lineups.
 #'
+#' When no innocent suspect is designated (\code{innocent_suspect =
+#' "estimated"}, or \code{"auto"} on such data), \code{1 / lineup_size} of each
+#' target-absent filler count is moved into the matching suspect category, so
+#' the result assumes a fair lineup of \code{lineup_size} members.
+#'
 #' @references
 #' Starns, J. J., Cohen, A. L., & Rotello, C. M. (2023). A complete method for
 #' assessing the effectiveness of eyewitness identification procedures: Expected
@@ -204,6 +209,9 @@ make_eig_data <- function(data, confidence_bins = NULL, lineup_size = 6,
 #' Higher EIG values indicate more diagnostic procedures. EIG = 0 means no
 #' information gain (responses don't distinguish guilty from innocent).
 #' The maximum EIG is the prior entropy; it is 1 bit only at prior guilt 0.5.
+#' Without a designated innocent suspect, EIG assumes a fair lineup
+#' (\code{1 / lineup_size} of target-absent filler choices are treated as
+#' innocent-suspect identifications; see \code{\link{make_eig_data}}).
 #'
 #' @references
 #' Starns, J. J., Cohen, A. L., & Rotello, C. M. (2023). A complete method for
